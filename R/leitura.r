@@ -47,9 +47,9 @@ leplanilha <- function(arq) {
     rend  <- setDT(rend)
     datas <- paste0(rend$Data, " ", formatC(rend$Hora - 1, width = 2, flag = "0", format = "d"), ":00")
     datas <- as.POSIXct(datas, "GMT", format = "%Y-%m-%d %H:%M")
-    pat   <- factor(rend[, 6, drop = TRUE], levels = c("P", "M", "L"), ordered = TRUE)
-    energ <- rend[, 4, drop = TRUE]
-    rend  <- rend[, 3, drop = TRUE]
+    pat   <- factor(rend$Patamar, levels = c("P", "M", "L"), ordered = TRUE)
+    energ <- rend[[4]]
+    rend  <- rend[[3]]
 
     turb <- read_xlsx(arq, sheet = "QTurb", skip = 1, col_types = "numeric",
                         .name_repair = "minimal", n_max = 87649)
@@ -117,6 +117,12 @@ agregasemana <- function(dat, min.horas = .9) UseMethod("agregasemana")
 agregasemana.data.table <- function(dat, min.horas = .9) {
 
     if(min.horas > 1) min.horas <- min.horas / 100
+
+    diasem <- lubridate::wday(dat$datahora)
+    hora   <- lubridate::hour(dat$datahora)
+    inisem <- dat$datahora[(diasem == 7) & (hora == 0)]
+
+    dat[, semana := findInterval(datahora, inisem)]
 
 }
 
