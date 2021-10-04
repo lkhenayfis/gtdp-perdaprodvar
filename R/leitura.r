@@ -31,7 +31,7 @@ leplanilha <- function(arq) {
     nome <- as.character(usina[1, 1])
     cod  <- as.numeric(usina[2, 1])
 
-    maqs <- setDT(read_xlsx(arq, sheet = "Cadastro", range = "D15:G300", .name_repair = "minimal"))
+    maqs <- setDT(read_xlsx(arq, sheet = "Cadastro", range = "E15:G300", .name_repair = "minimal"))
     maqs <- maqs[complete.cases(maqs)]
     qmax <- maqs[, sum(Qef)]
     nmaq <- maqs[, .N]
