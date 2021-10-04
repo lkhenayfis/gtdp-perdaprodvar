@@ -21,6 +21,8 @@ new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos) {
 
 # METODOS ------------------------------------------------------------------------------------------
 
+#' @export
+
 predict.gamperda <- function(object, newdata, ...) {
 
     if("data.table" %in% class(newdata)) {
@@ -31,7 +33,7 @@ predict.gamperda <- function(object, newdata, ...) {
     }
 
     pred <- split(data, findInterval(data$vazao, attr(object, "cortes")) + 1)
-    pred <- lapply(seq(pred), function(i) predict(object$model[[i]], newdata = pred[[i]]))
+    pred <- lapply(names(pred), function(i) predict(object$model[[as.numeric(i)]], newdata = pred[[i]]))
 
     pred <- unlist(pred)
 
