@@ -32,10 +32,13 @@ predict.gamperda <- function(object, newdata, ...) {
         setDT(data)
     }
 
-    pred <- split(data, findInterval(data$vazao, attr(object, "cortes")) + 1)
+    sect <- findInterval(data$vazao, attr(object, "cortes")) + 1
+    pred <- split(data, sect)
     pred <- lapply(names(pred), function(i) predict(object$model[[as.numeric(i)]], newdata = pred[[i]]))
 
-    pred <- unlist(pred)
+    ordem <- split(seq(nrow(data)), sect)
+    pred  <- unlist(pred)
+    pred  <- pred[order(unlist(ordem))]
 
     return(pred)
 }
