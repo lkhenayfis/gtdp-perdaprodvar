@@ -1,13 +1,11 @@
 #' Modelagem De Perdas e Produtibilidades Variaveis
 #' 
 #' @docType package
-#' @name DCS
+#' @name perdaprodvar
 #' 
 #' @import data.table
 NULL
 
-#' ## usethis namespace: start
-#' @useDynLib perdaprodvar, .registration = TRUE
+#' @useDynLib perdaprodvar
 #' @importFrom Rcpp sourceCpp
-#' ## usethis namespace: end
 NULL
