@@ -23,7 +23,7 @@ fitgam_perda(
 \item{extrap}{vetor de duas posições indicando o tipo de extrapolação em cada região. Ver
 Detalhes}
 
-\item{quantil}{quantis para uso na extrapolação, caso seja tipo 2. Ver Detalhes}
+\item{quantil}{quantis para uso na extrapolação. Ver Detalhes}
 }
 \value{
 objeto \code{gamperda} contendo GAM e extrapolações estimadas
@@ -38,4 +38,28 @@ apenas o último é relevante para a estimação de curva, sendo os outros dois 
 para escrita de resultados e plots. Desta forma, para garantir o funcionamento apropriado da
 função o objeto passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente
 pelas funções fornecidas no pacote.
+
+Para extrapolação, independentemente do tipo, duas partes do dado serão seccionadas:
+correspondente às vazões inferiores a \code{quantil[1]} e outra àquelas superiores a
+\code{quantil[2]}. Caso seja adotada extrapolação tipo 1:
+\enumerate{
+\item Para região inferior, uma equação do tipo \eqn{kQ^2} será ajustada entre a origem e o ponto de
+de menor perda
+\item Para região superior é feito o mesmo, porém para o ponto de maior vazão
+}
+
+Se for selecionada a extrapolação do tipo 2
+\enumerate{
+\item Ajusta-se uma curva \eqn{kQ^2} aos pontos da região inferior
+\item Ajusta-se uma curva \eqn{a + kQ^2} aos pontos da região superior
+}
+
+Uma vez realizadas as extrapolações, o ajuste final é composto chaveando modelos no cruzamento
+entre curvas. Caso não ocorra interseção, é utilizado o ponto de vazão no qual a distância entre
+elas seja a menor possível e um aviso será emitido.
+}
+\seealso{
+Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
+\code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização
+\code{\link{plot.gamperda}}
 }

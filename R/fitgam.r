@@ -11,15 +11,36 @@
 #' função o objeto passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente
 #' pelas funções fornecidas no pacote.
 #' 
+#' Para extrapolação, independentemente do tipo, duas partes do dado serão seccionadas: 
+#' correspondente às vazões inferiores a \code{quantil[1]} e outra àquelas superiores a 
+#' \code{quantil[2]}. Caso seja adotada extrapolação tipo 1:
+#' 
+#' 1. Para região inferior, uma equação do tipo \eqn{kQ^2} será ajustada entre a origem e o ponto de
+#'    de menor perda
+#' 1. Para região superior é feito o mesmo, porém para o ponto de maior vazão
+#' 
+#' Se for selecionada a extrapolação do tipo 2
+#' 
+#' 1. Ajusta-se uma curva \eqn{kQ^2} aos pontos da região inferior
+#' 1. Ajusta-se uma curva \eqn{a + kQ^2} aos pontos da região superior
+#' 
+#' Uma vez realizadas as extrapolações, o ajuste final é composto chaveando modelos no cruzamento 
+#' entre curvas. Caso não ocorra interseção, é utilizado o ponto de vazão no qual a distância entre 
+#' elas seja a menor possível e um aviso será emitido.
+#' 
 #' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
 #' @param ns.vazao numero de nós no GAM ajustado. Padrao 10
 #' @param ts.vazao tipo de spline utilizada para vazao -- um de \code{c("tp", "cr")}; veja
 #'     \code{link[mgcv]{gam}} e Detalhes. Padrao "tp"
 #' @param extrap vetor de duas posições indicando o tipo de extrapolação em cada região. Ver 
 #'     Detalhes
-#' @param quantil quantis para uso na extrapolação, caso seja tipo 2. Ver Detalhes
+#' @param quantil quantis para uso na extrapolação. Ver Detalhes
 #' 
 #' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
+#' 
+#' @seealso Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
+#' \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização 
+#' \code{\link{plot.gamperda}}
 #' 
 #' @export
 
