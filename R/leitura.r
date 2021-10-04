@@ -97,7 +97,7 @@ leplanilha <- function(arq) {
 #' 
 #' @return \code{data.table} com médias semanais cotendo as variáveis
 #'     \describe{
-#'         \item{datahora}{Data e hora inicial da semana}
+#'         \item{data}{Data e hora inicial da semana}
 #'         \item{nmont}{Nível de montante}
 #'         \item{quedal}{Queda líquida media}
 #'         \item{perda}{Perda média}
@@ -112,20 +112,65 @@ leplanilha <- function(arq) {
 
 agregasemana <- function(dat, min.horas = .9) UseMethod("agregasemana")
 
-#' @S3method agregasemana data.table
+#' @export 
+#' 
+#' @rdname agregasemana
 
 agregasemana.data.table <- function(dat, min.horas = .9) {
 
     if(min.horas > 1) min.horas <- min.horas / 100
 
-    diasem <- lubridate::wday(dat$datahora)
-    hora   <- lubridate::hour(dat$datahora)
-    inisem <- dat$datahora[(diasem == 7) & (hora == 0)]
+    datsem <- copy(dat)
 
-    dat[, semana := findInterval(datahora, inisem)]
+    diasem <- lubridate::wday(datsem$datahora)
+    hora   <- lubridate::hour(datsem$datahora)
+    inisem <- datsem$datahora[(diasem == 7) & (hora == 0)]
 
+    datsem[, semana := findInterval(datahora, inisem)]
+    datsem <- datsem[semana != 0]
+    datsem <- datsem[semana != length(inisem)]
+    datsem <- datsem[, regvale := complete.cases(datsem)]
+
+    datsem[, semanafull := mean(regvale) > min.horas, by = semana]
+
+    # funcao alternativa para weighted.mean, que so corta NA de x e nao dos pesos
+    wm2 <- function(x, w) sum(x * w, na.rm = TRUE) / sum(w, na.rm = TRUE)
+
+    datsem <- datsem[semanafull == TRUE, lapply(.SD, wm2, w = energia), .SDcols = 2:9, by = semana]
+
+    datsem[, c("nmaq", "patamar", "energia") := lapply(1:3, function(x) rep(NA, .N))]
+    
+    datsem[, data := inisem[semana]]
+
+    setcolorder(datsem, c("data", colnames(datsem)[-c(1, 10)]))
+
+    datsem <- datsem[, -10]
+
+    attr(datsem, "cod") <- attr(dat, "cod")
+    attr(datsem, "nome") <- attr(dat, "nome")
+    attr(datsem, "nmaq") <- attr(dat, "nmaq")
+    attr(datsem, "qmax") <- attr(dat, "qmax")
+
+    return(datsem)
 }
+
+#' @export 
+#' 
+#' @rdname agregasemana
 
 agregasemana.character <- function(dat, min.horas = .9) {
 
+    extensao <- sub(".*\\.", "", dat)
+
+    if(extensao == "RDS") {
+        dat <- readRDS(dat)
+    } else if(extensao == "xlsm") {
+        dat <- leplanilha(dat)
+    } else {
+        stop("Formato de arquivo nao permitido")
+    }
+
+    dat <- agregasemana(dat)
+
+    return(dat)
 }
