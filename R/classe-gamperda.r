@@ -1,5 +1,18 @@
 ######################################### CLASSE GAMPERDA ##########################################
 
+#' Objeto \code{gamperda}
+#' 
+#' Construtor e métodos da classe \code{gamperda}
+#' 
+#' @name gamperda
+NULL
+
+#' Construtor Interno
+#' 
+#' Função para contrução da saída de \code{fitgam_perda}, não deve ser chamada diretamente
+#' 
+#' @rdname gamperda
+
 new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos) {
 
     dat <- copy(dat)[, .SD, .SDcols = c("vazao", "perda")]
@@ -21,7 +34,17 @@ new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos) {
 
 # METODOS ------------------------------------------------------------------------------------------
 
+#' @param object objeto \code{gamperda} retornado por \code{\link{fitgam_perda}}
+#' @param newdata data.frame ou data.table contendo variável explicativa para previsão
+#' @param ... demais parametros
+#' 
+#' @return para \code{predict.gamperda}, vetor de perdas previstas nas abscissas contidas em 
+#' \code{newdata}. Para code{fitted.gamperda}, os valores ajustados e \code{rediduals.gamperda} os
+#' erros
+#' 
 #' @export
+#' 
+#' @rdname gamperda
 
 predict.gamperda <- function(object, newdata, ...) {
 
@@ -44,10 +67,14 @@ predict.gamperda <- function(object, newdata, ...) {
 }
 
 #' @export
+#' 
+#' @rdname gamperda
 
 fitted.gamperda <- function(object, ...) predict(object, object$dat)
 
 #' @export
+#' 
+#' @rdname gamperda
 
 residuals.gamperda <- function(object, ...) {
 
