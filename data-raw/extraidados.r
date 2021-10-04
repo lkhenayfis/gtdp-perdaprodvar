@@ -22,3 +22,12 @@ parallel::parLapply(clst, arqs, function(arq) {
 })
 
 parallel::stopCluster(clst)
+
+# Checa quem deu erro ------------------------------------------------------------------------------
+
+for(arq in arqs) {
+    outdir <- sub("Vazao.*", "Produtibilidade Variável", arq)
+    usina  <- gsub("(.*iterativo - )|(\\.xls[xm])", "", arq)
+
+    if(!file.exists(file.path(outdir, paste0(usina, ".RDS")))) print(usina)
+}
