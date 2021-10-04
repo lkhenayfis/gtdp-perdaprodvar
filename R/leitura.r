@@ -33,7 +33,7 @@ leplanilha <- function(arq) {
 
     maqs <- setDT(read_xlsx(arq, sheet = "Cadastro", range = "E15:G300", .name_repair = "minimal"))
     maqs <- maqs[complete.cases(maqs)]
-    qmax <- maqs[, sum(Qef)]
+    qef  <- maqs[, sum(Qef)]
     nmaq <- maqs[, .N]
 
     info <- read_xlsx(arq, sheet = "Abertura(1)", range = "G13:G18", .name_repair = "minimal")
@@ -75,7 +75,7 @@ leplanilha <- function(arq) {
     attr(out, "cod")  <- cod
     attr(out, "nome") <- nome
     attr(out, "nmaq") <- nmaq
-    attr(out, "qmax") <- qmax
+    attr(out, "qef") <- qef
 
     return(out)
 }
@@ -149,7 +149,7 @@ agregasemana.data.table <- function(dat, min.horas = .9) {
     attr(datsem, "cod") <- attr(dat, "cod")
     attr(datsem, "nome") <- attr(dat, "nome")
     attr(datsem, "nmaq") <- attr(dat, "nmaq")
-    attr(datsem, "qmax") <- attr(dat, "qmax")
+    attr(datsem, "qmax") <- max(attr(dat, "qef"), datsem[, max(vazao)])
 
     return(datsem)
 }
