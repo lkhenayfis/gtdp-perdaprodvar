@@ -1,5 +1,28 @@
 ############################### AJUSTE DE MODELOS ADITIVOS AOS DADOS ###############################
 
+#' Ajuste De Curva Para Perdas
+#' 
+#' Estima GAM para perdas, complementando regiões inferior e superior com extrapolação
+#' 
+#' \code{fitgam_perda} espera que alguns atributos especiais estejam presetnes no argumento
+#' \code{dat}, dentre eles: codigo, nome e vazao turbinada efetiva total da usina. Dentre estes,
+#' apenas o último é relevante para a estimação de curva, sendo os outros dois necessários apenas
+#' para escrita de resultados e plots. Desta forma, para garantir o funcionamento apropriado da 
+#' função o objeto passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente
+#' pelas funções fornecidas no pacote.
+#' 
+#' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
+#' @param ns.vazao numero de nós no GAM ajustado. Padrao 10
+#' @param ts.vazao tipo de spline utilizada para vazao -- um de \code{c("tp", "cr")}; veja
+#'     \code{link[mgcv]{gam}} e Detalhes. Padrao "tp"
+#' @param extrap vetor de duas posições indicando o tipo de extrapolação em cada região. Ver 
+#'     Detalhes
+#' @param quantil quantis para uso na extrapolação, caso seja tipo 2. Ver Detalhes
+#' 
+#' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
+#' 
+#' @export
+
 fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "tp", extrap = c(1, 1), quantil = c(.05, .95)) {
 
     if(!(all(extrap %in% 1:2))) stop("extrap so pode assumir valor 1 ou 2")

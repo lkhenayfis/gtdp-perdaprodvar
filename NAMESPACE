@@ -3,6 +3,7 @@
 S3method(agregasemana,character)
 S3method(agregasemana,data.table)
 export(agregasemana)
+export(fitgam_perda)
 export(leplanilha)
 import(data.table)
 importFrom(Rcpp,sourceCpp)
