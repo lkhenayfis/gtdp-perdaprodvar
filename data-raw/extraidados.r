@@ -17,7 +17,7 @@ parallel::parLapply(clst, arqs, function(arq) {
     usina  <- gsub("(.*iterativo - )|(\\.xls[xm])", "", arq)
     if(!dir.exists(outdir)) dir.create(outdir)
 
-    data.table::fwrite(dado, file.path(outdir, paste0(usina, ".csv")), quote = FALSE)
+   # data.table::fwrite(dado, file.path(outdir, paste0(usina, ".csv")), quote = FALSE)
     saveRDS(dado, file.path(outdir, paste0(usina, ".RDS")))
 })
 
