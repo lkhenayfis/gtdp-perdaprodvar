@@ -136,15 +136,14 @@ agregasemana.data.table <- function(dat, min.horas = .9) {
     # funcao alternativa para weighted.mean, que so corta NA de x e nao dos pesos
     wm2 <- function(x, w) sum(x * w, na.rm = TRUE) / sum(w, na.rm = TRUE)
 
-    datsem <- datsem[semanafull == TRUE, lapply(.SD, wm2, w = energia), .SDcols = 2:9, by = semana]
+    datsem <- datsem[semanafull == TRUE, lapply(.SD, wm2, w = energia), .SDcols = c(2:6, 9), by = semana]
 
     datsem[, c("nmaq", "patamar", "energia") := lapply(1:3, function(x) rep(NA, .N))]
     
     datsem[, data := inisem[semana]]
+    datsem <- datsem[, -1]
 
-    setcolorder(datsem, c("data", colnames(datsem)[-c(1, 10)]))
-
-    datsem <- datsem[, -10]
+    setcolorder(datsem, c("data", colnames(dat)[-1]))
 
     attr(datsem, "cod") <- attr(dat, "cod")
     attr(datsem, "nome") <- attr(dat, "nome")
