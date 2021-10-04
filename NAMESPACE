@@ -2,7 +2,9 @@
 
 S3method(agregasemana,character)
 S3method(agregasemana,data.table)
+S3method(fitted,gamperda)
 S3method(predict,gamperda)
+S3method(residuals,gamperda)
 export(agregasemana)
 export(fitgam_perda)
 export(leplanilha)

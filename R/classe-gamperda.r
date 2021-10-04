@@ -39,3 +39,17 @@ predict.gamperda <- function(object, newdata, ...) {
 
     return(pred)
 }
+
+#' @export
+
+fitted.gamperda <- function(object, ...) predict(object, object$dat)
+
+#' @export
+
+residuals.gamperda <- function(object, ...) {
+
+    fit <- fitted(object)
+    res <- object$model$perda - fit
+
+    return(res)
+}
