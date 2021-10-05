@@ -1,5 +1,18 @@
 ######################################### CLASSE GRIDPERDA #########################################
 
+#' Extrator De Grades de Perda
+#' 
+#' Amostra \code{dim} pontos igualmente espaçacados no ajuste da curva de perdas
+#' 
+#' @param fit object \code{gamperda} retornado por \code{fitgam_perda} ou \code{optgam_perda}
+#' @param dim inteiro indicando número de pontos na grade a ser extraída
+#' 
+#' @return objeto da classe \code{gridperda} contendo grade extraída e ajuste original
+#' 
+#' @export
+#' 
+#' @rdname gridperda
+
 extraigrid.gamperda <- function(fit, dim, ...) {
 
     dim <- dim[1]
@@ -9,6 +22,12 @@ extraigrid.gamperda <- function(fit, dim, ...) {
 
     new_gridperda(perda, vazao, fit)
 }
+
+#' Construtor Interno
+#' 
+#' Função para contrução da saída de \code{extraigrid.gamperda}, não deve ser chamada diretamente
+#' 
+#' @rdname gridperda
 
 new_gridperda <- function(perda, vazao, fit) {
 
@@ -20,9 +39,21 @@ new_gridperda <- function(perda, vazao, fit) {
     return(out)
 }
 
+#' @export
+
 print.gridperda <- function(x, ...) print(gg$grid)
 
 # METODOS ------------------------------------------------------------------------------------------
+
+#' @param object objeto \code{gridperda} retornado por \code{\link{extraigrid.gamperda}}
+#' @param newdata data.frame ou data.table contendo variável explicativa para previsão
+#' @param ... demais parametros
+#' 
+#' @return objeto \code{gridperda} contendo grade extraída e modelo originalmente ajustado ao dado
+#' 
+#' @export
+#' 
+#' @rdname gridperda
 
 predict.gridperda <- function(object, newdata, ...) {
 
@@ -36,7 +67,11 @@ predict.gridperda <- function(object, newdata, ...) {
     return(interp)
 }
 
-reiduals.gridperda <- function(object, ...) {
+#' @export
+#' 
+#' @rdname gridperda
+
+residuals.gridperda <- function(object, ...) {
 
     vazao <- object$gam$dat$vazao
 
