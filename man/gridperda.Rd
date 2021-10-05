@@ -4,6 +4,7 @@
 \alias{extraigrid.gamperda}
 \alias{new_gridperda}
 \alias{predict.gridperda}
+\alias{fitted.gridperda}
 \alias{residuals.gridperda}
 \title{Extrator De Grades de Perda}
 \usage{
@@ -12,6 +13,8 @@
 new_gridperda(perda, vazao, fit)
 
 \method{predict}{gridperda}(object, newdata, ...)
+
+\method{fitted}{gridperda}(object, ...)
 
 \method{residuals}{gridperda}(object, ...)
 }

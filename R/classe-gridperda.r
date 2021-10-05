@@ -67,6 +67,19 @@ predict.gridperda <- function(object, newdata, ...) {
     return(interp)
 }
 
+#' @export 
+#' 
+#' @rdname gridperda
+
+fitted.gridperda <- function(object, ...) {
+
+    vazao <- object$gam$dat[, list(vazao)]
+
+    fit <- predict(object, newdata = vazao)
+
+    return(fit)
+}
+
 #' @export
 #' 
 #' @rdname gridperda
