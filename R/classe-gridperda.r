@@ -60,9 +60,11 @@ predict.gridperda <- function(object, newdata, ...) {
     grid  <- object$grid
     setorder(grid, vazao)
 
+    ordem <- order(newdata$vazao)
     vazao <- sort(newdata$vazao)
 
     interp <- INTERPLIN(grid$vazao, grid$perda, vazao)
+    interp <- interp[order(ordem)]
 
     return(interp)
 }
@@ -86,10 +88,7 @@ fitted.gridperda <- function(object, ...) {
 
 residuals.gridperda <- function(object, ...) {
 
-    vazao <- object$gam$dat$vazao
-
-    fit <- predict(object, newdata = data.frame(vazao = vazao))
-
+    fit <- fitted(object)
     res <- object$gam$dat$perda - fit
 
     return(res)
