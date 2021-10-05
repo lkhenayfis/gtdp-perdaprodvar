@@ -7,6 +7,7 @@
 \alias{fitted.gamperda}
 \alias{residuals.gamperda}
 \alias{plot.gamperda}
+\alias{lines.gamperda}
 \title{Objeto \code{gamperda}}
 \usage{
 new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
@@ -17,7 +18,9 @@ new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
 
 \method{residuals}{gamperda}(object, ...)
 
-\method{plot}{gamperda}(x, legend = TRUE, ...)
+\method{plot}{gamperda}(x, legenda = TRUE, ...)
+
+\method{lines}{gamperda}(x, ...)
 }
 \arguments{
 \item{object}{objeto \code{gamperda} retornado por \code{\link{fitgam_perda}}}

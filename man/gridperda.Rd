@@ -19,7 +19,7 @@ new_gridperda(perda, vazao, fit)
 
 \method{residuals}{gridperda}(object, ...)
 
-\method{plot}{gridperda}(x, legend = TRUE, ...)
+\method{plot}{gridperda}(x, legenda = TRUE, ...)
 }
 \arguments{
 \item{fit}{object \code{gamperda} retornado por \code{fitgam_perda} ou \code{optgam_perda}}

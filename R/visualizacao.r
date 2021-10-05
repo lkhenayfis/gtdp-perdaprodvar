@@ -6,7 +6,7 @@
 #' 
 #' @rdname gamperda
 
-plot.gamperda <- function(x, legend = TRUE, ...) {
+plot.gamperda <- function(x, legenda = TRUE, ...) {
 
     xlim <- c(0, attr(x, "qmax"))
     ylim <- c(0, max(x$dat$perda))
@@ -17,8 +17,8 @@ plot.gamperda <- function(x, legend = TRUE, ...) {
         xlab = expression("Vazão Turbinada (m"^3 * "/s)"), ylab = "Perda (m)",
         xlim = xlim, ylim = ylim)
     lines(xline, predict(x, newdata = data.frame(vazao = xline)), col = 2, lwd = 2)
-    if(legend) {
-        legend("bottomright", .02, 
+    if(legenda) {
+        legend("bottomright", inset = .02, 
             legend = c("Dados históricos", "Ajuste"), 
             pch = c(16, NA), col = c("deepskyblue2", 2), lty = c(NA, 1), lwd = c(NA, 2))
     }
@@ -26,15 +26,29 @@ plot.gamperda <- function(x, legend = TRUE, ...) {
 
 #' @export
 #' 
+#' @rdname gamperda
+
+lines.gamperda <- function(x, ...) {
+
+    xlim <- c(0, attr(x, "qmax"))
+    ylim <- c(0, max(x$dat$perda))
+
+    xline <- seq(xlim[1], xlim[2])
+
+    lines(xline, predict(x, newdata = data.frame(vazao = xline)), ...)
+}
+
+#' @export
+#' 
 #' @rdname gridperda
 
-plot.gridperda <- function(x, legend = TRUE, ...) {
+plot.gridperda <- function(x, legenda = TRUE, ...) {
 
-    plot(x$gam, legend = FALSE)
+    plot(x$gam, legenda = FALSE)
 
     points(x$grid, type = "o", lwd = 2)
-    if(legend) {
-        legend("bottomright", .02, 
+    if(legenda) {
+        legend("bottomright", inset = .02, 
             legend = c("Dados históricos", "Ajuste", "Grade"), 
             pch = c(16, NA, 1), col = c("deepskyblue2", 2, 1), lty = c(NA, 1, 1), lwd = c(NA, 2, 2))
     }
@@ -42,7 +56,7 @@ plot.gridperda <- function(x, legend = TRUE, ...) {
 
 #' @export
 
-plot.varreduraperda <- function(x, legend = TRUE, ...) {
+plot.varreduraperda <- function(x, legenda = TRUE, ...) {
 
     estaveis <- x$front[1, X]:length(x$range)
 
@@ -52,6 +66,8 @@ plot.varreduraperda <- function(x, legend = TRUE, ...) {
     points(x$range[estaveis], x$razao[estaveis], col = "yellow2", pch = 16, type = "o", lwd = 2)
     points(x$range[estaveis[1]], x$razao[estaveis[1]], col = "red", pch = 16, type = "o", lwd = 2)
     abline(h = x$R, col = "blue", lty = 2, lwd = 2)
-    legend("topright", inset = .02,
-        legend = c("Inadequado", "Estável", "Fronteira"), pch = 16, col = c("purple", "yellow3", "red"))    
+    if(legenda) {
+        legend("topright", inset = .02,
+            legend = c("Inadequado", "Estável", "Fronteira"), pch = 16, col = c("purple", "yellow3", "red"))    
+    }
 }
