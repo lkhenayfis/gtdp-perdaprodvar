@@ -84,3 +84,11 @@ residuals.gamperda <- function(object, ...) {
 
     return(res)
 }
+
+#' @export
+
+AIC.gamperda <- function(object, ...) AIC(object$model[[2]])
+
+#' @export
+
+BIC.gamperda <- function(object, ...) BIC(object$model[[2]])

@@ -8,7 +8,7 @@
 \alias{residuals.gamperda}
 \title{Objeto \code{gamperda}}
 \usage{
-new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos)
+new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
 
 \method{predict}{gamperda}(object, newdata, ...)
 
