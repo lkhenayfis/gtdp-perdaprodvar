@@ -28,7 +28,7 @@ agregasemana(dat, min.horas = 0.9)
 \item{prod}{Produtibilidade média}
 \item{nmaq}{NA, não faz sentido em média semanal}
 \item{patamar}{NA, não faz sentido em média semanal}
-\item{energia}{NA, não faz sentido em média semanal}
+\item{energia}{Energia gerada total da usina}
 }
 }
 \description{
@@ -43,4 +43,10 @@ possibilidades:
 \item Se \code{dat} é um caminho de planilha padrão, com extensão ".xlsm", primeiro será chamada
 \cdde{link{leplanilha}} neste arquivo e então é feita a agregação
 }
+}
+\examples{
+
+# utilizando o dado exemplo do pacote
+dat_agregado <- agregasemana(dummydata)
+
 }

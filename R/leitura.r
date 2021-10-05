@@ -16,7 +16,7 @@
 #'         \item{prod}{Produtibilidade média}
 #'         \item{nmaq}{Número de máquinas em operação}
 #'         \item{patamar}{Patamar de carga}
-#'         \item{energia}{Energia gerada total}
+#'         \item{energia}{Energia gerada total da usina}
 #'     }
 #' 
 #' @importFrom readxl read_xlsx
@@ -110,7 +110,7 @@ leplanilha <- function(arq) {
 #'         \item{prod}{Produtibilidade média}
 #'         \item{nmaq}{NA, não faz sentido em média semanal}
 #'         \item{patamar}{NA, não faz sentido em média semanal}
-#'         \item{energia}{NA, não faz sentido em média semanal}
+#'         \item{energia}{Energia gerada total da usina}
 #'     }
 #' 
 #' @export

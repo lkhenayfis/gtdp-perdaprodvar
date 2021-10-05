@@ -20,7 +20,7 @@ leplanilha(arq)
 \item{prod}{Produtibilidade média}
 \item{nmaq}{Número de máquinas em operação}
 \item{patamar}{Patamar de carga}
-\item{energia}{Energia gerada total}
+\item{energia}{Energia gerada total da usina}
 }
 }
 \description{
