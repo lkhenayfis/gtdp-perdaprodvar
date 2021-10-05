@@ -82,5 +82,5 @@ legend("bottomright", inset = .02, legend = c("tp", "cr", "ps"), lty = 1, col = 
 \seealso{
 Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
 \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização
-\code{\link{plot.gamperda}}. Função para otimização do número de nós \code{\list{optgam_perda}}
+\code{\link{plot.gamperda}}. Função para otimização de nós \code{\list{optgam_perda}}
 }

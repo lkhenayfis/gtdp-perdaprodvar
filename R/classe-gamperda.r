@@ -53,8 +53,8 @@ print.gamperda <- function(x, ...) {
 #' @param ... demais parametros
 #' 
 #' @return para \code{predict.gamperda}, vetor de perdas previstas nas abscissas contidas em 
-#' \code{newdata}. Para code{fitted.gamperda}, os valores ajustados e \code{rediduals.gamperda} os
-#' erros
+#'     \code{newdata}. Para code{fitted.gamperda}, os valores ajustados e \code{rediduals.gamperda} 
+#'     os erros
 #' 
 #' @export
 #' 

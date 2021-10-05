@@ -31,8 +31,8 @@ new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
 }
 \value{
 para \code{predict.gamperda}, vetor de perdas previstas nas abscissas contidas em
-\code{newdata}. Para code{fitted.gamperda}, os valores ajustados e \code{rediduals.gamperda} os
-erros
+\code{newdata}. Para code{fitted.gamperda}, os valores ajustados e \code{rediduals.gamperda}
+os erros
 }
 \description{
 Construtor e métodos da classe \code{gamperda}

@@ -59,8 +59,8 @@
 #' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
 #' 
 #' @seealso Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
-#' \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização 
-#' \code{\link{plot.gamperda}}. Função para otimização do número de nós \code{\list{optgam_perda}}
+#'     \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização 
+#'     \code{\link{plot.gamperda}}. Função para otimização de nós \code{\list{optgam_perda}}
 #' 
 #' @export
 
