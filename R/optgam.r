@@ -2,31 +2,12 @@
 
 optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "tp", extrap = c(1, 1), quantil = c(.05, .95)) {
 
-    temp <- Sys.getenv(".perdaprodvarTEMP")
-    temp <- file.path(temp, paste0("optgamperda", ts.vazao, ".RDS"))
+    fitgams <- lapply(range.vazao, function(ns) fitgam_perda(dat, ns, ts.vazao, extrap, quantil))
+    BICs    <- sapply(fitgams, BIC)
 
-    BICs <- data.table(ns = range.vazao, BIC = NA_real_)
-    attr(BICs, "cod")      <- attr(dat, "cod")
-    attr(BICs, "ts.vazao") <- attr(dat, "ts.vazao")
+    optgam <- fitgams[which.min(BICs)]
 
-    if(file.exists(temp)) {
-        old <- readRDS(temp)
-    }
-
-    if(matchattr(old, BICs)) {
-        BICs <- rbind(old, BICs)
-        BICs <- BICs[!duplicated(BICs$ns)]
-    }
-
-    nsteste <- BICs[is.na(BIC), ns]
-    fitgams <- lapply(nsteste, function(ns) fitgam_perda(dat, ns, ts.vazao, extrap, quantil))
-
-    BICs[match(nsteste, ns), BIC := sapply(fitgams, BIC)]
-    saveRDS(BICs, temp)
-
-    fitgams <- fitgams[order(BICs$BIC)]
-
-    return(fitgams)
+    return(optgam)
 }
 
 # HELPERS ------------------------------------------------------------------------------------------
