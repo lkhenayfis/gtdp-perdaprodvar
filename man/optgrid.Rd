@@ -7,7 +7,7 @@
 \usage{
 optgrid(fit, R = 1.01, ..., full.output = FALSE)
 
-\method{optgrid}{gamperda}(fit, R, range.vazao = 5:50, ..., full.output = FALSE)
+\method{optgrid}{gamperda}(fit, R = 1.01, range.vazao = 5:50, ..., full.output = FALSE)
 }
 \arguments{
 \item{fit}{ajuste do dado de perda ou produtibilidade}

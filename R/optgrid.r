@@ -26,7 +26,7 @@ optgrid <- function(fit, R = 1.01, ..., full.output = FALSE) {
 #' 
 #' @rdname optgrid
 
-optgrid.gamperda <- function(fit, R, range.vazao = 5:50, ..., full.output = FALSE) {
+optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output = FALSE) {
 
     errofit <- sum(residuals(fit)^2)
 
@@ -36,18 +36,26 @@ optgrid.gamperda <- function(fit, R, range.vazao = 5:50, ..., full.output = FALS
     razaoerros <- matrix(unlist(erros) / errofit, length(range.vazao))
 
     persis <- achapersistencia(razaoerros <= R)
-    front  <- achafronteira(persis)
 
-    out <- grades[range.vazao == front[1, X]][[1]]
+    if(!any(persis)) {
+        cat("Nenhum numero de segmentacoes atende o criterio -- aumentando range")
+        
+        range.vazao <- seq(max(range.vazao), max(range.vazao) + diff(range(range.vazao)))
+        optgrid(fit, R, range.vazao = range.vazao, full.output = full.output)
+    } else {
+        front  <- achafronteira(persis)
 
-    if(full.output) {
-        varredura <- list(razao = razaoerros, R = R)
-        class(varredura) <- "varreduraperda"
+        out <- grades[[front[1, X]]]
 
-        out <- list(optgrid = out, varredura = varredura)
+        if(full.output) {
+            varredura <- list(razao = razaoerros, range = range.vazao, R = R, front = front)
+            class(varredura) <- "varreduraperda"
+
+            out <- list(optgrid = out, varredura = varredura)
+        }
+
+        return(out)   
     }
-
-    return(out)
 }
 
 # GENERICA PARA EXTRACAO DE GRADE ------------------------------------------------------------------
