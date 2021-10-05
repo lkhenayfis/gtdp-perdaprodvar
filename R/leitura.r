@@ -95,6 +95,11 @@ leplanilha <- function(arq) {
 #' @param dat caminho de arquivo ou \code{data.table} contendo o dado a ser agregado. Ver Detalhes
 #' @param min.horas percentual indicando o mínimo de horas para considerar a semana valida
 #' 
+#' @examples
+#' 
+#' # utilizando o dado exemplo do pacote
+#' dat_agregado <- agregasemana(dummydata)
+#' 
 #' @return \code{data.table} com médias semanais cotendo as variáveis
 #'     \describe{
 #'         \item{data}{Data e hora inicial da semana}
