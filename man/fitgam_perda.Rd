@@ -7,8 +7,8 @@
 fitgam_perda(
   dat,
   ns.vazao = 10,
-  ts.vazao = "tp",
-  extrap = c(1, 1),
+  ts.vazao = "ps",
+  extrap = c(2, 2),
   quantil = c(0.05, 0.95)
 )
 }
@@ -17,11 +17,11 @@ fitgam_perda(
 
 \item{ns.vazao}{numero de nós no GAM ajustado. Padrao 10}
 
-\item{ts.vazao}{tipo de spline utilizada para vazao -- um de \code{c("tp", "cr")}; veja
-\code{link[mgcv]{gam}} e Detalhes. Padrao "tp"}
+\item{ts.vazao}{tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
+\code{link[mgcv]{gam}} e Detalhes. Padrao "ps"}
 
 \item{extrap}{vetor de duas posições indicando o tipo de extrapolação em cada região. Ver
-Detalhes}
+Detalhes. Padrao tipo 2 para ambas as extrapolações}
 
 \item{quantil}{quantis para uso na extrapolação. Ver Detalhes}
 }
@@ -33,11 +33,11 @@ Estima GAM para perdas, complementando regiões inferior e superior com extrapol
 }
 \details{
 \code{fitgam_perda} espera que alguns atributos especiais estejam presetnes no argumento
-\code{dat}, dentre eles: codigo, nome e vazao turbinada efetiva total da usina. Dentre estes,
-apenas o último é relevante para a estimação de curva, sendo os outros dois necessários apenas
-para escrita de resultados e plots. Desta forma, para garantir o funcionamento apropriado da
-função o objeto passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente
-pelas funções fornecidas no pacote.
+\code{dat}, dentre eles: codigo, nome e vazao turbinada efetiva total da usina. Destes, apenas
+o último é relevante para a estimação de curva, sendo os outros dois necessários para escrita
+de resultados e plots. Desta forma, para garantir o funcionamento apropriado da função o objeto
+passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente pelas funções
+fornecidas no pacote.
 
 Para extrapolação, independentemente do tipo, duas partes do dado serão seccionadas:
 correspondente às vazões inferiores a \code{quantil[1]} e outra àquelas superiores a
@@ -57,9 +57,30 @@ Se for selecionada a extrapolação do tipo 2
 Uma vez realizadas as extrapolações, o ajuste final é composto chaveando modelos no cruzamento
 entre curvas. Caso não ocorra interseção, é utilizado o ponto de vazão no qual a distância entre
 elas seja a menor possível e um aviso será emitido.
+
+O argumento \code{ts.vazao} permite utilizar diferentes tipos de splines no ajuste do dado. Todas
+as splines suportadas pelo pacote \code{mgcv} podem ser utilizadas na modelagem de perdas.
+Como cada um dos tipos define uma base diferente, o resultado do ajuste com splines diferentes,
+mesmo mantendo-se o número de nós, pode ser significativamente diferente.
+}
+\examples{
+
+dat <- agregasemana(dummydata)
+
+# ajustes com diferentes tipos de splines (com 10 nÃ³s em todos os casos)
+fit_tp <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "tp")
+fit_cr <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "cr")
+fit_ps <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "ps")
+
+# objetos retornados por fitgam_perda possuem um metodo de plot e lines, para facil visualizacao
+plot(fit_tp, legenda = FALSE)
+lines(fit_cr, col = 3, lwd = 3)
+lines(fit_ps, col = 6, lwd = 3)
+legend("bottomright", inset = .02, legend = c("tp", "cr", "ps"), lty = 1, col = c(2, 3, 6))
+
 }
 \seealso{
 Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
 \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização
-\code{\link{plot.gamperda}}
+\code{\link{plot.gamperda}}. Função para otimização do número de nós \code{\list{optgam_perda}}
 }
