@@ -29,3 +29,21 @@ segundo
 \description{
 Otimiza o número de divisões de grade para atendimento de um critério mínimo
 }
+\examples{
+
+# otimizando grade de perdas -----------------------------------------------
+
+dat <- agregasemana(dummydata)
+ajuste <- fitgam_perda(dat, ns.vazao = 5)
+
+# roda otimizacao do numero de segmentacoes sem retornar varredura
+optgrade <- optgrid(ajuste, range.vazao = 10:60)
+
+# assim como ajustes de curvas, grades tambem possuem um metodo de plot
+plot(optgrade)
+
+# e possivel rodar a otimizacao retornando a varredura de numero de segmentacoes e plota-la
+optgrade <- optgrid(ajuste, range.vazao = 10:60, full.output = TRUE)
+plot(optgrade[[2]])
+
+}
