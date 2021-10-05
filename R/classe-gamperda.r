@@ -93,7 +93,7 @@ fitted.gamperda <- function(object, ...) predict(object, object$dat)
 residuals.gamperda <- function(object, ...) {
 
     fit <- fitted(object)
-    res <- object$model$perda - fit
+    res <- object$dat$perda - fit
 
     return(res)
 }

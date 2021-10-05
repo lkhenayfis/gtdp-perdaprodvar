@@ -41,7 +41,7 @@ new_gridperda <- function(perda, vazao, fit) {
 
 #' @export
 
-print.gridperda <- function(x, ...) print(gg$grid)
+print.gridperda <- function(x, ...) print(x$grid)
 
 # METODOS ------------------------------------------------------------------------------------------
 
