@@ -11,7 +11,6 @@
 //' @param yPred valores da variável explicativa a interpolar na grade
 //' 
 //' @return vetor de valores interpolados
-
 // [[Rcpp::export]]
 arma::vec INTERPLIN( arma::vec &yData, arma::vec &zData, arma::vec yPred )
 {
@@ -57,7 +56,6 @@ arma::vec INTERPLIN( arma::vec &yData, arma::vec &zData, arma::vec yPred )
 //' @param xPred,yPred valores das variáveis explicativas a interpolar na grade
 //' 
 //' @return vetor de valores interpolados
-
 // [[Rcpp::export]]
 arma::vec INTERPBILIN( arma::vec &xData, arma::vec &yData, arma::mat &zData, 
     arma::vec &xPred, arma::vec &yPred )
