@@ -1,11 +1,46 @@
 ##################################### OTIMIZACAO DO AJUSTE GAM #####################################
 
-optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "tp", extrap = c(1, 1), quantil = c(.05, .95)) {
+#' Otimização Do Ajuste De Perdas
+#' 
+#' Varre uma faixa de números de nós, reportando aquele correspondente ao ajuste de menor BIC
+#' 
+#' Os parâmetros recebidos por \code{optgam_perda} são exatamente aqueles de 
+#' \code{\link{fitgam_perda}}, com uma exceção: o argumento \code{ns.vazao} é substituído por 
+#' \code{range.vazao}, um vetor de inteiros indicando os números de nós candidatos para seleção.
+#' 
+#' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
+#' @param range.vazao vetor de numero de nós a testar na seleção. Padrao 5:30
+#' @param ts.vazao tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
+#'     \code{link[mgcv]{gam}} e Detalhes. Padrao "ps"
+#' @param extrap vetor de duas posições indicando o tipo de extrapolação em cada região. Ver 
+#'     Detalhes. Padrao tipo 2 para ambas as extrapolações
+#' @param quantil quantis para uso na extrapolação. Ver Detalhes
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' 
+#' # execucao limitando a faixa de numero de splines a algo mais baixo
+#' optfit <- optgam_perda(dat, range.vazao = 5:10)
+#' plot(optfit)
+#' 
+#' # dentre os argumentos de optfit esta a lista 'gamargs', contendo a parametrizacao do gam
+#' attr(optfit, "gamargs") # ns.vazao corresponde ao numero de nos utilizados no ajuste otimo
+#' 
+#' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
+#' 
+#' @seealso Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
+#'     \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização 
+#'     \code{\link{plot.gamperda}}
+#' 
+#' @export
+
+optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
 
     fitgams <- lapply(range.vazao, function(ns) fitgam_perda(dat, ns, ts.vazao, extrap, quantil))
     BICs    <- sapply(fitgams, BIC)
 
-    optgam <- fitgams[which.min(BICs)]
+    optgam <- fitgams[[which.min(BICs)]]
 
     return(optgam)
 }
