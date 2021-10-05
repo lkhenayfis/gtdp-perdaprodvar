@@ -114,5 +114,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "tp", extrap = c(1, 1), 
 
     # Monta objeto de saida ----------------------------------------------
 
-    new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos)
+    args <- list(ns.vazao = ns.vazao, ts.vazao = ts.vazao, extrap = extrap, quantil = quantil)
+
+    new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
 }

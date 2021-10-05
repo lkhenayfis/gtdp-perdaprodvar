@@ -13,7 +13,7 @@ NULL
 #' 
 #' @rdname gamperda
 
-new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos) {
+new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos, args) {
 
     dat <- copy(dat)[, .SD, .SDcols = c("vazao", "perda")]
 
@@ -24,8 +24,9 @@ new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos) {
     modsup$coefficients <- coefS
 
     out <- list(model = list(modinf, mod, modsup), dat = dat)
-    attr(out, "cortes") <- c(inf = corteI, sup = corteS)
-    attr(out, "coef")   <- list(inf = c(0, coefI), sup = coefS)
+    attr(out, "cortes")  <- c(inf = corteI, sup = corteS)
+    attr(out, "coef")    <- list(inf = c(0, coefI), sup = coefS)
+    attr(out, "gamargs") <- args
     for(at in names(atributos)) attr(out, at) <- atributos[[at]]
     class(out) <- "gamperda"
 
