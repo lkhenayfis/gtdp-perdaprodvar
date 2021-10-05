@@ -33,6 +33,19 @@ new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos, args
     return(out)
 }
 
+#' @export
+
+print.gamperda <- function(x, ...) {
+    cat("\n## Extrapolacao Inferior\n")
+    print(x$model[[1]])
+    cat("--------------------------\n")
+    cat("\n## GAM\n")
+    print(x$model[[2]])
+    cat("--------------------------\n")
+    cat("\n## Extrapolacao Superior\n")
+    print(x$model[[3]])
+}
+
 # METODOS ------------------------------------------------------------------------------------------
 
 #' @param object objeto \code{gamperda} retornado por \code{\link{fitgam_perda}}
