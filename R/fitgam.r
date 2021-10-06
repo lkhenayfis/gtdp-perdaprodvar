@@ -70,8 +70,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 
     atributos <- attributes(dat)[c("cod", "nome", "nmaq", "qmax")]
 
-    form <- as.formula(paste0("perda ~ s(vazao, bs = '", ts.vazao, "', k = ", ns.vazao, ")"))
-    mod  <- mgcv::gam(form, data = dat)
+    mod  <- mgcv::gam(perda ~ s(vazao, bs = ts.vazao, k = ns.vazao), data = dat)
 
     # Extrapolacao inferior ----------------------------------------------
 
@@ -137,4 +136,42 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     args <- list(ns.vazao = ns.vazao, ts.vazao = ts.vazao, extrap = extrap, quantil = quantil)
 
     new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
+}
+
+#' Ajuste De Curva Para Perdas
+#' 
+#' Estima GAM para perdas, complementando regiões inferior e superior com extrapolação
+
+fitgam_prod <- function(dat, ns.quedal = 10, ns.vazao = 10, ts.quedal = "ps", ts.vazao = "ps", bordas = TRUE,
+    modo = c("tensor", "multivar", "simples")) {
+
+    modo <- match.arg(modo)
+
+    atributos <- attributes(dat)[c("cod", "nome", "nmaq", "qmax")]
+
+    m_borda <- bordasCC[usina == atributos$cod, ]
+    m_borda <- matrix(unlist(m_borda)[-1], ncol = 3, byrow = TRUE)
+
+    dfit <- rbind(dat, as.data.table(m_borda[bordas, , drop = FALSE]), fill = TRUE)
+
+    if(modo == "simples") {
+        term1 <- paste0("s(quedal, bs = '", ts.quedal, "', k = ", ns.quedal, ")")
+        term2 <- paste0("s(vazao, bs = '", ts.vazao, "', k = ", ns.vazao, ")")
+        form <- as.formula(paste0("prod ~ ", term1, " + ", term2))
+    } else if(modo == "multivar") {
+        if(!((ts.quedal == "tp") & (ts.vazao == "tp"))) stop("modo multivar so suporta tipos de spline 'tp'")
+
+        term <- paste0("s(quedal, vazao, bs = 'tp', k = c(", ns.quedal, ", ", ns.vazao, "))")
+        form <- as.formula(paste0("prod ~ ", term))
+    } else {
+        term <- paste0("te(quedal, vazao, bs = c('", ts.quedal, "', '", ts.vazao, "'), k = c(", ns.quedal, ", ", ns.vazao, "))")
+        form <- as.formula(paste0("prod ~ ", term))
+    }
+
+    mod <- mgcv::gam(form, data = dfit)
+
+    args <- list(ns.quedal = ns.quedal, ns.vazao = ns.vazao, ts.quedal = ts.quedal, ts.vazao = ts.vazao,
+        bordas = bordas)
+
+    new_gamprod(dat, mod, atributos, args)
 }
