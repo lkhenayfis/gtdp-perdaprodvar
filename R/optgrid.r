@@ -56,7 +56,7 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
 
     if(!any(persis)) {
         cat("Nenhum numero de segmentacoes atende o criterio -- aumentando range")
-        
+
         range.vazao <- seq(max(range.vazao), max(range.vazao) + diff(range(range.vazao)))
         optgrid(fit, R, range.vazao = range.vazao, full.output = full.output)
     } else {
@@ -71,7 +71,7 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
             out <- list(optgrid = out, varredura = varredura)
         }
 
-        return(out)   
+        return(out)
     }
 }
 
@@ -120,7 +120,7 @@ achapersistencia <- function(mat) {
     out <- matrix(FALSE, R, C, dimnames = dimnames(mat))
 
     # Testa a regiao de aceitacao para cada coordenada
-    for(i in 1:nrow(coords)) {
+    for(i in seq(nrow(coords))) {
 
         # Checa se essa coordenada deve ser testada
         if(!coords[i, testar]) next
@@ -142,7 +142,7 @@ achapersistencia <- function(mat) {
 
             # Identifica a coordenada do FALSE mais interno
             maisint <- tail(which(!submat), 1)
-            maisint <- c((maisint - 1) %%  (R - xi + 1) + xi, 
+            maisint <- c((maisint - 1) %%  (R - xi + 1) + xi,
                          (maisint - 1) %/% (R - xi + 1) + yi)
 
             # Corta as buscas que incluem esse ponto
@@ -169,11 +169,11 @@ achafronteira <- function(mat) {
 
     # Olha pelos x
     dx <- apply(mat, 1, function(x) ifelse(length(x) > 1, which(x)[1], NA))
-    dx <- data.table(X = 1:nrow(mat), Y = dx)
+    dx <- data.table(X = seq(nrow(mat)), Y = dx)
 
     # Olha pelos y
     dy <- apply(mat, 2, function(y) ifelse(length(y) > 1, which(y)[1], NA))
-    dy <- data.table(X = dy, Y = 1:ncol(mat))
+    dy <- data.table(X = dy, Y = seq(ncol(mat)))
 
     # Combina os dois e remove possiveis duplicatas
     front <- rbind(dx, dy)
