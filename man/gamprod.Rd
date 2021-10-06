@@ -3,9 +3,30 @@
 \name{gamprod}
 \alias{gamprod}
 \alias{new_gamprod}
+\alias{predict.gamprod}
+\alias{fitted.gamprod}
+\alias{residuals.gamprod}
 \title{Objeto \code{gamprod}}
 \usage{
 new_gamprod(dat, mod, atributos, args)
+
+\method{predict}{gamprod}(object, newdata, ...)
+
+\method{fitted}{gamprod}(object, ...)
+
+\method{residuals}{gamprod}(object, ...)
+}
+\arguments{
+\item{object}{objeto \code{gamprod} retornado por \code{\link{fitgam_prod}}}
+
+\item{newdata}{data.frame ou data.table contendo variável explicativa para previsão}
+
+\item{...}{demais parametros}
+}
+\value{
+para \code{predict.gamprod}, vetor de produtibilidades previstas nas abscissas contidas
+em \code{newdata}. Para code{fitted.gamprod}, os valores ajustados e \code{rediduals.gamprod}
+os erros
 }
 \description{
 Construtor e métodos da classe \code{gamprod}
