@@ -149,8 +149,7 @@ fitgam_prod <- function(dat, ns.quedal = 10, ns.vazao = 10, ts.quedal = "ps", ts
 
     atributos <- attributes(dat)[c("cod", "nome", "nmaq", "qmax")]
 
-    m_borda <- bordasCC[usina == atributos$cod, ]
-    m_borda <- matrix(unlist(m_borda)[-1], ncol = 3, byrow = TRUE)
+    m_borda <- bordasCC[usina == atributos$cod, 3:5]
 
     dfit <- rbind(dat, as.data.table(m_borda[bordas, , drop = FALSE]), fill = TRUE)
 
