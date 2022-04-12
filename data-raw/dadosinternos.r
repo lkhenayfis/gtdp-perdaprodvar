@@ -27,25 +27,6 @@ attr(dummydata, "qef") <- 210
 
 usethis::use_data(dummydata, overwrite = TRUE)
 
-# NOMES --------------------------------------------------------------------------------------------
-
-root <- "//rio-arq-01/_GTDP/Ciclo 2 - 2010 a 2019/_Resultados Finais por Usina"
-dirs <- list.dirs(root, full.names = TRUE, recursive = FALSE)
-dirs <- file.path(dirs, "Vazao Turbinada")
-
-arqs <- sapply(dirs, list.files, full.names = TRUE, pattern = "^Processo.*xlsm$")
-arqs <- unlist(unname(arqs))
-
-NOMES <- lapply(arqs, function(arq) {
-    usina <- read_xlsx(arq, sheet = "Cadastro", range = "C1:C2", col_names = FALSE, .name_repair = "minimal")
-    nome <- as.character(usina[1, 1])
-    cod  <- as.numeric(usina[2, 1])
-
-    data.table(nome = nome, cod = cod)
-})
-
-NOMES <- rbindlist(NOMES)
-
 # HIDR ---------------------------------------------------------------------------------------------
 
 HIDR <- fread("data-raw/Hidr_PMO_Jun2021.csv")
@@ -58,15 +39,37 @@ colnames(HIDR) <- c("cod", sub("\\(([[:digit:]])\\)", "_\\1", colnames(HIDR))[-1
 HIDR <- melt(HIDR, id = 1, measure.vars = patterns(nmaq = "^#Maq_", vazao = "^QEf_"), variable.name = "grupo")
 
 HIDR <- HIDR[, .(nmaq = sum(nmaq), qmax = sum(nmaq * vazao)), by = cod]
-HIDR <- merge(NOMES, HIDR)
+
+# NOMES --------------------------------------------------------------------------------------------
+
+#root <- "//rio-arq-01/_GTDP/Ciclo 2 - 2010 a 2019/_Resultados Finais por Usina"
+#dirs <- list.dirs(root, full.names = TRUE, recursive = FALSE)
+#dirs <- file.path(dirs, "Vazao Turbinada")
+#
+#arqs <- sapply(dirs, list.files, full.names = TRUE, pattern = "^Processo.*xlsm$")
+#arqs <- unlist(unname(arqs))
+#
+#NOMES <- lapply(arqs, function(arq) {
+#    usina <- read_xlsx(arq, sheet = "Cadastro", range = "C1:C2", col_names = FALSE, .name_repair = "minimal")
+#    nome <- as.character(usina[1, 1])
+#    cod  <- as.numeric(usina[2, 1])
+#
+#    data.table(nome = nome, cod = cod)
+#})
+#
+#NOMES <- rbindlist(NOMES)
+#HIDR <- merge(NOMES, HIDR)
 
 # BORDAS CURVA COLINA ------------------------------------------------------------------------------
 
-# dado do ciclo passado #########################
-bordasCC <- read_xlsx("C:/Users/lucask/Documents/TESTE/ExtremosColina_editado.xlsx", skip = 1, .name_repair = "minimal")
-#################################################
+bordasCC <- read_xlsx(
+    "D:/ONS/OneDrive - Operador Nacional do Sistema Eletrico/Documentos/TESTE/Extremos Guia Curva Colina.xlsx",
+    skip = 2, sheet = 2, col_names = FALSE, col_types = "numeric")
 
 setDT(bordasCC)
+bordasCC <- bordasCC[, c(2, 13 + 0:2, 20 + 0:2, 27 + 0:2, 34 + 0:2)]
+bordasCC <- bordasCC[!apply(bordasCC, 1, function(v) all(is.na(v)))]
+
 colnames(bordasCC) <- c("usina", paste0(c("quedal", "vazao", "prod"), "_", rep(1:4, each = 3)))
 
 bordasCC <- melt(bordasCC, id.var = "usina", variable.name = "ponto",
