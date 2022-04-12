@@ -5,10 +5,10 @@
 \alias{dummydata}
 \title{Exemplo De Dado Semanal}
 \format{
-Dado horário de uma usina do SIN reescalonado de modo a manter a anonimidade. Contem as variáveis
+\code{data.table} com as colunas
 
 \describe{
-\item{data}{Data e hora inicial da semana}
+\item{data}{Data e hora do registro}
 \item{nmont}{Nível de montante}
 \item{quedal}{Queda líquida media}
 \item{perda}{Perda média}
@@ -23,6 +23,6 @@ Dado horário de uma usina do SIN reescalonado de modo a manter a anonimidade. C
 dummydata
 }
 \description{
-Exemplo De Dado Semanal
+Dado horário de uma usina do SIN reescalonado de modo a manter a anonimidade.
 }
 \keyword{datasets}

@@ -2,11 +2,12 @@
 
 #' Exemplo De Dado Semanal
 #' 
-#' @format
-#' Dado horário de uma usina do SIN reescalonado de modo a manter a anonimidade. Contem as variáveis
+#' Dado horário de uma usina do SIN reescalonado de modo a manter a anonimidade. 
+#' 
+#' @format \code{data.table} com as colunas
 #' 
 #' \describe{
-#'     \item{data}{Data e hora inicial da semana}
+#'     \item{data}{Data e hora do registro}
 #'     \item{nmont}{Nível de montante}
 #'     \item{quedal}{Queda líquida media}
 #'     \item{perda}{Perda média}
@@ -16,5 +17,4 @@
 #'     \item{patamar}{NA, não faz sentido em média semanal}
 #'     \item{energia}{NA, não faz sentido em média semanal}
 #' }
-
 "dummydata"
