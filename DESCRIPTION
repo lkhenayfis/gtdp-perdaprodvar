@@ -1,11 +1,18 @@
 Package: perdaprodvar
+Title: Modelagem De Dados De Perda E Produtibillidade E Extração De Grades
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Lucas",
            family = "Khenayfis",
            role = c("aut", "cre"),
            email = "lkhenayfis@ons.org.br")
-Description: .
+Description: Este pacote contém o conjunto de funções necessárias para aplicação e análise da 
+    metodologia para modelagem de perda e produtibillidade variáveis através de modelos aditivos. 
+    Além de funções dedicadas à extração dos dados e cálculo das médias semanais, são fornecidas 
+    funções para ajuste dos modelos, otimização dos hiperparâmetros dos mesmos, extração de grades e 
+    otimização do número de segmentações necessárias, segundo critérios acordados no GT 
+    Produtibillidade Hidrelétrica da CPAMP. Finalmente, funções para visualização e diagnósticos são
+    inclusas.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -15,9 +22,12 @@ LinkingTo:
     Rcpp,
     RcppArmadillo
 Imports: 
-    Rcpp,
+    Rcpp (>= 1.0),
+    RcppArmadillo (>= 0.11),
+    plotly (>= 4.9.3),
     data.table (>= 1.14.0),
     lsei (>= 1.3-0),
+    scam (>= 1.2),
     mgcv (>= 1.8-34)
 Depends: 
     R (>= 4.0)
