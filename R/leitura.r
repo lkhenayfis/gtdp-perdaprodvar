@@ -142,8 +142,8 @@ agregasemana.data.table <- function(dat, min.horas = .9) {
 
     datsem <- copy(dat)
 
-    diasem <- lubridate::wday(datsem$datahora)
-    hora   <- lubridate::hour(datsem$datahora)
+    diasem <- wday(datsem$datahora)
+    hora   <- hour(datsem$datahora)
     inisem <- datsem$datahora[(diasem == 7) & (hora == 0)]
 
     datsem[, semana := findInterval(datahora, inisem)]
