@@ -41,7 +41,7 @@ possibilidades:
 \enumerate{
 \item Se \code{dat} é um caminho para arquivo com extensão ".RDS", será lido e agregado
 \item Se \code{dat} é um caminho de planilha padrão, com extensão ".xlsm", primeiro será chamada
-\cdde{link{leplanilha}} neste arquivo e então é feita a agregação
+\code{link{leplanilha}} neste arquivo e então é feita a agregação
 }
 }
 \examples{
