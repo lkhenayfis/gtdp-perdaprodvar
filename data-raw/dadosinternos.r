@@ -5,27 +5,52 @@ devtools::load_all()
 
 # DADO DUMMY PARA EXEMPLOS -------------------------------------------------------------------------
 
-arq <- "D:/ONS/OneDrive - Operador Nacional do Sistema Eletrico/Documentos/TESTE/dummyusi.RDS"
-dummydata <- readRDS(arq)
+arq <- "D:/ONS/OneDrive - Operador Nacional do Sistema Eletrico/Documentos/TESTE/dummyusi.xlsm"
+dummydata <- leplanilha(arq)
 oldcod <- attr(dummydata, "cod")
 
-minolds <- sapply(dummydata[, 2:6], min, na.rm = TRUE)
-maxolds <- sapply(dummydata[, 2:6], max, na.rm = TRUE)
+minolds <- sapply(dummydata[, c(4:5, 7:9)], min, na.rm = TRUE)
+maxolds <- sapply(dummydata[, c(4:5, 7:9)], max, na.rm = TRUE)
 
-minnews <- c(50, 20, .1, 40, .006)
-maxnews <- c(60, 22, .5, 200, .007)
+minnews <- c(.006, 1, 50, .1, 20)
+maxnews <- c(.007, 200, 60, .5, 22)
 
 renorm <- function(vec, minold, maxold, minnew, maxnew) {
     (vec - minold) / (maxold - minold) * (maxnew - minnew) + minnew
 }
 
-dummydata[, 2:6] <- mapply(renorm, dummydata[, 2:6], minolds, maxolds, minnews, maxnews, SIMPLIFY = FALSE)
+dummydata[, c(4:5, 7:9)] <- mapply(renorm,
+    dummydata[, c(4:5, 7:9)], minolds, maxolds, minnews, maxnews, SIMPLIFY = FALSE)
 attr(dummydata, "cod") <- 999
 attr(dummydata, "nome") <- "dummy"
 attr(dummydata, "nmaq") <- 0
-attr(dummydata, "qef") <- 210
+attr(dummydata, "qmax") <- 210
 
 usethis::use_data(dummydata, overwrite = TRUE)
+
+# BORDAS CURVA COLINA ------------------------------------------------------------------------------
+
+bordasCC <- read_xlsx(
+    "D:/ONS/OneDrive - Operador Nacional do Sistema Eletrico/Documentos/TESTE/Extremos Guia Curva Colina.xlsx",
+    skip = 2, sheet = 2, col_names = FALSE)
+
+setDT(bordasCC)
+bordasCC <- bordasCC[, c(2, 13 + 0:2, 20 + 0:2, 27 + 0:2, 34 + 0:2)]
+bordasCC <- bordasCC[!apply(bordasCC, 1, function(v) all(is.na(v)))]
+
+colnames(bordasCC) <- c("usina", paste0(c("quedal", "vazao", "prod"), "_", rep(1:4, each = 3)))
+
+bordasCC <- melt(bordasCC, id.var = "usina", variable.name = "ponto",
+    measure.vars = patterns(queda = "^quedal_", vazao = "^vazao_", prod = "^prod_"))
+
+aux <- bordasCC[usina == oldcod]
+aux[, usina := 999]
+aux[, queda := renorm(queda, minolds[5], maxolds[5], minnews[5], maxnews[5])]
+aux[, vazao := renorm(vazao, minolds[2], maxolds[2], minnews[2], maxnews[2])]
+
+bordasCC <- rbind(bordasCC, aux)
+
+setorder(bordasCC, usina)
 
 # HIDR ---------------------------------------------------------------------------------------------
 
@@ -59,30 +84,6 @@ HIDR <- HIDR[, .(nmaq = sum(nmaq), qmax = sum(nmaq * vazao)), by = cod]
 #
 #NOMES <- rbindlist(NOMES)
 #HIDR <- merge(NOMES, HIDR)
-
-# BORDAS CURVA COLINA ------------------------------------------------------------------------------
-
-bordasCC <- read_xlsx(
-    "D:/ONS/OneDrive - Operador Nacional do Sistema Eletrico/Documentos/TESTE/Extremos Guia Curva Colina.xlsx",
-    skip = 2, sheet = 2, col_names = FALSE, col_types = "numeric")
-
-setDT(bordasCC)
-bordasCC <- bordasCC[, c(2, 13 + 0:2, 20 + 0:2, 27 + 0:2, 34 + 0:2)]
-bordasCC <- bordasCC[!apply(bordasCC, 1, function(v) all(is.na(v)))]
-
-colnames(bordasCC) <- c("usina", paste0(c("quedal", "vazao", "prod"), "_", rep(1:4, each = 3)))
-
-bordasCC <- melt(bordasCC, id.var = "usina", variable.name = "ponto",
-    measure.vars = patterns(queda = "^quedal_", vazao = "^vazao_", prod = "^prod_"))
-
-aux <- bordasCC[usina == oldcod]
-aux[, usina := 999]
-aux[, queda := renorm(queda, minolds[2], maxolds[2], minnews[2], maxnews[2])]
-aux[, vazao := renorm(queda, minolds[4], maxolds[4], minnews[4], maxnews[4])]
-
-bordasCC <- rbind(bordasCC, aux)
-
-setorder(bordasCC, usina)
 
 # ESCREVE INTERNOS ---------------------------------------------------------------------------------
 
