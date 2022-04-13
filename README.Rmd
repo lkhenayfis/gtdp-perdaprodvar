@@ -1,0 +1,75 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# perdaprodvar
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+Este pacote contém o conjunto de funções necessárias para aplicação da metodologia de perdas e 
+produtibillidades variáveis através de modelos aditivos. Além de funções para interface com as 
+planilhas do GTDP e cálculo das médias semanais, são fornecidas funções para ajuste dos modelos, 
+otimização dos hiperparâmetros dos mesmos, extração de grades e otimização do número de segmentações
+necessárias, segundo critérios acordados no GT Produtibillidade Hidrelétrica da CPAMP. Finalmente,
+funções para visualização e diagnósticos são inclusas.
+
+## Instalação
+Este pacote ainda nao se encontra disponibilizado no CRAN, de modo que deve ser instalado 
+diretamente a partir do repositorio utilizando:
+
+```{r intro, eval = FALSE}
+# Caso a biblioteca remotes nao esteja instalada, execute install.packages("remotes") primeiro
+remotes::install_github("lkhenayfis/gtdp-perdaprodvar", build_vignettes = TRUE)
+```
+
+## Exemplo de uso
+
+Abaixo esta um trecho de codigo exemplificando de forma simplificada o uso das funcionalidades 
+contidas neste pacote, com respeito apenas à modelagem de perdas. Um manual de uso pode ser acessado
+através de `vignette("perdaprodvar")` e mais detalhes acerca das funcoes se encontram em suas 
+respectivas paginas de ajuda.
+
+```{r leitura}
+library(perdaprodvar)
+
+# exemplo de leitura de arquivo bruto (reduzido) incluido no pacote
+arq <- system.file("extdata/dummyusi1.xlsx", package = "perdaprodvar")
+dado_horario <- leplanilha(arq)
+
+print(dado_horario)
+```
+
+Uma vez que o dado foi lido, podemos prosseguir para sua modelagem.
+
+```{r ajuste_gam, fig.height=6}
+
+# realizacao da agregacao semanal ponderada por energia gerada
+dado_semanal <- agregasemana(dummydata) # dummydata e um dado embutido no pacote para exemplos
+
+# ajuste de modelos para perda
+mod1 <- fitgam_perda(dado_semanal, ts.vazao = "ps")
+mod2 <- fitgam_perda(dado_semanal, ts.vazao = "tp")
+
+plot(mod1, legenda = FALSE)
+lines(mod2, col = 3, lwd = 2)
+```
+
+Finalmente, podemos extrair uma grade do modelo ajustado (neste caso com 50 segmentações)
+
+```{r interpolacao, fig.height=6}
+grade_perda <- extraigrid(mod1, 50)
+
+plot(grade_perda)
+```

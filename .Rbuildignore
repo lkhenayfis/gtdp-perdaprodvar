@@ -2,3 +2,4 @@
 ^data-raw$
 ^informals$
 ^.vscode$
+^README\.Rmd$
