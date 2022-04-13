@@ -15,10 +15,10 @@ fitgam_perda(
 \arguments{
 \item{dat}{\code{data.table} de dados para ajuste. Ver Detalhes}
 
-\item{ns.vazao}{numero de nós no GAM ajustado. Padrao 10}
+\item{ns.vazao}{dimensão da base expandida para ajuste. Padrão 10}
 
-\item{ts.vazao}{tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
-\code{link[mgcv]{gam}} e Detalhes. Padrao "ps"}
+\item{ts.vazao}{tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
+todas as opções. Padrão \code{"ps"}}
 
 \item{extrap}{vetor de duas posições indicando o tipo de extrapolação em cada região. Ver
 Detalhes. Padrao tipo 2 para ambas as extrapolações}
@@ -58,10 +58,10 @@ Uma vez realizadas as extrapolações, o ajuste final é composto chaveando mode
 entre curvas. Caso não ocorra interseção, é utilizado o ponto de vazão no qual a distância entre
 elas seja a menor possível e um aviso será emitido.
 
-O argumento \code{ts.vazao} permite utilizar diferentes tipos de splines no ajuste do dado. Todas
-as splines suportadas pelo pacote \code{mgcv} podem ser utilizadas na modelagem de perdas.
-Como cada um dos tipos define uma base diferente, o resultado do ajuste com splines diferentes,
-mesmo mantendo-se o número de nós, pode ser significativamente diferente.
+\code{ts.vazao} permite a especificação do tipo de spline utilizada na expansão de base. Todos os
+tipos definidos em \code{\link[mgcv]{mgcv}} são suportados. Para maiores detalhes a respeito das
+possibilidades e suas descrições, veja \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado
+\code{ts.vazao = "ps"}, o que corresponde à expansão por P-Splines.
 }
 \examples{
 
@@ -82,5 +82,6 @@ legend("bottomright", inset = .02, legend = c("tp", "cr", "ps"), lty = 1, col = 
 \seealso{
 Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
 \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização
-\code{\link{plot.gamperda}}. Função para otimização de nós \code{\list{optgam_perda}}
+\code{\link{plot.gamperda}}. Função para otimização de nós \code{\link{optgam_perda}}
 }
+\concept{funcoes_fitgam}

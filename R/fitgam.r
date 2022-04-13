@@ -28,15 +28,15 @@
 #' entre curvas. Caso não ocorra interseção, é utilizado o ponto de vazão no qual a distância entre 
 #' elas seja a menor possível e um aviso será emitido.
 #' 
-#' O argumento \code{ts.vazao} permite utilizar diferentes tipos de splines no ajuste do dado. Todas
-#' as splines suportadas pelo pacote \code{mgcv} podem ser utilizadas na modelagem de perdas.
-#' Como cada um dos tipos define uma base diferente, o resultado do ajuste com splines diferentes,
-#' mesmo mantendo-se o número de nós, pode ser significativamente diferente.
+#' \code{ts.vazao} permite a especificação do tipo de spline utilizada na expansão de base. Todos os 
+#' tipos definidos em \code{\link[mgcv]{mgcv}} são suportados. Para maiores detalhes a respeito das 
+#' possibilidades e suas descrições, veja \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado 
+#' \code{ts.vazao = "ps"}, o que corresponde à expansão por P-Splines.
 #' 
 #' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
-#' @param ns.vazao numero de nós no GAM ajustado. Padrao 10
-#' @param ts.vazao tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
-#'     \code{link[mgcv]{gam}} e Detalhes. Padrao "ps"
+#' @param ns.vazao dimensão da base expandida para ajuste. Padrão 10
+#' @param ts.vazao tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
+#'     todas as opções. Padrão \code{"ps"}
 #' @param extrap vetor de duas posições indicando o tipo de extrapolação em cada região. Ver 
 #'     Detalhes. Padrao tipo 2 para ambas as extrapolações
 #' @param quantil quantis para uso na extrapolação. Ver Detalhes
@@ -60,11 +60,16 @@
 #' 
 #' @seealso Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
 #'     \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização 
-#'     \code{\link{plot.gamperda}}. Função para otimização de nós \code{\list{optgam_perda}}
+#'     \code{\link{plot.gamperda}}. Função para otimização de nós \code{\link{optgam_perda}}
+#' 
+#' @family funcoes_fitgam
 #' 
 #' @export
 
 fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
+
+    wrn <- paste0("Não há cruzamento entre a extrapolação inferior escolhida e o ajuste do GAM - ",
+        "foi utilizado o ponto mais próximo")
 
     if(!(all(extrap %in% 1:2))) stop("extrap so pode assumir valor 1 ou 2")
 
@@ -96,7 +101,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
         } else {
             corteI <- which.min(abs(vdiff))
             corteI <- vx[corteI][1]
-            warning("Não há cruzamento entre a extrapolação inferior escolhida e o ajuste do GAM - foi utilizado o ponto mais próximo")
+            warning(wrn)
         }
     }
 
@@ -128,7 +133,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     } else {
         corteS <- which.min(abs(vdiff))
         corteS <- vx[corteS][1]
-        warning("Não há cruzamento entre a extrapolação superior escolhida e o ajuste do GAM - foi utilizado o ponto mais próximo")
+        warning(wrn)
     }
 
     # Monta objeto de saida ----------------------------------------------
