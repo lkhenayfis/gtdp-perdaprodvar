@@ -88,6 +88,8 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
 #' 
 #' @return object \code{grid(perda)|(prod)}, dependendo da classe do argumento \code{fit}. Em ambos
 #'     os casos será uma lista com a grade na primeira posição e o modelo original na segunda
+#' 
+#' @export
 
 extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")
 
