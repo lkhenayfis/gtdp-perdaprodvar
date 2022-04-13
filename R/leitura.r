@@ -9,14 +9,14 @@
 #' @return \code{data.table} em base horária contendo as variáveis
 #'     \describe{
 #'         \item{datahora}{Data e hora do registro}
-#'         \item{nmont}{Nível de montante}
-#'         \item{quedal}{Queda líquida media}
-#'         \item{perda}{Perda média}
-#'         \item{vazao}{Vazão defluente tota}
-#'         \item{prod}{Produtibilidade média}
-#'         \item{nmaq}{Número de máquinas em operação}
 #'         \item{patamar}{Patamar de carga}
 #'         \item{energia}{Energia gerada total da usina}
+#'         \item{prod}{Produtibilidade média}
+#'         \item{vazao}{Vazão defluente tota}
+#'         \item{nmaq}{Número de máquinas em operação}
+#'         \item{nmont}{Nível de montante}
+#'         \item{perda}{Perda média}
+#'         \item{quedal}{Queda líquida média}
 #'     }
 #' 
 #' @importFrom readxl read_xlsx
@@ -33,7 +33,7 @@ leplanilha <- function(arq) {
 
     maqs <- setDT(read_xlsx(arq, sheet = "Cadastro", range = "E15:G300", .name_repair = "minimal"))
     maqs <- maqs[complete.cases(maqs)]
-    qef  <- maqs[, sum(Qef)]
+    qmax  <- maqs[, sum(Qef)]
     nmaq <- maqs[, .N]
 
     info <- read_xlsx(arq, sheet = "Abertura(1)", range = "G13:G18", .name_repair = "minimal")
@@ -42,40 +42,53 @@ leplanilha <- function(arq) {
     rho <- as.numeric(ifelse(!is.na(info[5, ]), info[5, ], info[2, ]))
 
     classes <- c("date", "numeric",  "numeric", "numeric", "text", "text")
-    rend <- read_xlsx(arq, sheet = "Rendimento Usina (hora)", .name_repair = "minimal", 
+    rend <- read_xlsx(arq, sheet = "Rendimento Usina (hora)", .name_repair = "minimal",
                      range = "A2:F87650", col_types = classes)
-    rend  <- setDT(rend)
-    datas <- paste0(rend$Data, " ", formatC(rend$Hora - 1, width = 2, flag = "0", format = "d"), ":00")
-    datas <- as.POSIXct(datas, "GMT", format = "%Y-%m-%d %H:%M")
-    pat   <- factor(rend$Patamar, levels = c("P", "M", "L"), ordered = TRUE)
-    energ <- rend[[4]]
-    rend  <- rend[[3]]
+    rend <- setDT(rend)
+    rend <- rend[apply(rend, 1, function(r) !all(is.na(r)))]
+    colnames(rend) <- c("data", "hora", "rend", "energia", "diasem", "patamar")
+    rend[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
+    rend[, prod := rend * rho * G * 1e-6]
+    rend <- rend[, .(datahora, patamar, energia, prod)]
+    setkey(rend, datahora)
 
-    turb <- read_xlsx(arq, sheet = "QTurb", skip = 1, col_types = "numeric",
-                        .name_repair = "minimal", n_max = 87649)
-    turb <- data.matrix(turb[, 3:(nmaq + 3)])
-    nmaqs <- apply(turb[, 1:nmaq], 2, function(x) is.na(x) | (x == 0))
-    nmaqs <- factor(rowSums(!nmaqs))
-    turb <- turb[, nmaq + 1]
+    turb <- read_xlsx(arq, sheet = "QTurb", skip = 1, .name_repair = "minimal",
+        range = paste0("A2:", LETTERS[2 + nmaq + 1], "87650"))
+    turb <- setDT(turb)
+    turb <- turb[apply(turb, 1, function(r) !all(is.na(r)))]
+    colnames(turb) <- c("data", "hora", paste0("vaz_maq", seq(nmaq)), "vazao")
+    turb[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
+    nmaqs <- turb[, lapply(.SD, function(x) is.na(x) | (x == 0)), .SDcols = names(turb) %like% "vaz_maq"]
+    turb[, nmaq := rowSums(!nmaqs)]
+    turb <- turb[, .(datahora, vazao, nmaq)]
+    setkey(turb, datahora)
 
-    quedab <- read_xlsx(arq, sheet = "Dados", range = "D2:E87650", col_types = "numeric", .name_repair = "minimal")
-    quedab <- data.matrix(quedab)
-    nmont  <- quedab[, 1]
-    quedab <- apply(quedab, 1, function(x) x[1] - x[2])
+    quedab <- read_xlsx(arq, sheet = "Dados", range = "A2:E87650", .name_repair = "minimal")
+    setDT(quedab)
+    quedab <- quedab[apply(quedab, 1, function(r) !all(is.na(r)))]
+    colnames(quedab) <- c("data", "hora", "XXX", "nmont", "njus")
+    quedab[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
+    quedab[, quedab := nmont - njus]
+    quedab <- quedab[, .(datahora, nmont, quedab)]
+    setkey(quedab, datahora)
 
-    perda <- read_xlsx(arq, sheet = "Perda Usina (hora)", .name_repair = "minimal", 
-                     range = "C2:C87650", col_types = "numeric")
-    perda <- c(data.matrix(perda))
+    perda <- read_xlsx(arq, sheet = "Perda Usina (hora)", .name_repair = "minimal",
+                     range = "A2:C87650")
+    setDT(perda)
+    perda <- perda[apply(perda, 1, function(r) !all(is.na(r)))]
+    colnames(perda) <- c("data", "hora", "perda")
+    perda[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
+    perda <- perda[, .(datahora, perda)]
+    setkey(perda, datahora)
 
-    quedal <- quedab - perda
+    out <- Reduce(function(d1, d2) merge(d1, d2, all = TRUE), list(rend, turb, quedab, perda))
+    out[, quedal := quedab - perda]
+    out[, quedab := NULL]
 
-    out <- data.table("datahora" = datas, "nmont" = nmont, "quedal" = quedal, "perda" = perda,
-        "vazao" = turb, "prod" = rend * G * rho * 1e-6, "nmaq" = nmaqs,
-        "patamar" = pat, "energia" = energ)
     attr(out, "cod")  <- cod
     attr(out, "nome") <- nome
     attr(out, "nmaq") <- nmaq
-    attr(out, "qef") <- qef
+    attr(out, "qmax") <- qmax
 
     return(out)
 }
@@ -90,7 +103,7 @@ leplanilha <- function(arq) {
 #' 
 #' 1. Se \code{dat} é um caminho para arquivo com extensão ".RDS", será lido e agregado
 #' 1. Se \code{dat} é um caminho de planilha padrão, com extensão ".xlsm", primeiro será chamada
-#'    \cdde{link{leplanilha}} neste arquivo e então é feita a agregação
+#'    \code{link{leplanilha}} neste arquivo e então é feita a agregação
 #' 
 #' @param dat caminho de arquivo ou \code{data.table} contendo o dado a ser agregado. Ver Detalhes
 #' @param min.horas percentual indicando o mínimo de horas para considerar a semana valida
@@ -125,6 +138,8 @@ agregasemana.data.table <- function(dat, min.horas = .9) {
 
     if(min.horas > 1) min.horas <- min.horas / 100
 
+    col0 <- colnames(dat)
+
     datsem <- copy(dat)
 
     diasem <- lubridate::wday(datsem$datahora)
@@ -133,7 +148,8 @@ agregasemana.data.table <- function(dat, min.horas = .9) {
 
     datsem[, semana := findInterval(datahora, inisem)]
     datsem <- datsem[semana != 0]
-    datsem <- datsem[semana != length(inisem)]
+    # esse | serve para evitar que o data.table fique vazio quando so tem uma semana no dado (planilhas teste)
+    datsem <- datsem[(semana != length(inisem)) | (length(inisem) == 1)]
     datsem <- datsem[, regvale := complete.cases(datsem)]
 
     datsem[, semanafull := mean(regvale) > min.horas, by = semana]
@@ -141,19 +157,19 @@ agregasemana.data.table <- function(dat, min.horas = .9) {
     # funcao alternativa para weighted.mean, que so corta NA de x e nao dos pesos
     wm2 <- function(x, w) sum(x * w, na.rm = TRUE) / sum(w, na.rm = TRUE)
 
-    datsem <- datsem[semanafull == TRUE, lapply(.SD, wm2, w = energia), .SDcols = c(2:6, 9), by = semana]
+    datsem <- datsem[semanafull == TRUE, lapply(.SD, wm2, w = energia), .SDcols = c(4:5, 7:9), by = semana]
 
     datsem[, c("nmaq", "patamar", "energia") := lapply(1:3, function(x) rep(NA, .N))]
-    
-    datsem[, data := inisem[semana]]
-    datsem <- datsem[, -1]
 
-    setcolorder(datsem, c("data", colnames(dat)[-1]))
+    datsem[, datahora := inisem[semana]]
+    datsem[, semana := NULL] # tira coluna de indice da semana
+
+    setcolorder(datsem, col0[col0 %in% colnames(datsem)])
 
     attr(datsem, "cod") <- attr(dat, "cod")
     attr(datsem, "nome") <- attr(dat, "nome")
     attr(datsem, "nmaq") <- attr(dat, "nmaq")
-    attr(datsem, "qmax") <- max(attr(dat, "qef"), datsem[, max(vazao)])
+    attr(datsem, "qmax") <- max(attr(dat, "qmax"), datsem[, max(vazao)])
 
     return(datsem)
 }

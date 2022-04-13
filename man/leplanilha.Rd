@@ -13,14 +13,14 @@ leplanilha(arq)
 \code{data.table} em base horária contendo as variáveis
 \describe{
 \item{datahora}{Data e hora do registro}
-\item{nmont}{Nível de montante}
-\item{quedal}{Queda líquida media}
-\item{perda}{Perda média}
-\item{vazao}{Vazão defluente tota}
-\item{prod}{Produtibilidade média}
-\item{nmaq}{Número de máquinas em operação}
 \item{patamar}{Patamar de carga}
 \item{energia}{Energia gerada total da usina}
+\item{prod}{Produtibilidade média}
+\item{vazao}{Vazão defluente tota}
+\item{nmaq}{Número de máquinas em operação}
+\item{nmont}{Nível de montante}
+\item{perda}{Perda média}
+\item{quedal}{Queda líquida média}
 }
 }
 \description{
