@@ -68,6 +68,12 @@
 
 fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
 
+    # um jeito um pouco mais longo de pegar a call, mas guarda inclusive os args default
+    fc <- match.call()
+    da <- formals()
+    da[match(names(fc[-1]), names(da))] <- fc[-1]
+    fc <- as.call(c(fc[[1]], da))
+
     wrn <- paste0("Não há cruzamento entre a extrapolação inferior escolhida e o ajuste do GAM - ",
         "foi utilizado o ponto mais próximo")
 
@@ -140,7 +146,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 
     args <- list(ns.vazao = ns.vazao, ts.vazao = ts.vazao, extrap = extrap, quantil = quantil)
 
-    new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
+    new_gamperda(dat, mod, coefI, coefS, corteI, corteS, fc)
 }
 
 #' Ajuste De Curva Para Perdas

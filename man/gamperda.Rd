@@ -10,7 +10,7 @@
 \alias{lines.gamperda}
 \title{Objeto \code{gamperda}}
 \usage{
-new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
+new_gamperda(dat, mod, coefI, coefS, corteI, corteS, fitcall)
 
 \method{predict}{gamperda}(object, newdata, ...)
 
@@ -23,6 +23,16 @@ new_gamperda(dat, mod, coefI, corteI, coefS, corteS, atributos, args)
 \method{lines}{gamperda}(x, ...)
 }
 \arguments{
+\item{dat}{dado utilizado para ajuste}
+
+\item{mod}{modelo ajustado}
+
+\item{coefI, coefS}{coeficientes ajustados das extrapolações inferior e superior}
+
+\item{corteI, corteS}{valores dos cortes entre extrapolações e modelo aditivo}
+
+\item{fitcall}{chamada de \code{fitgam_perda} original}
+
 \item{object}{objeto \code{gamperda} retornado por \code{\link{fitgam_perda}}}
 
 \item{newdata}{data.frame ou data.table contendo variável explicativa para previsão}

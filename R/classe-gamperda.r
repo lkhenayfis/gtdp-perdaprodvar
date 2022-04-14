@@ -11,9 +11,15 @@ NULL
 #' 
 #' Função para contrução da saída de \code{fitgam_perda}, não deve ser chamada diretamente
 #' 
+#' @param dat dado utilizado para ajuste
+#' @param mod modelo ajustado
+#' @param coefI,coefS coeficientes ajustados das extrapolações inferior e superior
+#' @param corteI,corteS valores dos cortes entre extrapolações e modelo aditivo
+#' @param fitcall chamada de \code{fitgam_perda} original
+#' 
 #' @rdname gamperda
 
-new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos, args) {
+new_gamperda <- function(dat, mod, coefI, coefS, corteI, corteS, fitcall) {
 
     dat <- copy(dat)[, .SD, .SDcols = c("vazao", "perda")]
 
@@ -25,14 +31,16 @@ new_gamperda <- function(dat, mod, coefI, corteI, coefS, corteS, atributos, args
 
     out <- list(model = list(modinf, mod, modsup), dat = dat)
     attr(out, "cortes")  <- c(inf = corteI, sup = corteS)
-    attr(out, "coef")    <- list(inf = c(0, coefI), sup = coefS)
-    attr(out, "gamargs") <- args
-    for(at in names(atributos)) attr(out, at) <- atributos[[at]]
+    attr(out, "fitcall") <- fitcall
     class(out) <- "gamperda"
 
     return(out)
 }
 
+#' Print De Objetos \code{gamperda}
+#' 
+#' @param x objeto da classe \code{gamperda}
+#' 
 #' @export
 
 print.gamperda <- function(x, ...) {
