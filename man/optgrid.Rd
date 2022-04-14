@@ -27,7 +27,23 @@ Se \code{full.output = TRUE}, uma lista com a grade no primeiro elemento e a var
 segundo
 }
 \description{
-Otimiza o número de divisões de grade para atendimento de um critério mínimo
+Otimiza o número de divisões de grade visando o atendimento de um critério mínimo
+}
+\details{
+\code{optgrid} tenta determinar a melhor configuração de grade de modo que o erro de
+representação do dado histórico por interpolação linear na grade seja suficientemente próximo do
+erro do modelo latente ajustado. Isto se dá por uma pesquisa exaustiva, testando todas as
+configurações de grade em uma determinada faixa de número de divisões permissíveis.
+
+O argumento \code{R} controla o critério de comparação entre os erros de representação. Quando
+\eqn{erro_grade / erro_modelo \leq R} para um dado número de segmentações, considera-se esta
+configuração adequada.
+
+Para perdas, serão testados os números de divisões fornecidos pelo argumento \code{range.vazao},
+um vetor de inteiros indicando quais números de segmentações testar. Será selecionado como número
+ótimo o primeiro para o qual todos os números seguintes atendem ao critério de comparação. Isto é
+feito para evitar convergências precipitadas, garantindo assim que o valor selecionado
+corresponde à menor grade possível que atende confiavelmente ao critério de comparação.
 }
 \examples{
 

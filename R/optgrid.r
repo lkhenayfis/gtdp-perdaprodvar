@@ -1,8 +1,63 @@
 ################################## OTIMIZACAO DO TAMANHO DE GRADE ##################################
 
+# GENERICA PARA EXTRACAO DE GRADE ------------------------------------------------------------------
+
+#' Extrator De Grades
+#' 
+#' Extrai grades de perda e produtibilidade a partir dos ajustes realizados
+#' 
+#' Esta funcao é um wrapper em torno do método \code{predict} de cada modelo, amostrando um número 
+#' de pontos igualmente espaçados no dado, determinado por \code{dim}. Para perdas este argumento 
+#' deve ser um escalar inteiro, enquanto para produtibilidade deve ser um vetor de inteiros 
+#' indicando o número de divisões em queda e probabilidade na primeira e segunda posição, 
+#' respectivamente.
+#' 
+#' @param fit objeto \code{gam(perda)|(prod)} gerado pelas funções de \code{fit} ou \code{opt} 
+#'     apropriadas
+#' @param dim dimensão da grade -- vetor de uma posição para perda e duas para produtibilidade 
+#'     (divisoes de queda liquida, divisoes de vazao)
+#' @param ... demais parâmetros passados aos métodos específicos
+#' 
+#' @examples
+#' 
+#' dat <- agregasemana(dummydata)
+#' 
+#' mod <- fitgam_perda(dat)
+#' 
+#' # extraindo uma grade com 20 divisoes
+#' grade <- extraigrid(mod, dim = 20)
+#' 
+#' \dontrun{
+#' plot(grade)
+#' }
+#' 
+#' @return object \code{grid(perda)|(prod)}, dependendo da classe do argumento \code{fit}. Em ambos
+#'     os casos será uma lista com a grade na primeira posição e o modelo original na segunda
+#' 
+#' @export
+
+extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")
+
+# OTIMIZACAO DO NUMERO DE SEGMENTACOES -------------------------------------------------------------
+
 #' Otimização De Segmentações De Grade
 #' 
-#' Otimiza o número de divisões de grade para atendimento de um critério mínimo
+#' Otimiza o número de divisões de grade visando o atendimento de um critério mínimo
+#' 
+#' \code{optgrid} tenta determinar a melhor configuração de grade de modo que o erro de 
+#' representação do dado histórico por interpolação linear na grade seja suficientemente próximo do 
+#' erro do modelo latente ajustado. Isto se dá por uma pesquisa exaustiva, testando todas as 
+#' configurações de grade em uma determinada faixa de número de divisões permissíveis.
+#' 
+#' O argumento \code{R} controla o critério de comparação entre os erros de representação. Quando 
+#' \eqn{erro_grade / erro_modelo \leq R} para um dado número de segmentações, considera-se esta 
+#' configuração adequada.
+#' 
+#' Para perdas, serão testados os números de divisões fornecidos pelo argumento \code{range.vazao}, 
+#' um vetor de inteiros indicando quais números de segmentações testar. Será selecionado como número
+#' ótimo o primeiro para o qual todos os números seguintes atendem ao critério de comparação. Isto é
+#' feito para evitar convergências precipitadas, garantindo assim que o valor selecionado 
+#' corresponde à menor grade possível que atende confiavelmente ao critério de comparação.
 #' 
 #' @param fit ajuste do dado de perda ou produtibilidade
 #' @param R razão mínima entre erro do ajuste e da grade para aceitação
@@ -33,9 +88,7 @@
 #' 
 #' @export
 
-optgrid <- function(fit, R = 1.01, ..., full.output = FALSE) {
-    UseMethod("optgrid")
-}
+optgrid <- function(fit, R = 1.01, ..., full.output = FALSE) UseMethod("optgrid")
 
 #' @param range.vazao vetor de inteiros indicando números de segmentações a serem testados
 #' 
@@ -74,24 +127,6 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
         return(out)
     }
 }
-
-# GENERICA PARA EXTRACAO DE GRADE ------------------------------------------------------------------
-
-#' Extrator De Grades
-#' 
-#' Extrai grades de perda e produtibilidade a parti dos ajustes realizados
-#' 
-#' @param fit objeto \code{gam(perda)|(prod)} gerado pelas funções de \code{fit} ou \code{opt} 
-#'     apropriadas
-#' @param dim dimensão da grade -- vetor de uma posição para perda e duas para produtibilidade 
-#'     (divisoes de queda liquida, divisoes de vazao)
-#' 
-#' @return object \code{grid(perda)|(prod)}, dependendo da classe do argumento \code{fit}. Em ambos
-#'     os casos será uma lista com a grade na primeira posição e o modelo original na segunda
-#' 
-#' @export
-
-extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")
 
 # HELPERS ------------------------------------------------------------------------------------------
 

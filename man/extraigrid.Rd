@@ -12,11 +12,34 @@ apropriadas}
 
 \item{dim}{dimensão da grade -- vetor de uma posição para perda e duas para produtibilidade
 (divisoes de queda liquida, divisoes de vazao)}
+
+\item{...}{demais parâmetros passados aos métodos específicos}
 }
 \value{
 object \code{grid(perda)|(prod)}, dependendo da classe do argumento \code{fit}. Em ambos
 os casos será uma lista com a grade na primeira posição e o modelo original na segunda
 }
 \description{
-Extrai grades de perda e produtibilidade a parti dos ajustes realizados
+Extrai grades de perda e produtibilidade a partir dos ajustes realizados
+}
+\details{
+Esta funcao é um wrapper em torno do método \code{predict} de cada modelo, amostrando um número
+de pontos igualmente espaçados no dado, determinado por \code{dim}. Para perdas este argumento
+deve ser um escalar inteiro, enquanto para produtibilidade deve ser um vetor de inteiros
+indicando o número de divisões em queda e probabilidade na primeira e segunda posição,
+respectivamente.
+}
+\examples{
+
+dat <- agregasemana(dummydata)
+
+mod <- fitgam_perda(dat)
+
+# extraindo uma grade com 20 divisoes
+grade <- extraigrid(mod, dim = 20)
+
+\dontrun{
+plot(grade)
+}
+
 }
