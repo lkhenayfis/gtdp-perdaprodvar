@@ -74,6 +74,8 @@
 
 fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
 
+    vazao <- perda <- NULL
+
     # um jeito um pouco mais longo de pegar a call, mas guarda inclusive os args default
     fc <- match.call()
     da <- formals()
@@ -218,7 +220,8 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 #' # valores ajustados, previsao e residuos
 #' res <- residuals(mod)
 #' fitt <- fitted(mod)
-#' predd <- predict(mod, newdata = data.frame(quedal = runif(100, 20.5, 21), vazao = runif(100, 20, 150)))
+#' predd <- predict(mod, newdata = data.frame(quedal = runif(100, 20.5, 21),
+#' vazao = runif(100, 20, 150)))
 #' 
 #' # objetos retornados por fitgam_prod possuem um metodo de plot e lines, para facil visualizacao
 #' \dontrun{
@@ -236,6 +239,8 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 
 fitgam_prod <- function(dat, ns.quedal = 10, ns.vazao = 10, ts.quedal = "ps", ts.vazao = "ps", bordas = TRUE,
     modo = c("tensor", "multivar", "simples")) {
+
+    usina <- vazao <- ponto <- NULL
 
     # um jeito um pouco mais longo de pegar a call, mas guarda inclusive os args default
     fc <- match.call()

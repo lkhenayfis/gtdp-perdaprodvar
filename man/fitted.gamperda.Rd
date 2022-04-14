@@ -20,6 +20,7 @@ Método \code{fitted} para objetos da classe \code{gamperda}
 \seealso{
 Other metodos gamperda: 
 \code{\link{fitgam_perda}()},
+\code{\link{optgam_perda}()},
 \code{\link{predict.gamperda}()},
 \code{\link{residuals.gamperda}()}
 }

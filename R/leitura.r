@@ -25,6 +25,8 @@
 
 leplanilha <- function(arq) {
 
+    Qef <- datahora <- data <- hora <- patamar <- energia <- vazao <- nmont <- njus <- quedal <- NULL
+
     options(readxl.show_progress = FALSE)
 
     usina <- read_xlsx(arq, sheet = "Cadastro", range = "C1:C2", col_names = FALSE, .name_repair = "minimal")
@@ -49,7 +51,7 @@ leplanilha <- function(arq) {
     colnames(rend) <- c("data", "hora", "rend", "energia", "diasem", "patamar")
     rend[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
     rend[, prod := rend * rho * G * 1e-6]
-    rend <- rend[, .(datahora, patamar, energia, prod)]
+    rend <- rend[, list(datahora, patamar, energia, prod)]
     setkey(rend, datahora)
 
     turb <- read_xlsx(arq, sheet = "QTurb", skip = 1, .name_repair = "minimal",
@@ -60,7 +62,7 @@ leplanilha <- function(arq) {
     turb[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
     nmaqs <- turb[, lapply(.SD, function(x) is.na(x) | (x == 0)), .SDcols = names(turb) %like% "vaz_maq"]
     turb[, nmaq := rowSums(!nmaqs)]
-    turb <- turb[, .(datahora, vazao, nmaq)]
+    turb <- turb[, list(datahora, vazao, nmaq)]
     setkey(turb, datahora)
 
     quedab <- read_xlsx(arq, sheet = "Dados", range = "A2:E87650", .name_repair = "minimal")
@@ -69,7 +71,7 @@ leplanilha <- function(arq) {
     colnames(quedab) <- c("data", "hora", "XXX", "nmont", "njus")
     quedab[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
     quedab[, quedab := nmont - njus]
-    quedab <- quedab[, .(datahora, nmont, quedab)]
+    quedab <- quedab[, list(datahora, nmont, quedab)]
     setkey(quedab, datahora)
 
     perda <- read_xlsx(arq, sheet = "Perda Usina (hora)", .name_repair = "minimal",
@@ -78,7 +80,7 @@ leplanilha <- function(arq) {
     perda <- perda[apply(perda, 1, function(r) !all(is.na(r)))]
     colnames(perda) <- c("data", "hora", "perda")
     perda[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
-    perda <- perda[, .(datahora, perda)]
+    perda <- perda[, list(datahora, perda)]
     setkey(perda, datahora)
 
     out <- Reduce(function(d1, d2) merge(d1, d2, all = TRUE), list(rend, turb, quedab, perda))
@@ -135,6 +137,8 @@ agregasemana <- function(dat, min.horas = .9) UseMethod("agregasemana")
 #' @rdname agregasemana
 
 agregasemana.data.table <- function(dat, min.horas = .9) {
+
+    semana <- datahora <- regvale <- semanafull <- energia <- vazao <- NULL
 
     if(min.horas > 1) min.horas <- min.horas / 100
 

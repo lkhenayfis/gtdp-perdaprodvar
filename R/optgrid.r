@@ -103,6 +103,8 @@ optgrid <- function(fit, R = 1.01, ..., full.output = FALSE) UseMethod("optgrid"
 
 optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output = FALSE) {
 
+    X <- NULL
+
     errofit <- sum(residuals(fit)^2)
 
     grades <- lapply(range.vazao, function(segs) extraigrid(fit, segs))
@@ -148,8 +150,12 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
 #'     linhas de queda líquida
 #' 
 #' @return matriz booleana; TRUE na região de convergência e FALSE do contrário
+#' 
+#' @importFrom utils tail
 
 achapersistencia <- function(mat) {
+
+    testar <- X <- Y <- NULL
 
     # Extrai numero de colunas e linhas
     R <- nrow(mat)
@@ -208,6 +214,8 @@ achapersistencia <- function(mat) {
 #' @return data.table contendo as coordenadas na matriz dos pontos de fronteira
 
 achafronteira <- function(mat) {
+
+    X <- Y <- NULL
 
     # Olha pelos x
     dx <- apply(mat, 1, function(x) ifelse(length(x) > 1, which(x)[1], NA))

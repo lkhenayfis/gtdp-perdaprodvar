@@ -91,11 +91,13 @@ otimização da dimensão de base \code{\link{optgam_perda}}.
 
 Other metodos gamperda: 
 \code{\link{fitted.gamperda}()},
+\code{\link{optgam_perda}()},
 \code{\link{predict.gamperda}()},
 \code{\link{residuals.gamperda}()}
 
 Other plots gamperda: 
 \code{\link{lines.gamperda}()},
+\code{\link{optgam_perda}()},
 \code{\link{plot.gamperda}()}
 }
 \concept{metodos gamperda}

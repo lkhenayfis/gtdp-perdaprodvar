@@ -12,6 +12,8 @@
 
 new_gamprod <- function(dat, mod, fitcall) {
 
+    usina <- ponto <- vazao <- NULL
+
     dat <- copy(dat)[, .SD, .SDcols = c("quedal", "vazao", "prod")]
 
     borda <- bordasCC[usina == attr(dat, "cod")]

@@ -32,6 +32,7 @@ plot(mod)
 \seealso{
 Other plots gamperda: 
 \code{\link{fitgam_perda}()},
-\code{\link{lines.gamperda}()}
+\code{\link{lines.gamperda}()},
+\code{\link{optgam_perda}()}
 }
 \concept{plots gamperda}

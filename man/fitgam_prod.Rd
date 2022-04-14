@@ -89,7 +89,8 @@ mod <- fitgam_prod(dat, ns.vazao = 10, ts.vazao = "tp")
 # valores ajustados, previsao e residuos
 res <- residuals(mod)
 fitt <- fitted(mod)
-predd <- predict(mod, newdata = data.frame(quedal = runif(100, 20.5, 21), vazao = runif(100, 20, 150)))
+predd <- predict(mod, newdata = data.frame(quedal = runif(100, 20.5, 21),
+vazao = runif(100, 20, 150)))
 
 # objetos retornados por fitgam_prod possuem um metodo de plot e lines, para facil visualizacao
 \dontrun{

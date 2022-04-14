@@ -32,6 +32,7 @@ lines(mod2, col = 3, lwd = 2. lty = 2)
 \seealso{
 Other plots gamperda: 
 \code{\link{fitgam_perda}()},
+\code{\link{optgam_perda}()},
 \code{\link{plot.gamperda}()}
 }
 \concept{plots gamperda}

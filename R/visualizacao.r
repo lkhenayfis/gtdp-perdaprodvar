@@ -21,7 +21,7 @@
 #' 
 #' @return plota dados originais e ajuste realizado
 #' 
-#' @importFrom graphics plot lines points legend
+#' @importFrom graphics plot lines points legend grid
 #' 
 #' @export
 #' 
@@ -119,11 +119,13 @@ plot.gridperda <- function(x, legenda = TRUE, ...) {
     }
 }
 
-#' @importFrom graphics plot abline points legend
+#' @importFrom graphics plot abline points legend grid
 #' 
 #' @export
 
 plot.varreduraperda <- function(x, legenda = TRUE, ...) {
+
+    X <- NULL
 
     estaveis <- x$front[1, X]:length(x$range)
 

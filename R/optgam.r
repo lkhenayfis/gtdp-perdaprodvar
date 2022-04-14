@@ -2,11 +2,11 @@
 
 #' Otimização Do Ajuste De Perdas
 #' 
-#' Varre uma faixa de números de nós, reportando aquele correspondente ao ajuste de menor BIC
+#' Varre uma faixa de dimensões de base, reportando aquele correspondente ao ajuste de menor BIC
 #' 
 #' Os parâmetros recebidos por \code{optgam_perda} são exatamente aqueles de 
 #' \code{\link{fitgam_perda}}, com uma exceção: o argumento \code{ns.vazao} é substituído por 
-#' \code{range.vazao}, um vetor de inteiros indicando os números de nós candidatos para seleção.
+#' \code{range.vazao}, um vetor de inteiros indicando as dimensões de base candidatos para seleção.
 #' 
 #' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
 #' @param range.vazao vetor de numero de nós a testar na seleção. Padrao 5:30
@@ -29,9 +29,10 @@
 #' 
 #' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
 #' 
-#' @seealso Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
-#'     \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização 
-#'     \code{\link{plot.gamperda}}
+#' @seealso ajuste individual para uma dada dimensão de base \code{\link{fitgam_perda}}
+#' 
+#' @family metodos gamperda
+#' @family plots gamperda
 #' 
 #' @export
 
@@ -43,6 +44,15 @@ optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2,
     optgam <- fitgams[[which.min(BICs)]]
 
     return(optgam)
+}
+
+#' Otimização Do Ajuste De Produtibilidade
+#' 
+#' Varre uma faixa de dimensões de base, reportando aquele correspondente ao ajuste de menor BIC
+
+optgam_prod <- function() {
+
+    return(NULL)
 }
 
 # HELPERS ------------------------------------------------------------------------------------------

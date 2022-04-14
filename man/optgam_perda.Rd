@@ -29,12 +29,12 @@ Detalhes. Padrao tipo 2 para ambas as extrapolações}
 objeto \code{gamperda} contendo GAM e extrapolações estimadas
 }
 \description{
-Varre uma faixa de números de nós, reportando aquele correspondente ao ajuste de menor BIC
+Varre uma faixa de dimensões de base, reportando aquele correspondente ao ajuste de menor BIC
 }
 \details{
 Os parâmetros recebidos por \code{optgam_perda} são exatamente aqueles de
 \code{\link{fitgam_perda}}, com uma exceção: o argumento \code{ns.vazao} é substituído por
-\code{range.vazao}, um vetor de inteiros indicando os números de nós candidatos para seleção.
+\code{range.vazao}, um vetor de inteiros indicando as dimensões de base candidatos para seleção.
 }
 \examples{
 
@@ -49,7 +49,18 @@ attr(optfit, "gamargs") # ns.vazao corresponde ao numero de nos utilizados no aj
 
 }
 \seealso{
-Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
-\code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização
-\code{\link{plot.gamperda}}
+ajuste individual para uma dada dimensão de base \code{\link{fitgam_perda}}
+
+Other metodos gamperda: 
+\code{\link{fitgam_perda}()},
+\code{\link{fitted.gamperda}()},
+\code{\link{predict.gamperda}()},
+\code{\link{residuals.gamperda}()}
+
+Other plots gamperda: 
+\code{\link{fitgam_perda}()},
+\code{\link{lines.gamperda}()},
+\code{\link{plot.gamperda}()}
 }
+\concept{metodos gamperda}
+\concept{plots gamperda}

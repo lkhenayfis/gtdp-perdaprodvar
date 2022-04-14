@@ -23,6 +23,7 @@ Método \code{predict} para objetos da classe \code{gamperda}
 Other metodos gamperda: 
 \code{\link{fitgam_perda}()},
 \code{\link{fitted.gamperda}()},
+\code{\link{optgam_perda}()},
 \code{\link{residuals.gamperda}()}
 }
 \concept{metodos gamperda}

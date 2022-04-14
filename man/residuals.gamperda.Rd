@@ -21,6 +21,7 @@ Método \code{residuals} para objetos da classe \code{gamperda}
 Other metodos gamperda: 
 \code{\link{fitgam_perda}()},
 \code{\link{fitted.gamperda}()},
+\code{\link{optgam_perda}()},
 \code{\link{predict.gamperda}()}
 }
 \concept{metodos gamperda}
