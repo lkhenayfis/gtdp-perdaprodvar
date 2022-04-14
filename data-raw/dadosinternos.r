@@ -21,9 +21,9 @@ renorm <- function(vec, minold, maxold, minnew, maxnew) {
 
 dummydata[, c(4:5, 7:9)] <- mapply(renorm,
     dummydata[, c(4:5, 7:9)], minolds, maxolds, minnews, maxnews, SIMPLIFY = FALSE)
-attr(dummydata, "cod") <- 999
+attr(dummydata, "cod") <- 9999
 attr(dummydata, "nome") <- "dummy"
-attr(dummydata, "nmaq") <- 0
+attr(dummydata, "nmaq") <- 2
 attr(dummydata, "qmax") <- 210
 
 usethis::use_data(dummydata, overwrite = TRUE)
@@ -42,9 +42,10 @@ colnames(bordasCC) <- c("usina", paste0(c("quedal", "vazao", "prod"), "_", rep(1
 
 bordasCC <- melt(bordasCC, id.var = "usina", variable.name = "ponto",
     measure.vars = patterns(queda = "^quedal_", vazao = "^vazao_", prod = "^prod_"))
+bordasCC[, c("queda", "vazao", "prod") := lapply(.(queda, vazao, prod), as.numeric)]
 
 aux <- bordasCC[usina == oldcod]
-aux[, usina := 999]
+aux[, usina := 9999]
 aux[, queda := renorm(queda, minolds[5], maxolds[5], minnews[5], maxnews[5])]
 aux[, vazao := renorm(vazao, minolds[2], maxolds[2], minnews[2], maxnews[2])]
 
