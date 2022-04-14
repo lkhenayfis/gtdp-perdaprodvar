@@ -34,6 +34,11 @@
 #' @return object \code{grid(perda)|(prod)}, dependendo da classe do argumento \code{fit}. Em ambos
 #'     os casos será uma lista com a grade na primeira posição e o modelo original na segunda
 #' 
+#' @seealso otimização do número de segmentações da grade \code{\link{optgrid}}
+#' 
+#' @family metodos gridperda
+#' @family plots gridperda
+#' 
 #' @export
 
 extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")

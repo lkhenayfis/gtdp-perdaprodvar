@@ -8,6 +8,11 @@
 }
 \arguments{
 \item{x}{objeto da classe \code{gridperda}}
+
+\item{...}{exite apenas para consistência com a genérica}
+}
+\value{
+print da grade no console, sem retornar nenhum valor
 }
 \description{
 Print De Objetos \code{gridperda}

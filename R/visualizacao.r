@@ -77,9 +77,29 @@ lines.gamperda <- function(x, ...) {
     lines(xline, predict(x, newdata = data.frame(vazao = xline)), ...)
 }
 
+#' Plot Completo De Objetos \code{gridperda}
+#' 
+#' Wrapper para visualização dos modelos contínuos de perda, dados ajustados e grade extraída
+#' 
+#' @param x objeto da classe \code{gridperda}
+#' @param legenda booleano indicando se uma legenda automática deve ser adicionada
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod <- fitgam_perda(dat)
+#' grd <- extraigrid(mod, 20)
+#' 
+#' \dontrun{
+#' plot(grd)
+#' }
+#' 
+#' @return plota dados originais, ajuste realizado e grade de perdas extraída
+#' 
 #' @export
 #' 
-#' @rdname gridperda
+#' @family plots gridperda
 
 plot.gridperda <- function(x, legenda = TRUE, ...) {
 
