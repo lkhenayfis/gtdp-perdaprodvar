@@ -151,39 +151,123 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     new_gamperda(dat, mod, coefI, coefS, corteI, corteS, fc)
 }
 
-#' Ajuste De Curva Para Perdas
+#' Ajuste De Curva Para Produtibilidade
 #' 
-#' Estima GAM para perdas, complementando regiões inferior e superior com extrapolação
+#' Estima GAM para produtibilidades
+#' 
+#' \code{fitgam_prod} espera que alguns atributos especiais estejam presetnes no argumento
+#' \code{dat}, dentre eles: codigo, nome e vazao turbinada efetiva total da usina. Destes, apenas
+#' o último é relevante para a estimação de curva, sendo os outros dois necessários para escrita
+#' de resultados e plots. Desta forma, para garantir o funcionamento apropriado da função o objeto 
+#' passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente pelas funções 
+#' fornecidas no pacote.
+#' 
+#' \code{ts.quedal} e \code{ts.vazao} permitem a especificação do tipo de spline utilizada na 
+#' expansão de base. Todos os tipos definidos em \code{\link[mgcv]{mgcv}} são suportados. Para 
+#' maiores detalhes a respeito das possibilidades e suas descrições, veja
+#' \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado  \code{ts.vazao = "ps"}, o que 
+#' corresponde à expansão por P-Splines.
+#' 
+#' Embora a função ofereça a possibilidade de utilizar ou não as bordas da curva colina como apoio 
+#' para geração do grid, o domínio final é sempre o mesmo:
+#' \itemize{
+#' \item o grid de produtibilidade sempre cobre da vazão zero até o máximo entre a vazão histórica e
+#'     aquela estipulada no HIDR, ou seja, mesmo que colina tenha bordas em vazões superiores, o 
+#'     grid NÃO vai até este ponto, dado que o DECOMP não consultará vazões tão elevadas
+#' \item o domínio de queda líquida, por outro lado, sempre vai da menor a maior queda observadas na
+#'     curva colina, mesmo que a borda não seja contemplada no ajuste. Isto é feito de modo a 
+#'     garantir que o grid possua o domínio completo de quedas operáveis pelas máquinas da usina
+#' }
+#' 
+#' Desta forma, a borda só é utilizada como apoio no ajuste do GAM, mas não interfere no domínio 
+#' final do grid ajustado
+#' 
+#' Ainda no que toca a borda, seu uso pode ser informado de duas formas: um valor lógico ou vetor 
+#' numérico. Caso o primeiro seja informado, todos os pontos da borda são utilizados ou não. Caso 
+#' se informe um vetor numérico, apenas os pontos listados neste vetor serão utilizados. A 
+#' disposição do dado de borda é:
+#' \enumerate{
+#'     \item menor queda, menor vazão
+#'     \item MAIOR queda, menor vazão
+#'     \item menor queda, MAIOR vazão
+#'     \item MAIOR queda, MAIOR vazão
+#' }
+#' 
+#' O argumento \code{modo} permite definir a estrutura geral do modelo aditivo. 
+#' \code{modo = "simples"} implica em um modelo de efeitos aditivos sem iteração, isto é, a função
+#' estimada é da forma \eqn{g(x) = f_1(X_1) + f_2(X_2)}, sem interação entre as variáveis. 
+#' \code{modo = "tensor"} construirá uma função por produto tensor das marginais, isto é, levando em
+#' consideração a interação entre variáveis. \code{modo = "multivar"} só é aplicável quando ambos 
+#' \code{ts.quedal = ts.vazao = "tp"|"ts"}, pois corresponde a modelagem com suavizadores 
+#' naturalmente multivariados, que é o caso singular das thin plate regression splines.
+#' 
+#' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
+#' @param ns.quedal,ns.vazao dimensão da base em cada eixo expandida para ajuste. Padrão 10 em ambos
+#' @param ts.quedal,ts.vazao tipo de spline utilizada para queda líquida e vazão -- 
+#'     veja \code{\link[mgcv]{smooth.terms}} para todas as opções. Padrão \code{"ps"} em ambos
+#' @param bordas booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros 
+#'     indicando quais vértices utilizar. Ver Detalhes
+#' @param modo um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de 
+#'     interação entre funções marginais. Ver Detalhes
+#' 
+#' @examples
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod <- fitgam_prod(dat, ns.vazao = 10, ts.vazao = "tp")
+#' 
+#' # valores ajustados, previsao e residuos
+#' res <- residuals(mod)
+#' fitt <- fitted(mod)
+#' predd <- predict(mod, newdata = data.frame(quedal = runif(100, 20.5, 21), vazao = runif(100, 20, 150)))
+#' 
+#' # objetos retornados por fitgam_prod possuem um metodo de plot e lines, para facil visualizacao
+#' \dontrun{
+#' plot(mod)
+#' }
+#' 
+#' @return objeto \code{gamprod} contendo GAM e extrapolações estimadas
+#' 
+#' @seealso otimização da dimensão de base \code{\link{optgam_prod}}.
+#' 
+#' @family metodos gamprod
+#' @family plots gamprod
+#' 
+#' @export
 
 fitgam_prod <- function(dat, ns.quedal = 10, ns.vazao = 10, ts.quedal = "ps", ts.vazao = "ps", bordas = TRUE,
     modo = c("tensor", "multivar", "simples")) {
 
+    # um jeito um pouco mais longo de pegar a call, mas guarda inclusive os args default
+    fc <- match.call()
+    da <- formals()
+    da[match(names(fc[-1]), names(da))] <- fc[-1]
+    fc <- as.call(c(fc[[1]], da))
+
     modo <- match.arg(modo)
 
-    atributos <- attributes(dat)[c("cod", "nome", "nmaq", "qmax")]
+    borda <- bordasCC[usina == attr(dat, "cod")]
+    borda[ponto %in% 3:4, vazao := vazao * attr(dat, "nmaq")]
 
-    m_borda <- bordasCC[usina == atributos$cod, 3:5]
-
-    dfit <- rbind(dat, as.data.table(m_borda[bordas, , drop = FALSE]), fill = TRUE)
+    dfit <- rbind(dat, as.data.table(borda[bordas, 3:5, drop = FALSE]), fill = TRUE)
 
     if(modo == "simples") {
         term1 <- paste0("s(quedal, bs = '", ts.quedal, "', k = ", ns.quedal, ")")
         term2 <- paste0("s(vazao, bs = '", ts.vazao, "', k = ", ns.vazao, ")")
         form <- as.formula(paste0("prod ~ ", term1, " + ", term2))
     } else if(modo == "multivar") {
-        if(!((ts.quedal == "tp") & (ts.vazao == "tp"))) stop("modo multivar so suporta tipos de spline 'tp'")
+        if(!(ts.quedal %in% c("tp", "ts")) | !(ts.vazao %in% c("tp", "ts"))) {
+            stop("modo multivar so suporta tipos de spline 'tp'")
+        }
 
         term <- paste0("s(quedal, vazao, bs = 'tp', k = c(", ns.quedal, ", ", ns.vazao, "))")
         form <- as.formula(paste0("prod ~ ", term))
     } else {
-        term <- paste0("te(quedal, vazao, bs = c('", ts.quedal, "', '", ts.vazao, "'), k = c(", ns.quedal, ", ", ns.vazao, "))")
+        term <- paste0("te(quedal, vazao, bs = c('", ts.quedal, "', '",
+            ts.vazao, "'), k = c(", ns.quedal, ", ", ns.vazao, "))")
         form <- as.formula(paste0("prod ~ ", term))
     }
 
     mod <- mgcv::gam(form, data = dfit)
 
-    args <- list(ns.quedal = ns.quedal, ns.vazao = ns.vazao, ts.quedal = ts.quedal, ts.vazao = ts.vazao,
-        bordas = bordas)
-
-    new_gamprod(dat, mod, atributos, args)
+    new_gamprod(dat, mod, fc)
 }

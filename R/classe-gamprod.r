@@ -1,30 +1,40 @@
 ########################################## CLASSE GAMPROD ##########################################
 
-#' Objeto \code{gamprod}
-#' 
-#' Construtor e métodos da classe \code{gamprod}
-#' 
-#' @name gamprod
-NULL
-
 #' Construtor Interno
 #' 
-#' Função para contrução da saída de \code{fitgam_perda}, não deve ser chamada diretamente
+#' Função para contrução da saída de \code{fitgam_prod}, não deve ser chamada diretamente
 #' 
-#' @rdname gamprod
+#' @param dat dado utilizado para ajuste
+#' @param mod modelo ajustado
+#' @param fitcall chamada de \code{fitgam_prod} original
+#' 
+#' @return objeto \code{gamprod} com modelo ajustado e dado original
 
-new_gamprod <- function(dat, mod, atributos, args) {
+new_gamprod <- function(dat, mod, fitcall) {
 
     dat <- copy(dat)[, .SD, .SDcols = c("quedal", "vazao", "prod")]
 
+    borda <- bordasCC[usina == attr(dat, "cod")]
+    borda[ponto %in% 3:4, vazao := vazao * attr(dat, "nmaq")]
+
+    rangevaz <- c(0, max(max(dat$vazao), attr(dat, "qmax")))
+    rangehl  <- c(min(min(dat$quedal), min(borda$queda)), max(max(dat$quedal), max(borda$queda)))
+
     out <- list(model = mod, dat = dat)
-    attr(out, "gamargs") <- args
-    for(at in names(atributos)) attr(out, at) <- atributos[[at]]
+    attr(out, "fitcall") <- fitcall
+    attr(out, "ranges") <- list(quedal = rangehl, vazao = rangevaz)
     class(out) <- "gamprod"
 
     return(out)
 }
 
+#' Print De Objetos \code{gamprod}
+#' 
+#' @param x objeto da classe \code{gamprod}
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @return print do modelo no console, sem retornar nenhum valor
+#' 
 #' @export
 
 print.gamprod <- function(x, ...) {
@@ -34,17 +44,19 @@ print.gamprod <- function(x, ...) {
 
 # METODOS ------------------------------------------------------------------------------------------
 
-#' @param object objeto \code{gamprod} retornado por \code{\link{fitgam_prod}}
-#' @param newdata data.frame ou data.table contendo variável explicativa para previsão
-#' @param ... demais parametros
+#' Previsão Com Objetos \code{gamprod}
 #' 
-#' @return para \code{predict.gamprod}, vetor de produtibilidades previstas nas abscissas contidas 
-#'     em \code{newdata}. Para code{fitted.gamprod}, os valores ajustados e \code{rediduals.gamprod} 
-#'     os erros
+#' Método \code{predict} para objetos da classe \code{gamprod}
+#' 
+#' @param object objeto \code{gamprod} retornado por \code{\link{fitgam_prod}}
+#' @param newdata data.frame ou data.table contendo variáveis explicativas para previsão
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @return vetor de produtibilidades previstas nas abscissas contidas em \code{newdata}
 #' 
 #' @export
 #' 
-#' @rdname gamprod
+#' @family metodos gamprod
 
 predict.gamprod <- function(object, newdata, ...) {
 
@@ -53,15 +65,33 @@ predict.gamprod <- function(object, newdata, ...) {
     return(pred)
 }
 
+#' Valores Ajustados De Objetos \code{gamprod}
+#' 
+#' Método \code{fitted} para objetos da classe \code{gamprod}
+#' 
+#' @param object objeto \code{gamprod} retornado por \code{\link{fitgam_prod}}
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @return vetor de valores ajustados pelo modelo estimado
+#' 
 #' @export
 #' 
-#' @rdname gamprod
+#' @family metodos gamprod
 
 fitted.gamprod <- function(object, ...) predict(object, object$dat)
 
+#' Resíduos De Objetos \code{gamprod}
+#' 
+#' Método \code{residuals} para objetos da classe \code{gamprod}
+#' 
+#' @param object objeto \code{gamprod} retornado por \code{\link{fitgam_prod}}
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @return vetor de erros de ajuste do modelo estimado
+#' 
 #' @export
 #' 
-#' @rdname gamprod
+#' @family metodos gamprod
 
 residuals.gamprod <- function(object, ...) {
 

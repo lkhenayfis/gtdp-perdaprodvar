@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitgam.r
 \name{fitgam_prod}
 \alias{fitgam_prod}
-\title{Ajuste De Curva Para Perdas}
+\title{Ajuste De Curva Para Produtibilidade}
 \usage{
 fitgam_prod(
   dat,
@@ -14,6 +14,99 @@ fitgam_prod(
   modo = c("tensor", "multivar", "simples")
 )
 }
-\description{
-Estima GAM para perdas, complementando regiões inferior e superior com extrapolação
+\arguments{
+\item{dat}{\code{data.table} de dados para ajuste. Ver Detalhes}
+
+\item{ns.quedal, ns.vazao}{dimensão da base em cada eixo expandida para ajuste. Padrão 10 em ambos}
+
+\item{ts.quedal, ts.vazao}{tipo de spline utilizada para queda líquida e vazão --
+veja \code{\link[mgcv]{smooth.terms}} para todas as opções. Padrão \code{"ps"} em ambos}
+
+\item{bordas}{booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros
+indicando quais vértices utilizar. Ver Detalhes}
+
+\item{modo}{um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de
+interação entre funções marginais. Ver Detalhes}
 }
+\value{
+objeto \code{gamprod} contendo GAM e extrapolações estimadas
+}
+\description{
+Estima GAM para produtibilidades
+}
+\details{
+\code{fitgam_prod} espera que alguns atributos especiais estejam presetnes no argumento
+\code{dat}, dentre eles: codigo, nome e vazao turbinada efetiva total da usina. Destes, apenas
+o último é relevante para a estimação de curva, sendo os outros dois necessários para escrita
+de resultados e plots. Desta forma, para garantir o funcionamento apropriado da função o objeto
+passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente pelas funções
+fornecidas no pacote.
+
+\code{ts.quedal} e \code{ts.vazao} permitem a especificação do tipo de spline utilizada na
+expansão de base. Todos os tipos definidos em \code{\link[mgcv]{mgcv}} são suportados. Para
+maiores detalhes a respeito das possibilidades e suas descrições, veja
+\code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado  \code{ts.vazao = "ps"}, o que
+corresponde à expansão por P-Splines.
+
+Embora a função ofereça a possibilidade de utilizar ou não as bordas da curva colina como apoio
+para geração do grid, o domínio final é sempre o mesmo:
+\itemize{
+\item o grid de produtibilidade sempre cobre da vazão zero até o máximo entre a vazão histórica e
+aquela estipulada no HIDR, ou seja, mesmo que colina tenha bordas em vazões superiores, o
+grid NÃO vai até este ponto, dado que o DECOMP não consultará vazões tão elevadas
+\item o domínio de queda líquida, por outro lado, sempre vai da menor a maior queda observadas na
+curva colina, mesmo que a borda não seja contemplada no ajuste. Isto é feito de modo a
+garantir que o grid possua o domínio completo de quedas operáveis pelas máquinas da usina
+}
+
+Desta forma, a borda só é utilizada como apoio no ajuste do GAM, mas não interfere no domínio
+final do grid ajustado
+
+Ainda no que toca a borda, seu uso pode ser informado de duas formas: um valor lógico ou vetor
+numérico. Caso o primeiro seja informado, todos os pontos da borda são utilizados ou não. Caso
+se informe um vetor numérico, apenas os pontos listados neste vetor serão utilizados. A
+disposição do dado de borda é:
+\enumerate{
+\item menor queda, menor vazão
+\item MAIOR queda, menor vazão
+\item menor queda, MAIOR vazão
+\item MAIOR queda, MAIOR vazão
+}
+
+O argumento \code{modo} permite definir a estrutura geral do modelo aditivo.
+\code{modo = "simples"} implica em um modelo de efeitos aditivos sem iteração, isto é, a função
+estimada é da forma \eqn{g(x) = f_1(X_1) + f_2(X_2)}, sem interação entre as variáveis.
+\code{modo = "tensor"} construirá uma função por produto tensor das marginais, isto é, levando em
+consideração a interação entre variáveis. \code{modo = "multivar"} só é aplicável quando ambos
+\code{ts.quedal = ts.vazao = "tp"|"ts"}, pois corresponde a modelagem com suavizadores
+naturalmente multivariados, que é o caso singular das thin plate regression splines.
+}
+\examples{
+
+dat <- agregasemana(dummydata)
+mod <- fitgam_prod(dat, ns.vazao = 10, ts.vazao = "tp")
+
+# valores ajustados, previsao e residuos
+res <- residuals(mod)
+fitt <- fitted(mod)
+predd <- predict(mod, newdata = data.frame(quedal = runif(100, 20.5, 21), vazao = runif(100, 20, 150)))
+
+# objetos retornados por fitgam_prod possuem um metodo de plot e lines, para facil visualizacao
+\dontrun{
+plot(mod)
+}
+
+}
+\seealso{
+otimização da dimensão de base \code{\link{optgam_prod}}.
+
+Other metodos gamprod: 
+\code{\link{fitted.gamprod}()},
+\code{\link{predict.gamprod}()},
+\code{\link{residuals.gamprod}()}
+
+Other plots gamprod: 
+\code{\link{plot.gamprod}()}
+}
+\concept{metodos gamprod}
+\concept{plots gamprod}
