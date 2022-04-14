@@ -76,15 +76,10 @@ Uma vez que o dado foi lido, podemos prosseguir para sua modelagem.
 dado_semanal <- agregasemana(dummydata) # dummydata e um dado embutido no pacote para exemplos
 
 # ajuste de modelos para perda
-mod1 <- fitgam_perda(dado_semanal, ts.vazao = "ps")
-#> Warning in fitgam_perda(dado_semanal, ts.vazao = "ps"): Não há cruzamento entre
-#> a extrapolação inferior escolhida e o ajuste do GAM - foi utilizado o ponto mais
-#> próximo
-mod2 <- fitgam_perda(dado_semanal, ts.vazao = "tp")
-#> Warning in fitgam_perda(dado_semanal, ts.vazao = "tp"): Não há cruzamento entre
-#> a extrapolação inferior escolhida e o ajuste do GAM - foi utilizado o ponto mais
-#> próximo
+mod1 <- fitgam_perda(dado_semanal, ns.vazao = 7, ts.vazao = "ps")
+mod2 <- fitgam_perda(dado_semanal, ns.vazao = 7, ts.vazao = "tp")
 
+par(mar = c(4, 4, .1, .1))
 plot(mod1, legenda = FALSE)
 lines(mod2, col = 3, lwd = 2)
 ```
@@ -97,6 +92,7 @@ Finalmente, podemos extrair uma grade do modelo ajustado (neste caso com
 ``` r
 grade_perda <- extraigrid(mod1, 50)
 
+par(mar = c(4, 4, .1, .1))
 plot(grade_perda)
 ```
 
