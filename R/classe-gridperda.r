@@ -6,6 +6,7 @@
 #' 
 #' @param fit object \code{gamperda} retornado por \code{fitgam_perda} ou \code{optgam_perda}
 #' @param dim inteiro indicando número de pontos na grade a ser extraída
+#' @param ... existe apenas para consistência com a genérica
 #' 
 #' @return objeto da classe \code{gridperda} contendo grade extraída e ajuste original
 #' 
@@ -27,6 +28,10 @@ extraigrid.gamperda <- function(fit, dim, ...) {
 #' 
 #' Função para contrução da saída de \code{extraigrid.gamperda}, não deve ser chamada diretamente
 #' 
+#' @param perda perda amostrada do modelo
+#' @param vazao vazoes correspondentes às segmentações da grade
+#' @param fit modelo ajustado aos dados
+#' 
 #' @rdname gridperda
 
 new_gridperda <- function(perda, vazao, fit) {
@@ -39,6 +44,10 @@ new_gridperda <- function(perda, vazao, fit) {
     return(out)
 }
 
+#' Print De Objetos \code{gridperda}
+#' 
+#' @param x objeto da classe \code{gridperda}
+#' 
 #' @export
 
 print.gridperda <- function(x, ...) print(x$grid)

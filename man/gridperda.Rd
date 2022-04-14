@@ -22,11 +22,15 @@ new_gridperda(perda, vazao, fit)
 \method{plot}{gridperda}(x, legenda = TRUE, ...)
 }
 \arguments{
-\item{fit}{object \code{gamperda} retornado por \code{fitgam_perda} ou \code{optgam_perda}}
+\item{fit}{modelo ajustado aos dados}
 
 \item{dim}{inteiro indicando número de pontos na grade a ser extraída}
 
 \item{...}{demais parametros}
+
+\item{perda}{perda amostrada do modelo}
+
+\item{vazao}{vazoes correspondentes às segmentações da grade}
 
 \item{object}{objeto \code{gridperda} retornado por \code{\link{extraigrid.gamperda}}}
 
