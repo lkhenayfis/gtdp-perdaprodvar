@@ -130,3 +130,61 @@ plot.varreduraperda <- function(x, legenda = TRUE, ...) {
             legend = c("Inadequado", "Est\u00E1vel", "Fronteira"), pch = 16, col = c("purple", "yellow3", "red"))    
     }
 }
+
+# PLOT DE PRODUTIBILIDADE --------------------------------------------------------------------------
+
+#' Plot Completo De Objetos \code{gamprod}
+#' 
+#' Wrapper para visualização dos modelos contínuos de produtibilidade junto aos dados ajustados
+#' 
+#' @param x objeto da classe \code{gamprod}
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod <- fitgam_prod(dat)
+#' 
+#' \dontrun{
+#' plot(mod)
+#' }
+#' 
+#' @return plota dados originais e ajuste realizado. Como o plot é 3d através do pacote 
+#'     \code{plotly}, é retornado um objeto desta classe contendo o plot para posteriores 
+#'     modificações
+#' 
+#' @importFrom plotly plot_ly add_markers add_surface hide_legend hide_colorbar layout %>%
+#' 
+#' @export
+#' 
+#' @family plots gamprod
+
+plot.gamprod <- function(x, ...) {
+
+    ranges <- attr(x, "ranges")
+    newdata <- expand.grid(vazao = seq(ranges$vazao[1], ranges$vazao[2], length.out = 100),
+                           quedal = seq(ranges$quedal[1], ranges$quedal[2], length.out = 100))
+    setDT(newdata)
+    fitt <- predict(x, newdata = newdata)
+    fitt <- cbind(newdata, prod = fitt)
+
+    f1 <- list(size = 17, color = "black")
+    f2 <- list(size = 12, color = "black")
+    p <- plot_ly() %>%
+        add_markers(data = x$dat, type = "scatter3d",
+            x = ~quedal, y = ~vazao, z = ~prod,
+             marker = list(color = "deepskyblue2", size = 12, opacity = 1)) %>%
+        add_surface(x = unique(fitt$quedal), y = unique(fitt$vazao),
+            z = data.matrix(dcast(fitt, quedal ~ vazao, value.var = "prod"))[, -1],
+            inherit = FALSE) %>%
+        layout(scene =
+            list(xaxis = list(titlefont = f1, tickfont = f2, title = "Queda l\u00edquida (m)"),
+                yaxis = list(titlefont = f1, tickfont = f2, title = "Vaz\u00E3o turbinada (m<sup>3</sup>/s)"),
+                zaxis = list(titlefont = f1, tickfont = f2, title = "Produtibilidade (MW/m<sup>4</sup>/s)"),
+                camera = list(eye = list(x = -1.5, y = -1.6, z = 1.2))),
+             legend = list(font = f1)) %>%
+        hide_legend() %>%
+        hide_colorbar()
+
+    return(p)
+}
