@@ -28,7 +28,7 @@ test_that("Modelagem continua de perdas", {
                 "cr" = "cr.smooth", "cs" = "cs.smooth", "ds" = "duchon.spline")
         )
 
-        expect_snapshot_value(fitted(mod$model[[2]]), style = "json2")
+        expect_snapshot_value(fitted(mod$model[[2]]), style = "serialize")
     }
 
     # Testando tipos de extrapolacao -------------------------------------
@@ -53,7 +53,7 @@ test_that("Modelagem continua de perdas", {
 
     # Testando diferentes quantis ----------------------------------------
 
-    expect_warning(expect_warning(mod1 <- fitgam_perda(dts, quantil = c(.01, .99))))
+    expect_warning(mod1 <- fitgam_perda(dts, quantil = c(.01, .99)))
     expect_warning(mod2 <- fitgam_perda(dts, quantil = c(.025, .975)))
     expect_warning(mod3 <- fitgam_perda(dts, quantil = c(.05, .95)))
     mod4 <- fitgam_perda(dts, quantil = c(.1, .9))
@@ -62,7 +62,8 @@ test_that("Modelagem continua de perdas", {
 
     suppressWarnings(mod <- fitgam_perda(dts))
 
-    expect_snapshot_value(fitted(mod), style = "json2")
-    expect_snapshot_value(residuals(mod), style = "deparse")
-    expect_snapshot_value(predict(mod, newdata = data.frame(vazao = seq(0, attr(dts, "qmax"), 10))), style = "json2")
+    expect_snapshot_value(fitted(mod), style = "serialize")
+    expect_snapshot_value(residuals(mod), style = "serialize")
+    expect_snapshot_value(predict(mod, newdata = data.frame(vazao = seq(0, attr(dts, "qmax"), 10))),
+        style = "serialize")
 })
