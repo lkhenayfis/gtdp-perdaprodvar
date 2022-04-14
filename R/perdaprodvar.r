@@ -15,5 +15,5 @@
 #' @useDynLib perdaprodvar
 #' @importFrom Rcpp sourceCpp
 #' 
-#' @import data.table stats graphics
+#' @import data.table stats
 NULL

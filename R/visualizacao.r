@@ -21,6 +21,8 @@
 #' 
 #' @return plota dados originais e ajuste realizado
 #' 
+#' @importFrom graphics plot lines points legend
+#' 
 #' @export
 #' 
 #' @family plots gamperda
@@ -63,6 +65,8 @@ plot.gamperda <- function(x, legenda = TRUE, ...) {
 #' 
 #' @return plota a linha do ajuste do modelo contido em \code{x}
 #' 
+#' @importFrom graphics lines
+#' 
 #' @export
 #' 
 #' @family plots gamperda
@@ -97,6 +101,8 @@ lines.gamperda <- function(x, ...) {
 #' 
 #' @return plota dados originais, ajuste realizado e grade de perdas extraída
 #' 
+#' @importFrom graphics plot points legend
+#' 
 #' @export
 #' 
 #' @family plots gridperda
@@ -113,6 +119,8 @@ plot.gridperda <- function(x, legenda = TRUE, ...) {
     }
 }
 
+#' @importFrom graphics plot abline points legend
+#' 
 #' @export
 
 plot.varreduraperda <- function(x, legenda = TRUE, ...) {
