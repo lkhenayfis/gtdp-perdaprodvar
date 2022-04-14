@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/lkhenayfis/gtdp-perdaprodvar/workflows/R-CMD-check/badge.svg)](https://github.com/lkhenayfis/gtdp-perdaprodvar/actions)
+[![test-coverage](https://github.com/lkhenayfis/gtdp-perdaprodvar/workflows/test-coverage/badge.svg)](https://github.com/lkhenayfis/gtdp-perdaprodvar/actions)
 <!-- badges: end -->
 
 Este pacote contém o conjunto de funções necessárias para aplicação da

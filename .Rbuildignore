@@ -3,3 +3,4 @@
 ^informals$
 ^.vscode$
 ^README\.Rmd$
+^\.github$
