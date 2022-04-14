@@ -56,10 +56,12 @@
 #' predd <- predict(fit_tp, newdata = data.frame(vazao = runif(100, 20, 150)))
 #' 
 #' # objetos retornados por fitgam_perda possuem um metodo de plot e lines, para facil visualizacao
+#' \dontrun{
 #' plot(fit_tp, legenda = FALSE)
 #' lines(fit_cr, col = 3, lwd = 3)
 #' lines(fit_ps, col = 6, lwd = 3)
 #' legend("bottomright", inset = .02, legend = c("tp", "cr", "ps"), lty = 1, col = c(2, 3, 6))
+#' }
 #' 
 #' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
 #' 
@@ -78,12 +80,10 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     da[match(names(fc[-1]), names(da))] <- fc[-1]
     fc <- as.call(c(fc[[1]], da))
 
-    wrn <- paste0("Não há cruzamento entre a extrapolação inferior escolhida e o ajuste do GAM - ",
-        "foi utilizado o ponto mais próximo")
+    wrn <- paste0("Nao ha cruzamento entre a extrapolacao inferior escolhida e o ajuste do GAM - ",
+        "foi utilizado o ponto mais proximo")
 
     if(!(all(extrap %in% 1:2))) stop("extrap so pode assumir valor 1 ou 2")
-
-    atributos <- attributes(dat)[c("cod", "nome", "nmaq", "qmax")]
 
     mod  <- mgcv::gam(perda ~ s(vazao, bs = ts.vazao, k = ns.vazao), data = dat)
 
@@ -118,7 +118,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     # Extrapolacao superior ----------------------------------------------
 
     dS <- dat[vazao > quantile(vazao, quantil[2])]
-    vx <- seq(min(min(dS$vazao), atributos$qmax), atributos$qmax, length.out = 1000)
+    vx <- seq(min(min(dS$vazao), attr(dat, "qmax")), attr(dat, "qmax"), length.out = 1000)
 
     if(extrap[2] == 1) {
         coefS <- dS[which.max(vazao), perda / vazao^2]
@@ -147,8 +147,6 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     }
 
     # Monta objeto de saida ----------------------------------------------
-
-    args <- list(ns.vazao = ns.vazao, ts.vazao = ts.vazao, extrap = extrap, quantil = quantil)
 
     new_gamperda(dat, mod, coefI, coefS, corteI, corteS, fc)
 }
