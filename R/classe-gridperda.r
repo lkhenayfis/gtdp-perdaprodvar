@@ -18,7 +18,7 @@ extraigrid.gamperda <- function(fit, dim, ...) {
 
     dim <- dim[1]
 
-    vazao <- seq(0, attr(fit, "qmax"), length.out = dim)
+    vazao <- seq(0, attr(fit$dat, "qmax"), length.out = dim)
     perda <- predict(fit, newdata = data.frame(vazao = vazao))
 
     new_gridperda(perda, vazao, fit)
@@ -38,7 +38,7 @@ new_gridperda <- function(perda, vazao, fit) {
 
     gridperda <- data.table(vazao = vazao, perda = perda)
 
-    out <- list(grid = gridperda, gam = fit)
+    out <- list(grid = gridperda, model = fit)
     class(out) <- "gridperda"
 
     return(out)
@@ -84,7 +84,7 @@ predict.gridperda <- function(object, newdata, ...) {
 
 fitted.gridperda <- function(object, ...) {
 
-    vazao <- object$gam$dat[, list(vazao)]
+    vazao <- object$model$dat[, list(vazao)]
 
     fit <- predict(object, newdata = vazao)
 
@@ -98,7 +98,7 @@ fitted.gridperda <- function(object, ...) {
 residuals.gridperda <- function(object, ...) {
 
     fit <- fitted(object)
-    res <- object$gam$dat$perda - fit
+    res <- object$model$dat$perda - fit
 
     return(res)
 }

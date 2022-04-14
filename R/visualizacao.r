@@ -44,7 +44,7 @@ lines.gamperda <- function(x, ...) {
 
 plot.gridperda <- function(x, legenda = TRUE, ...) {
 
-    plot(x$gam, legenda = FALSE)
+    plot(x$model, legenda = FALSE)
 
     points(x$grid, type = "o", lwd = 2)
     if(legenda) {
