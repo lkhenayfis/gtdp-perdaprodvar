@@ -8,7 +8,7 @@
 
 plot.gamperda <- function(x, legenda = TRUE, ...) {
 
-    xlim <- c(0, attr(x, "qmax"))
+    xlim <- c(0, attr(x$dat, "qmax"))
     ylim <- c(0, max(x$dat$perda))
 
     xline <- seq(xlim[1], xlim[2])
@@ -30,7 +30,7 @@ plot.gamperda <- function(x, legenda = TRUE, ...) {
 
 lines.gamperda <- function(x, ...) {
 
-    xlim <- c(0, attr(x, "qmax"))
+    xlim <- c(0, attr(x$dat, "qmax"))
     ylim <- c(0, max(x$dat$perda))
 
     xline <- seq(xlim[1], xlim[2])
