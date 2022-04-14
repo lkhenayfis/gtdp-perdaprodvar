@@ -7,6 +7,7 @@
 
 [![R-CMD-check](https://github.com/lkhenayfis/gtdp-perdaprodvar/workflows/R-CMD-check/badge.svg)](https://github.com/lkhenayfis/gtdp-perdaprodvar/actions)
 [![test-coverage](https://github.com/lkhenayfis/gtdp-perdaprodvar/workflows/test-coverage/badge.svg)](https://github.com/lkhenayfis/gtdp-perdaprodvar/actions)
+[![codecov](https://codecov.io/gh/lkhenayfis/gtdp-perdaprodvar/branch/master/graph/badge.svg?token=WFXUZ1LR3G)](https://codecov.io/gh/lkhenayfis/gtdp-perdaprodvar)
 <!-- badges: end -->
 
 Este pacote contém o conjunto de funções necessárias para aplicação da
