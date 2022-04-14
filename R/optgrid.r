@@ -50,7 +50,7 @@ extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")
 #' configurações de grade em uma determinada faixa de número de divisões permissíveis.
 #' 
 #' O argumento \code{R} controla o critério de comparação entre os erros de representação. Quando 
-#' \eqn{erro_grade / erro_modelo \leq R} para um dado número de segmentações, considera-se esta 
+#' \eqn{erro_grade / erro_modelo \le R} para um dado número de segmentações, considera-se esta 
 #' configuração adequada.
 #' 
 #' Para perdas, serão testados os números de divisões fornecidos pelo argumento \code{range.vazao}, 

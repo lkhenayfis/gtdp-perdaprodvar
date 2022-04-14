@@ -8,6 +8,11 @@
 }
 \arguments{
 \item{x}{objeto da classe \code{gamperda}}
+
+\item{...}{existe apenas para consistência com a genérica}
+}
+\value{
+print do modelo no console, sem retornar nenhum valor
 }
 \description{
 Print De Objetos \code{gamperda}

@@ -2,9 +2,28 @@
 
 # PLOT DE PERDAS -----------------------------------------------------------------------------------
 
+#' Plot Completo De Objetos \code{gamperda}
+#' 
+#' Wrapper para visualização dos modelos contínuos de perda junto aos dados ajustados
+#' 
+#' @param x objeto da classe \code{gamperda}
+#' @param legenda booleano indicando se uma legenda automática deve ser adicionada
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod <- fitgam_perda(dat)
+#' 
+#' \dontrun{
+#' plot(mod)
+#' }
+#' 
+#' @return plota dados originais e ajuste realizado
+#' 
 #' @export
 #' 
-#' @rdname gamperda
+#' @family plots gamperda
 
 plot.gamperda <- function(x, legenda = TRUE, ...) {
 
@@ -24,9 +43,29 @@ plot.gamperda <- function(x, legenda = TRUE, ...) {
     }
 }
 
+#' Plot De Linha Dos Modelos Ajustados Para Perda
+#' 
+#' Wrapper para visualização apenas dos modelos ajustados, sem dados ao fundo
+#' 
+#' @param x objeto da classe \code{gamperda}
+#' @param ... demais parâmetros passados à genérica \code{\link[graphics]{lines}}
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod1 <- fitgam_perda(dat)
+#' mod2 <- fitgam_perda(dat, 15)
+#' 
+#' \dontrun{
+#' plot(mod1)
+#' lines(mod2, col = 3, lwd = 2. lty = 2)
+#' }
+#' 
+#' @return plota a linha do ajuste do modelo contido em \code{x}
+#' 
 #' @export
 #' 
-#' @rdname gamperda
+#' @family plots gamperda
 
 lines.gamperda <- function(x, ...) {
 

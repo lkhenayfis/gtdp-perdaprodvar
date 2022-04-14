@@ -1,12 +1,5 @@
 ######################################### CLASSE GAMPERDA ##########################################
 
-#' Objeto \code{gamperda}
-#' 
-#' Construtor e métodos da classe \code{gamperda}
-#' 
-#' @name gamperda
-NULL
-
 #' Construtor Interno
 #' 
 #' Função para contrução da saída de \code{fitgam_perda}, não deve ser chamada diretamente
@@ -17,7 +10,7 @@ NULL
 #' @param corteI,corteS valores dos cortes entre extrapolações e modelo aditivo
 #' @param fitcall chamada de \code{fitgam_perda} original
 #' 
-#' @rdname gamperda
+#' @return objeto \code{gamperda} com modelo ajustado e dado original
 
 new_gamperda <- function(dat, mod, coefI, coefS, corteI, corteS, fitcall) {
 
@@ -40,6 +33,9 @@ new_gamperda <- function(dat, mod, coefI, coefS, corteI, corteS, fitcall) {
 #' Print De Objetos \code{gamperda}
 #' 
 #' @param x objeto da classe \code{gamperda}
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @return print do modelo no console, sem retornar nenhum valor
 #' 
 #' @export
 
@@ -56,17 +52,19 @@ print.gamperda <- function(x, ...) {
 
 # METODOS ------------------------------------------------------------------------------------------
 
+#' Previsão Com Objetos \code{gamperda}
+#' 
+#' Método \code{predict} para objetos da classe \code{gamperda}
+#' 
 #' @param object objeto \code{gamperda} retornado por \code{\link{fitgam_perda}}
 #' @param newdata data.frame ou data.table contendo variável explicativa para previsão
-#' @param ... demais parametros
+#' @param ... existe apenas para consistência com a genérica
 #' 
-#' @return para \code{predict.gamperda}, vetor de perdas previstas nas abscissas contidas em 
-#'     \code{newdata}. Para code{fitted.gamperda}, os valores ajustados e \code{rediduals.gamperda} 
-#'     os erros
+#' @return vetor de perdas previstas nas abscissas contidas em \code{newdata}
 #' 
 #' @export
 #' 
-#' @rdname gamperda
+#' @family metodos gamperda
 
 predict.gamperda <- function(object, newdata, ...) {
 
@@ -88,15 +86,33 @@ predict.gamperda <- function(object, newdata, ...) {
     return(pred)
 }
 
+#' Valores Ajustados De Objetos \code{gamperda}
+#' 
+#' Método \code{fitted} para objetos da classe \code{gamperda}
+#' 
+#' @param object objeto \code{gamperda} retornado por \code{\link{fitgam_perda}}
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @return vetor de valores ajustados pelo modelo estimado
+#' 
 #' @export
 #' 
-#' @rdname gamperda
+#' @family metodos gamperda
 
 fitted.gamperda <- function(object, ...) predict(object, object$dat)
 
+#' Resíduos De Objetos \code{gamperda}
+#' 
+#' Método \code{residuals} para objetos da classe \code{gamperda}
+#' 
+#' @param object objeto \code{gamperda} retornado por \code{\link{fitgam_perda}}
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @return vetor de erros de ajuste do modelo estimado
+#' 
 #' @export
 #' 
-#' @rdname gamperda
+#' @family metodos gamperda
 
 residuals.gamperda <- function(object, ...) {
 

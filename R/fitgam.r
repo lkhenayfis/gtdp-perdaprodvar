@@ -50,6 +50,11 @@
 #' fit_cr <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "cr")
 #' fit_ps <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "ps")
 #' 
+#' # valores ajustados, previsao e residuos
+#' res <- residuals(fit_tp)
+#' fitt <- fitted(fit_tp)
+#' predd <- predict(fit_tp, newdata = data.frame(vazao = runif(100, 20, 150)))
+#' 
 #' # objetos retornados por fitgam_perda possuem um metodo de plot e lines, para facil visualizacao
 #' plot(fit_tp, legenda = FALSE)
 #' lines(fit_cr, col = 3, lwd = 3)
@@ -58,11 +63,10 @@
 #' 
 #' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
 #' 
-#' @seealso Métodos aplicáveis ao objeto retornado: \code{\link{predict.gamperda}},
-#'     \code{\link{fitted.gamperda}}, \code{\link{residuals.gamperda}}; assim como visualização 
-#'     \code{\link{plot.gamperda}}. Função para otimização de nós \code{\link{optgam_perda}}
+#' @seealso otimização da dimensão de base \code{\link{optgam_perda}}.
 #' 
-#' @family funcoes_fitgam
+#' @family metodos gamperda
+#' @family plots gamperda
 #' 
 #' @export
 
