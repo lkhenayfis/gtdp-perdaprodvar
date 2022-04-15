@@ -12,8 +12,11 @@ test_that("Grades de perda", {
     # Metodos ------------------------------------------------------------
 
     expect_snapshot_value(fitted(grd), style = "serialize")
-    expect_snapshot_value(predict(grd, newdata = data.frame(vazao = 1:200)), style = "serialize")
     expect_snapshot_value(residuals(grd), style = "serialize")
+
+    expect_snapshot_value(predict(grd, newdata = data.frame(vazao = 1:200)), style = "serialize")
+    expect_snapshot_value(predict(grd, newdata = data.frame(vazao = c(10, 1, 130, 50, 60, 20, 190))),
+        style = "serialize")
 
     # Otimizacao de grade ------------------------------------------------
 
