@@ -33,9 +33,8 @@ remotes::install_github("lkhenayfis/gtdp-perdaprodvar", build_vignettes = TRUE)
 
 Abaixo esta um trecho de codigo exemplificando de forma simplificada o
 uso das funcionalidades contidas neste pacote, com respeito apenas à
-modelagem de perdas. Um manual de uso pode ser acessado através de
-`vignette("perdaprodvar")` e mais detalhes acerca das funcoes se
-encontram em suas respectivas paginas de ajuda.
+modelagem de perdas. Mais detalhes acerca das funcoes se encontram em
+suas respectivas paginas de ajuda.
 
 ``` r
 library(perdaprodvar)
@@ -82,9 +81,7 @@ dado_semanal <- agregasemana(dummydata) # dummydata e um dado embutido no pacote
 mod1 <- fitgam_perda(dado_semanal, ns.vazao = 7, ts.vazao = "ps")
 mod2 <- fitgam_perda(dado_semanal, ns.vazao = 7, ts.vazao = "tp")
 
-par(mar = c(4, 4, .1, .1))
-plot(mod1, legenda = FALSE)
-lines(mod2, col = 3, lwd = 2)
+plot(mod1, mod2)
 ```
 
 <img src="man/figures/README-ajuste_gam-1.png" width="100%" />
@@ -93,9 +90,8 @@ Finalmente, podemos extrair uma grade do modelo ajustado (neste caso com
 50 segmentações)
 
 ``` r
-grade_perda <- extraigrid(mod1, 50)
+grade_perda <- extraigrid(mod1, 15)
 
-par(mar = c(4, 4, .1, .1))
 plot(grade_perda)
 ```
 
