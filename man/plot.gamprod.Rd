@@ -4,10 +4,12 @@
 \alias{plot.gamprod}
 \title{Plot Completo De Objetos \code{gamprod}}
 \usage{
-\method{plot}{gamprod}(x, ...)
+\method{plot}{gamprod}(x, plot = TRUE, ...)
 }
 \arguments{
 \item{x}{objeto da classe \code{gamprod}}
+
+\item{plot}{booleano indicando se o plot deve ser gerado ou apenas retornado invisivelmente}
 
 \item{...}{existe apenas para consistência com a genérica}
 }

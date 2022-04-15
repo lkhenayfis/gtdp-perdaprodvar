@@ -57,10 +57,8 @@
 #' 
 #' # objetos retornados por fitgam_perda possuem um metodo de plot e lines, para facil visualizacao
 #' \dontrun{
-#' plot(fit_tp, legenda = FALSE)
-#' lines(fit_cr, col = 3, lwd = 3)
-#' lines(fit_ps, col = 6, lwd = 3)
-#' legend("bottomright", inset = .02, legend = c("tp", "cr", "ps"), lty = 1, col = c(2, 3, 6))
+#' plot(fit_tp)
+#' plot(fit_tp, fit_cr, fit_ps)
 #' }
 #' 
 #' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas

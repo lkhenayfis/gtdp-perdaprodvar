@@ -59,7 +59,6 @@ Other metodos gamperda:
 
 Other plots gamperda: 
 \code{\link{fitgam_perda}()},
-\code{\link{lines.gamperda}()},
 \code{\link{plot.gamperda}()}
 }
 \concept{metodos gamperda}

@@ -4,17 +4,17 @@
 \alias{plot.gamperda}
 \title{Plot Completo De Objetos \code{gamperda}}
 \usage{
-\method{plot}{gamperda}(x, legenda = TRUE, ...)
+\method{plot}{gamperda}(x, ..., plot = TRUE)
 }
 \arguments{
 \item{x}{objeto da classe \code{gamperda}}
 
-\item{legenda}{booleano indicando se uma legenda automática deve ser adicionada}
+\item{...}{outros objetos \code{gamperda} para adicionar ao plot}
 
-\item{...}{existe apenas para consistência com a genérica}
+\item{plot}{booleano indicando se o plot deve ser gerado ou apenas retornado invisivelmente}
 }
 \value{
-plota dados originais e ajuste realizado
+plot dos dados originais e ajuste(s) realizado(s)
 }
 \description{
 Wrapper para visualização dos modelos contínuos de perda junto aos dados ajustados
@@ -22,17 +22,19 @@ Wrapper para visualização dos modelos contínuos de perda junto aos dados ajus
 \examples{
 
 dat <- agregasemana(dummydata)
-mod <- fitgam_perda(dat)
+mod1 <- fitgam_perda(dat)
+mod2 <- fitgam_perda(dat, 5)
+mod3 <- fitgam_perda(dat, 7)
 
 \dontrun{
-plot(mod)
+plot(mod1)
+plot(mod1, mod2, mod3)
 }
 
 }
 \seealso{
 Other plots gamperda: 
 \code{\link{fitgam_perda}()},
-\code{\link{lines.gamperda}()},
 \code{\link{optgam_perda}()}
 }
 \concept{plots gamperda}

@@ -23,11 +23,11 @@ LinkingTo:
     RcppArmadillo
 Imports: 
     stats (>= 4.0),
-    graphics (>= 4.0),
     Rcpp (>= 1.0),
     RcppArmadillo (>= 0.11),
     readxl (>= 1.3),
     data.table (>= 1.14.0),
+    ggplot2 (>= 3.3),
     plotly (>= 4.9.3),
     lsei (>= 1.3-0),
     scam (>= 1.2),
