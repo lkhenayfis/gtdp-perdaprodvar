@@ -1,5 +1,12 @@
 test_that("Modelagem continua de perdas", {
     dts <- agregasemana(dummydata)
+    mod <- suppressWarnings(fitgam_perda(dts))
+
+    printout <- capture.output(print(mod))
+    expect_snapshot_value(printout, style = "serialize")
+
+    expect_snapshot_value(AIC(mod), style = "serialize")
+    expect_snapshot_value(BIC(mod), style = "serialize")
 
     # Testando diferentes dimensoes de base ------------------------------
 
