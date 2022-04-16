@@ -96,10 +96,12 @@ predict.gridprod <- function(object, newdata, ...) {
 
 fitted.gridprod <- function(object, ...) {
 
+    quedal <- vazao <- NULL
+
     quedal <- object$model$dat$quedal
     vazao  <- object$model$dat$vazao
 
-    fit <- predict(object, newdata = expand.grid(quedal = quedal, vazao = vazao))
+    fit <- predict(object, newdata = object$model$dat[, list(quedal, vazao)])
 
     return(fit)
 }
