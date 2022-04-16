@@ -18,6 +18,10 @@ test_that("Grades de perda", {
     expect_snapshot_value(predict(grd, newdata = data.frame(vazao = c(10, 1, 130, 50, 60, 20, 190))),
         style = "serialize")
 
+    # previsao out of bounds
+    predna <- predict(grd, newdata = data.frame(vazao = c(-10, -1, 250, 300)))
+    expect_true(all(is.na(predna)))
+
     # Otimizacao de grade ------------------------------------------------
 
     opt <- optgrid(mod, full.output = TRUE)

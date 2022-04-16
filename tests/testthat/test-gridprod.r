@@ -23,4 +23,8 @@ test_that("Grades de produtibilidade", {
     }
 
     expect_snapshot_value(predict(grd, newdata = geradf()), style = "serialize")
+
+    # previsao out of bounds
+    predna <- predict(grd, newdata = expand.grid(quedal = c(18, 19, 22, 23), vazao = c(-10, -1, 250, 300)))
+    expect_true(all(is.na(predna)))
 })
