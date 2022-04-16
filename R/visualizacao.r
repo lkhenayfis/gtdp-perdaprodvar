@@ -203,7 +203,7 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
             x = ~quedal, y = ~vazao, z = ~prod,
              marker = list(color = "deepskyblue2", size = 12, opacity = 1)) %>%
         add_surface(x = unique(fitt$quedal), y = unique(fitt$vazao),
-            z = data.matrix(dcast(fitt, quedal ~ vazao, value.var = "prod"))[, -1],
+            z = t(data.matrix(dcast(fitt, quedal ~ vazao, value.var = "prod"))[, -1]),
             inherit = FALSE) %>%
         layout(scene =
             list(xaxis = list(titlefont = f1, tickfont = f2, title = "Queda l\u00edquida (m)"),
