@@ -49,7 +49,7 @@ em \code{\link{fitgam_prod}}
 dat <- agregasemana(dummydata)
 
 # execucao limitando a faixa de numero de splines a algo mais baixo
-optfit <- optgam_prod(dat, range.quedal = 5:15, range.vazao = 5:15)
+optfit <- optgam_prod(dat, range.quedal = 5:10, range.vazao = 5:10)
 plot(optfit)
 
 # dentre os argumentos de optfit esta a lista 'gamargs', contendo a parametrizacao do gam

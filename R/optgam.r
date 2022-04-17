@@ -25,7 +25,9 @@
 #' 
 #' # execucao limitando a faixa de numero de splines a algo mais baixo
 #' optfit <- optgam_perda(dat, range.vazao = 5:10)
+#' \dontrun{
 #' plot(optfit)
+#' }
 #' 
 #' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
 #' 
@@ -73,7 +75,7 @@ optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2,
 #' dat <- agregasemana(dummydata)
 #' 
 #' # execucao limitando a faixa de numero de splines a algo mais baixo
-#' optfit <- optgam_prod(dat, range.quedal = 5:15, range.vazao = 5:15)
+#' optfit <- optgam_prod(dat, range.quedal = 5:10, range.vazao = 5:10)
 #' plot(optfit)
 #' 
 #' # dentre os argumentos de optfit esta a lista 'gamargs', contendo a parametrizacao do gam
