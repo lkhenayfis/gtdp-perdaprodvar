@@ -45,10 +45,17 @@ test_that("Testes de leitura", {
 })
 
 test_that("Testes de agregacao semanal", {
-    dts <- agregasemana(dummydata)
+    dts  <- agregasemana(dummydata)
 
     expect_equal(colnames(dummydata), colnames(dts))
 
     atrs <- c("cod", "nome", "nmaq", "qmax")
     expect_equal(attributes(dummydata)[atrs], attributes(dts)[atrs])
+
+    dts2 <- agregasemana(dummydata, min.horas = 90)
+    compara <- mapply("-", dts, dts2)
+    expect_true(all(compara[, c(1, 4, 5, 7, 8, 9)] == 0)) # nao compara colunas NA
+
+    dts3 <- agregasemana(system.file("extdata/dummyusi1.xlsx", package = "perdaprodvar"), .5)
+    expect_equal(nrow(dts3), 1)
 })

@@ -188,13 +188,13 @@ agregasemana.character <- function(dat, min.horas = .9) {
 
     if(extensao == "RDS") {
         dat <- readRDS(dat)
-    } else if(extensao == "xlsm") {
+    } else if(grepl("xlsm|x", dat)) {
         dat <- leplanilha(dat)
     } else {
         stop("Formato de arquivo nao permitido")
     }
 
-    dat <- agregasemana(dat)
+    dat <- agregasemana(dat, min.horas)
 
     return(dat)
 }
