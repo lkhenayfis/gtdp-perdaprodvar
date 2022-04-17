@@ -50,7 +50,9 @@ dat <- agregasemana(dummydata)
 
 # execucao limitando a faixa de numero de splines a algo mais baixo
 optfit <- optgam_prod(dat, range.quedal = 5:10, range.vazao = 5:10)
+\dontrun{
 plot(optfit)
+}
 
 # dentre os argumentos de optfit esta a lista 'gamargs', contendo a parametrizacao do gam
 attr(optfit, "gamargs") # ns.vazao corresponde ao numero de nos utilizados no ajuste otimo

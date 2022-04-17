@@ -45,7 +45,9 @@ dat <- agregasemana(dummydata)
 
 # execucao limitando a faixa de numero de splines a algo mais baixo
 optfit <- optgam_perda(dat, range.vazao = 5:10)
+\dontrun{
 plot(optfit)
+}
 
 }
 \seealso{

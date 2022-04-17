@@ -81,11 +81,15 @@ extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")
 #' optgrade <- optgrid(ajuste, range.vazao = 10:60)
 #' 
 #' # assim como ajustes de curvas, grades tambem possuem um metodo de plot
+#' \dontrun{
 #' plot(optgrade)
+#' }
 #' 
 #' # e possivel rodar a otimizacao retornando a varredura de numero de segmentacoes e plota-la
 #' optgrade <- optgrid(ajuste, range.vazao = 10:60, full.output = TRUE)
+#' \dontrun{
 #' plot(optgrade[[2]])
+#' }
 #' 
 #' @return se \code{full.output = FALSE}, a grade parsimoniosa que atenda a razão mínima \code{R}.
 #'     Se \code{full.output = TRUE}, uma lista com a grade no primeiro elemento e a varredura no 
