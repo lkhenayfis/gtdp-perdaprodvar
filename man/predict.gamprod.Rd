@@ -23,6 +23,7 @@ Método \code{predict} para objetos da classe \code{gamprod}
 Other metodos gamprod: 
 \code{\link{fitgam_prod}()},
 \code{\link{fitted.gamprod}()},
+\code{\link{optgam_prod}()},
 \code{\link{residuals.gamprod}()}
 }
 \concept{metodos gamprod}

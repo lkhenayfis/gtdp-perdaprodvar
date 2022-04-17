@@ -21,6 +21,7 @@ Método \code{residuals} para objetos da classe \code{gamprod}
 Other metodos gamprod: 
 \code{\link{fitgam_prod}()},
 \code{\link{fitted.gamprod}()},
+\code{\link{optgam_prod}()},
 \code{\link{predict.gamprod}()}
 }
 \concept{metodos gamprod}

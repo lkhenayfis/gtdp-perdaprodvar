@@ -20,6 +20,7 @@ Método \code{fitted} para objetos da classe \code{gamprod}
 \seealso{
 Other metodos gamprod: 
 \code{\link{fitgam_prod}()},
+\code{\link{optgam_prod}()},
 \code{\link{predict.gamprod}()},
 \code{\link{residuals.gamprod}()}
 }

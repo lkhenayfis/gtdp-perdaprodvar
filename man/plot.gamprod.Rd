@@ -33,6 +33,7 @@ plot(mod)
 }
 \seealso{
 Other plots gamprod: 
-\code{\link{fitgam_prod}()}
+\code{\link{fitgam_prod}()},
+\code{\link{optgam_prod}()}
 }
 \concept{plots gamprod}

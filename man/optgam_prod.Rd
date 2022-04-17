@@ -4,8 +4,70 @@
 \alias{optgam_prod}
 \title{Otimização Do Ajuste De Produtibilidade}
 \usage{
-optgam_prod()
+optgam_prod(
+  dat,
+  range.quedal = 5:30,
+  range.vazao = 5:30,
+  ts.quedal = "ps",
+  ts.vazao = "ps",
+  bordas = TRUE,
+  modo = c("tensor", "multivar", "simples")
+)
+}
+\arguments{
+\item{dat}{\code{data.table} de dados para ajuste. Ver Detalhes}
+
+\item{range.quedal, range.vazao}{vetor de dimensões de base a testar na seleção. Todas as
+combinações serão testadas (isto é, um domínio quadrado é gerado a partir dos ranges). Padrão
+\code{range.quedal = range.vazao = 5:30}}
+
+\item{ts.quedal, ts.vazao}{tipo de spline utilizada para queda líquida e vazão --
+veja \code{\link[mgcv]{smooth.terms}} para todas as opções. Padrão \code{"ps"} em ambos}
+
+\item{bordas}{booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros
+indicando quais vértices utilizar. Ver Detalhes}
+
+\item{modo}{um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de
+interação entre funções marginais. Ver Detalhes}
+}
+\value{
+objeto \code{gamprod} contendo GAM e extrapolações estimadas
 }
 \description{
-Varre uma faixa de dimensões de base, reportando aquele correspondente ao ajuste de menor BIC
+Varre uma faixa de dimensões de base, reportando aquela correspondente ao ajuste de menor BIC
 }
+\details{
+Os parâmetros recebidos por \code{optgam_prod} são exatamente aqueles de
+\code{\link{fitgam_prod}}, com uma exceção: os argumentos \code{ns.quedal} e \code{ns.vazao} são
+substituídos por \code{range.quedal} e \code{range.vazao}, vetores de inteiros indicando as
+dimensões de base candidatas em cada marginal para seleção.
+Mais detalhes a respeito da estimação e efeito dos argumentos individuais podem ser encontrados
+em \code{\link{fitgam_prod}}
+}
+\examples{
+
+dat <- agregasemana(dummydata)
+
+# execucao limitando a faixa de numero de splines a algo mais baixo
+optfit <- optgam_prod(dat, range.quedal = 5:15, range.vazao = 5:15)
+plot(optfit)
+
+# dentre os argumentos de optfit esta a lista 'gamargs', contendo a parametrizacao do gam
+attr(optfit, "gamargs") # ns.vazao corresponde ao numero de nos utilizados no ajuste otimo
+
+}
+\seealso{
+ajuste individual para uma dada dimensão de base \code{\link{fitgam_prod}}
+
+Other metodos gamprod: 
+\code{\link{fitgam_prod}()},
+\code{\link{fitted.gamprod}()},
+\code{\link{predict.gamprod}()},
+\code{\link{residuals.gamprod}()}
+
+Other plots gamprod: 
+\code{\link{fitgam_prod}()},
+\code{\link{plot.gamprod}()}
+}
+\concept{metodos gamprod}
+\concept{plots gamprod}
