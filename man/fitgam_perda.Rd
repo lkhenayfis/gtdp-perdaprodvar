@@ -26,7 +26,7 @@ Detalhes. Padrao tipo 2 para ambas as extrapolações}
 \item{quantil}{quantis para uso na extrapolação. Ver Detalhes}
 }
 \value{
-objeto \code{gamperda} contendo GAM e extrapolações estimadas
+objeto \code{gamperda} contendo modelo aditivo e extrapolações estimadas
 }
 \description{
 Estima GAM para perdas, complementando regiões inferior e superior com extrapolação

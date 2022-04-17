@@ -29,7 +29,7 @@ indicando quais vértices utilizar. Ver Detalhes}
 interação entre funções marginais. Ver Detalhes}
 }
 \value{
-objeto \code{gamprod} contendo GAM e extrapolações estimadas
+objeto \code{gamprod} contendo modelo aditivo ajustado
 }
 \description{
 Estima GAM para produtibilidades
@@ -103,10 +103,12 @@ otimização da dimensão de base \code{\link{optgam_prod}}.
 
 Other metodos gamprod: 
 \code{\link{fitted.gamprod}()},
+\code{\link{optgam_prod}()},
 \code{\link{predict.gamprod}()},
 \code{\link{residuals.gamprod}()}
 
 Other plots gamprod: 
+\code{\link{optgam_prod}()},
 \code{\link{plot.gamprod}()}
 }
 \concept{metodos gamprod}

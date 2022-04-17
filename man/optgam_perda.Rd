@@ -15,7 +15,8 @@ optgam_perda(
 \arguments{
 \item{dat}{\code{data.table} de dados para ajuste. Ver Detalhes}
 
-\item{range.vazao}{vetor de numero de nós a testar na seleção. Padrao 5:30}
+\item{range.vazao}{vetor de dimensões de base a testar na seleção. Padrão
+\code{range.vazao = 5:30}}
 
 \item{ts.vazao}{tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
 \code{link[mgcv]{gam}} e Detalhes. Padrao "ps"}
@@ -29,12 +30,14 @@ Detalhes. Padrao tipo 2 para ambas as extrapolações}
 objeto \code{gamperda} contendo GAM e extrapolações estimadas
 }
 \description{
-Varre uma faixa de dimensões de base, reportando aquele correspondente ao ajuste de menor BIC
+Varre uma faixa de dimensões de base, reportando aquela correspondente ao ajuste de menor BIC
 }
 \details{
 Os parâmetros recebidos por \code{optgam_perda} são exatamente aqueles de
 \code{\link{fitgam_perda}}, com uma exceção: o argumento \code{ns.vazao} é substituído por
-\code{range.vazao}, um vetor de inteiros indicando as dimensões de base candidatos para seleção.
+\code{range.vazao}, um vetor de inteiros indicando as dimensões de base candidatas para seleção.
+Mais detalhes a respeito da estimação e efeito dos argumentos individuais podem ser encontrados
+em \code{\link{fitgam_perda}}
 }
 \examples{
 
@@ -43,9 +46,6 @@ dat <- agregasemana(dummydata)
 # execucao limitando a faixa de numero de splines a algo mais baixo
 optfit <- optgam_perda(dat, range.vazao = 5:10)
 plot(optfit)
-
-# dentre os argumentos de optfit esta a lista 'gamargs', contendo a parametrizacao do gam
-attr(optfit, "gamargs") # ns.vazao corresponde ao numero de nos utilizados no ajuste otimo
 
 }
 \seealso{

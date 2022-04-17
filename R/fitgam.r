@@ -61,7 +61,7 @@
 #' plot(fit_tp, fit_cr, fit_ps)
 #' }
 #' 
-#' @return objeto \code{gamperda} contendo GAM e extrapolações estimadas
+#' @return objeto \code{gamperda} contendo modelo aditivo e extrapolações estimadas
 #' 
 #' @seealso otimização da dimensão de base \code{\link{optgam_perda}}.
 #' 
@@ -226,7 +226,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 #' plot(mod)
 #' }
 #' 
-#' @return objeto \code{gamprod} contendo GAM e extrapolações estimadas
+#' @return objeto \code{gamprod} contendo modelo aditivo ajustado
 #' 
 #' @seealso otimização da dimensão de base \code{\link{optgam_prod}}.
 #' 
