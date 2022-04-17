@@ -3,11 +3,21 @@
 \name{optgrid}
 \alias{optgrid}
 \alias{optgrid.gamperda}
+\alias{optgrid.gamprod}
 \title{Otimização De Segmentações De Grade}
 \usage{
 optgrid(fit, R = 1.01, ..., full.output = FALSE)
 
 \method{optgrid}{gamperda}(fit, R = 1.01, range.vazao = 5:50, ..., full.output = FALSE)
+
+\method{optgrid}{gamprod}(
+  fit,
+  R = 1.01,
+  range.quedal = 5:50,
+  range.vazao = 5:50,
+  ...,
+  full.output = FALSE
+)
 }
 \arguments{
 \item{fit}{ajuste do dado de perda ou produtibilidade}
@@ -19,7 +29,9 @@ Exemplos}
 
 \item{full.output}{booleano, se verdadeiro retorna objeto de varredura}
 
-\item{range.vazao}{vetor de inteiros indicando números de segmentações a serem testados}
+\item{range.quedal, range.vazao}{vetores de inteiros indicando números de segmentações a serem
+testadas em cada marginal. Todas as combinações serão testadas (isto é, um domínio quadrado é
+gerado a partir dos ranges). Padrão \code{range.quedal = range.vazao = 5:50}}
 }
 \value{
 se \code{full.output = FALSE}, a grade parsimoniosa que atenda a razão mínima \code{R}.

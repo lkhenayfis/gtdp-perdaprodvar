@@ -95,8 +95,6 @@ extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")
 
 optgrid <- function(fit, R = 1.01, ..., full.output = FALSE) UseMethod("optgrid")
 
-#' @param range.vazao vetor de inteiros indicando números de segmentações a serem testados
-#' 
 #' @export
 #' 
 #' @rdname optgrid
@@ -115,10 +113,10 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
     persis <- achapersistencia(razaoerros <= R)
 
     if(!any(persis)) {
-        cat("Nenhum numero de segmentacoes atende o criterio -- aumentando range")
+        stop("Nenhum numero de segmentacoes atende o criterio -- aumente o range")
 
-        range.vazao <- seq(max(range.vazao), max(range.vazao) + diff(range(range.vazao)))
-        optgrid(fit, R, range.vazao = range.vazao, full.output = full.output)
+        #range.vazao <- seq(max(range.vazao), max(range.vazao) + diff(range(range.vazao)))
+        #optgrid(fit, R, range.vazao = range.vazao, full.output = full.output)
     } else {
         front  <- achafronteira(persis)
 
@@ -127,6 +125,54 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
         if(full.output) {
             varredura <- list(razao = razaoerros, range = range.vazao, R = R, front = front)
             class(varredura) <- "varreduraperda"
+
+            out <- list(optgrid = out, varredura = varredura)
+        }
+
+        return(out)
+    }
+}
+
+#' @param range.quedal,range.vazao vetores de inteiros indicando números de segmentações a serem 
+#'     testadas em cada marginal. Todas as combinações serão testadas (isto é, um domínio quadrado é
+#'     gerado a partir dos ranges). Padrão \code{range.quedal = range.vazao = 5:50}
+#' 
+#' @export
+#' 
+#' @rdname optgrid
+
+optgrid.gamprod <- function(fit, R = 1.01, range.quedal = 5:50, range.vazao = 5:50, ..., full.output = FALSE) {
+
+    X <- Y <- NULL
+
+    errofit <- sum(residuals(fit)^2)
+
+    ranges <- expand.grid(quedal = range.quedal, vazao = range.vazao)
+
+    grades <- lapply(seq(nrow(ranges)), function(i) extraigrid(fit, c(ranges[i, 1], ranges[i, 2])))
+    erros  <- lapply(grades, function(grade) sum(residuals(grade)^2))
+
+    razaoerros <- matrix(unlist(erros) / errofit, length(range.quedal), length(range.vazao))
+
+    persis <- achapersistencia(razaoerros <= R)
+
+    if(!any(persis)) {
+        stop("Nenhum numero de segmentacoes atende o criterio -- aumente os ranges")
+
+        # deve ser implementado uma estrategia de aumento automatico do espaco de busca,
+        # possivelmente controlado por um argumento da funcao
+
+        #range.vazao <- seq(max(range.vazao), max(range.vazao) + diff(range(range.vazao)))
+        #optgrid(fit, R, range.vazao = range.vazao, full.output = full.output)
+    } else {
+        front <- achafronteira(persis)
+        minprod <- front[which.min(X * Y)]
+
+        out <- grades[[which((ranges$Var1 == minprod$X) & (ranges$Var2 == minprod$Y))]]
+
+        if(full.output) {
+            varredura <- list(razao = razaoerros, range = range.vazao, R = R, front = front)
+            class(varredura) <- "varreduraprod"
 
             out <- list(optgrid = out, varredura = varredura)
         }
