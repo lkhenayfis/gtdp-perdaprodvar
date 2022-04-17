@@ -74,3 +74,18 @@ test_that("PROD - Metodos", {
         newdata = data.frame(quedal = seq(20.5, 21, .1), vazao = seq(150, 200, 10))),
         style = "serialize")
 })
+
+test_that("PROD - Otimizacao da dimensao de base", {
+    dts <- agregasemana(dummydata)
+    optmod <- optgam_prod(dts, 5:10, 5:10)
+
+    printout <- capture.output(print(optmod))
+    expect_snapshot_value(printout, style = "serialize")
+
+    expect_equal(class(optmod), "gamprod")
+    expect_true(all(mapply("-", optmod$dat, dts[, .(quedal, vazao, prod)]) == 0))
+    expect_equal(class(optmod$model), c("gam", "glm", "lm"))
+
+    expect_snapshot_value(AIC(optmod), style = "serialize")
+    expect_snapshot_value(BIC(optmod), style = "serialize")
+})

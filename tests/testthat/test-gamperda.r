@@ -74,3 +74,19 @@ test_that("Modelagem continua de perdas", {
     expect_snapshot_value(predict(mod, newdata = data.frame(vazao = seq(0, attr(dts, "qmax"), 10))),
         style = "serialize")
 })
+
+test_that("PERDA - Otimizacao da dimensao de base", {
+    dts <- agregasemana(dummydata)
+    optmod <- suppressWarnings(optgam_perda(dts, 5:10))
+
+    printout <- capture.output(print(optmod))
+    expect_snapshot_value(printout, style = "serialize")
+
+    expect_equal(class(optmod), "gamperda")
+    expect_true(all(mapply("-", optmod$dat, dts[, .(vazao, perda)]) == 0))
+    expect_equal(length(optmod$model), 3)
+    expect_equal(sapply(optmod$model, class), list("lm", c("gam", "glm", "lm"), "lm"))
+
+    expect_snapshot_value(AIC(optmod), style = "serialize")
+    expect_snapshot_value(BIC(optmod), style = "serialize")
+})
