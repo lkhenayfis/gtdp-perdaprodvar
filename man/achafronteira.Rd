@@ -10,7 +10,7 @@ achafronteira(mat)
 \item{mat}{matriz de verdadeiros e falsos representando a região de convergência}
 }
 \value{
-data.table contendo as coordenadas na matriz dos pontos de fronteira
+data.table contendo os númeroes de divisões dos pontos de fronteira
 }
 \description{
 \code{achafronteira} identifica os pontos mais externos da região de convergência

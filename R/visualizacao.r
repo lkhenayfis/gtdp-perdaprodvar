@@ -105,9 +105,9 @@ plot.gridperda <- function(x, plot = TRUE, ...) {
     invisible(p)
 }
 
-#' Plot Completo De Objetos \code{gridperda}
+#' Plot Da Varredura De Número De Divisões Para Perda
 #' 
-#' Wrapper para visualização dos modelos contínuos de perda, dados ajustados e grade extraída
+#' Wrapper para visualização do resultado da varredura realizada na otimização do tamanho de grade
 #' 
 #' @param x objeto da classe \code{gridperda}
 #' @param plot booleano indicando se o plot deve ser gerado ou apenas retornado invisivelmente
@@ -117,10 +117,10 @@ plot.gridperda <- function(x, plot = TRUE, ...) {
 #' 
 #' dat <- agregasemana(dummydata)
 #' mod <- fitgam_perda(dat)
-#' grd <- extraigrid(mod, 20)
+#' grd <- optgrid(mod, full.output = TRUE)
 #' 
 #' \dontrun{
-#' plot(grd)
+#' plot(grd[[2]])
 #' }
 #' 
 #' @return plota dados originais, ajuste realizado e grade de perdas extraída
@@ -136,9 +136,9 @@ plot.varreduraperda <- function(x, plot = TRUE, ...) {
 
     tries <- data.table(segs = x$range, razao = x$razao[, 1])
 
-    ruins    <- cbind(tries[1:x$front[1, X]], tipo = "Inadequado")
-    estaveis <- cbind(tries[x$front[1, X]:length(x$range)], tipo = "Est\u00E1vel")
-    front    <- cbind(tries[x$front[1, X]], tipo = "Fronteira")
+    ruins    <- cbind(tries[segs <= x$front[1, X]], tipo = "Inadequado")
+    estaveis <- cbind(tries[segs >= x$front[1, X]], tipo = "Est\u00E1vel")
+    front    <- cbind(tries[segs == x$front[1, X]], tipo = "Fronteira")
 
     dplot <- rbind(ruins, front, estaveis)
     dplot$tipo <- factor(dplot$tipo, levels = unique(dplot$tipo))
@@ -199,9 +199,8 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
     f1 <- list(size = 17, color = "black")
     f2 <- list(size = 12, color = "black")
     p <- plot_ly() %>%
-        add_markers(data = x$dat, type = "scatter3d",
-            x = ~quedal, y = ~vazao, z = ~prod,
-             marker = list(color = "deepskyblue2", size = 12, opacity = 1)) %>%
+        add_markers(data = x$dat, type = "scatter3d", x = ~quedal, y = ~vazao, z = ~prod,
+             marker = list(color = "black")) %>%
         add_surface(x = unique(fitt$quedal), y = unique(fitt$vazao),
             z = t(data.matrix(dcast(fitt, quedal ~ vazao, value.var = "prod"))[, -1]),
             inherit = FALSE) %>%
@@ -213,6 +212,118 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
              legend = list(font = f1)) %>%
         hide_legend() %>%
         hide_colorbar()
+
+    if(plot) print(p)
+
+    invisible(p)
+}
+
+#' Plot De Objetos \code{gridprod}
+#' 
+#' Wrapper para visualização dos dados ajustados e grade de produtibilidade extraída
+#' 
+#' @param x objeto da classe \code{gridprod}
+#' @param plot booleano indicando se o plot deve ser gerado ou apenas retornado invisivelmente
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod <- fitgam_prod(dat)
+#' grd <- extraigrid(mod, 20)
+#' 
+#' \dontrun{
+#' plot(grd)
+#' }
+#' 
+#' @return plota dados originais, ajuste realizado e grade de prods extraída
+#' 
+#' @importFrom plotly plot_ly add_markers layout %>%
+#' 
+#' @export
+#' 
+#' @family plots gridprod
+
+plot.gridprod <- function(x, plot = TRUE, ...) {
+
+    grid <- cbind(x$grid, tipo = "Grade")
+    dat  <- cbind(x$model$dat, tipo = "Dados")
+
+    dplot <- rbind(grid, dat)
+
+    f1 <- list(size = 17, color = "black")
+    f2 <- list(size = 12, color = "black")
+    p <- plot_ly() %>%
+        add_markers(data = dplot, x = ~quedal, y = ~vazao, z = ~prod, color = ~tipo,
+             colors = c("black", "#00BFC4")) %>%
+        layout(scene =
+            list(xaxis = list(titlefont = f1, tickfont = f2, title = "Queda l\u00edquida (m)"),
+                yaxis = list(titlefont = f1, tickfont = f2, title = "Vaz\u00E3o turbinada (m<sup>3</sup>/s)"),
+                zaxis = list(titlefont = f1, tickfont = f2, title = "Produtibilidade (MW/m<sup>4</sup>/s)"),
+                camera = list(eye = list(x = -1.5, y = -1.6, z = 1.2))),
+             legend = list(font = f1))
+
+    if(plot) print(p)
+
+    invisible(p)
+}
+
+#' Plot Da Varredura De Número De Divisões Para Produtibilidade
+#' 
+#' Wrapper para visualização do resultado da varredura realizada na otimização do tamanho de grade
+#' 
+#' @param x objeto da classe \code{gridprod}
+#' @param plot booleano indicando se o plot deve ser gerado ou apenas retornado invisivelmente
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod <- fitgam_prod(dat)
+#' grd <- optgrid(mod, full.output = TRUE)
+#' 
+#' \dontrun{
+#' plot(grd[[2]])
+#' }
+#' 
+#' @return plota dados originais, ajuste realizado e grade de produtibilidade extraída
+#' 
+#' @importFrom plotly plot_ly add_markers layout %>%
+#' 
+#' @export
+
+plot.varreduraprod <- function(x, plot = TRUE, ...) {
+
+    drazao <- as.data.table(x$razao, keep.rownames = TRUE)
+    drazao <- melt(drazao, id.vars = "rn", value.name = "razao")
+
+    dpersis <- as.data.table(x$persis, keep.rownames = TRUE)
+    dpersis <- melt(dpersis, id.vars = "rn", value.name = "persis")
+
+    dplot <- merge(drazao, dpersis, by = c("rn", "variable"))
+    dplot[, quedal := as.numeric(sub("X", "", rn))]
+    dplot[, vazao  := as.numeric(sub("X", "", variable))]
+
+    dplot[persis == FALSE, tipo := "Inadequado"]
+    dplot[persis == TRUE, tipo := "Regi\u00E3o de persist\u00eancia"]
+
+    dplot[dplot[x$front, on = list(quedal, vazao), which = TRUE], tipo := "Fronteira"]
+    dplot[dplot[x$minprod, on = list(quedal, vazao), which = TRUE], tipo := "Menor Produto"]
+    dplot[, tipo := factor(tipo,
+        levels = c("Inadequado", "Fronteira", "Regi\u00E3o de persist\u00eancia", "Menor Produto"))]
+
+    f1 <- list(size = 17, color = "black")
+    f2 <- list(size = 12, color = "black")
+
+    p <- plot_ly() %>%
+        add_markers(data = dplot, x = ~quedal, y = ~vazao, z = ~razao, color = ~tipo,
+            colors = c("#440154FF", "#21908CFF", "#FDE725FF", "red")) %>%
+        layout(scene =
+            list(xaxis = list(titlefont = f1, tickfont = f2, title = "Divis\u00F5es de queda l\u00edquida"),
+                yaxis = list(titlefont = f1, tickfont = f2, title = "Divis\u00F5es de vaz\u00E3o turbinada"),
+                zaxis = list(titlefont = f1, tickfont = f2, title = "Raz\u00E3o entre erros"),
+                camera = list(eye = list(x = 2.1, y = 1, z = 1))),
+            legend = list(font = f1))
 
     if(plot) print(p)
 
