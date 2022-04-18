@@ -218,3 +218,65 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
 
     invisible(p)
 }
+
+#' Plot Da Varredura De Número De Divisões Para Produtibilidade
+#' 
+#' Wrapper para visualização do resultado da varredura realizada na otimização do tamanho de grade
+#' 
+#' @param x objeto da classe \code{gridprod}
+#' @param plot booleano indicando se o plot deve ser gerado ou apenas retornado invisivelmente
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod <- fitgam_prod(dat)
+#' grd <- optgrid(mod, full.output = TRUE)
+#' 
+#' \dontrun{
+#' plot(grd[[2]])
+#' }
+#' 
+#' @return plota dados originais, ajuste realizado e grade de produtibilidade extraída
+#' 
+#' @importFrom plotly plot_ly add_markers layout %>%
+#' 
+#' @export
+
+plot.varreduraprod <- function(x, plot = TRUE, ...) {
+
+    drazao <- as.data.table(x$razao, keep.rownames = TRUE)
+    drazao <- melt(drazao, id.vars = "rn", value.name = "razao")
+
+    dpersis <- as.data.table(x$persis, keep.rownames = TRUE)
+    dpersis <- melt(dpersis, id.vars = "rn", value.name = "persis")
+
+    dplot <- merge(drazao, dpersis, by = c("rn", "variable"))
+    dplot[, quedal := as.numeric(sub("X", "", rn))]
+    dplot[, vazao  := as.numeric(sub("X", "", variable))]
+
+    dplot[persis == FALSE, tipo := "Inadequado"]
+    dplot[persis == TRUE, tipo := "Regi\u00E3o de persist\u00eancia"]
+
+    dplot[dplot[x$front, on = list(quedal, vazao), which = TRUE], tipo := "Fronteira"]
+    dplot[dplot[x$minprod, on = list(quedal, vazao), which = TRUE], tipo := "Menor Produto"]
+    dplot[, tipo := factor(tipo,
+        levels = c("Inadequado", "Fronteira", "Regi\u00E3o de persist\u00eancia", "Menor Produto"))]
+
+    f1 <- list(size = 17, color = "black")
+    f2 <- list(size = 12, color = "black")
+
+    p <- plot_ly() %>%
+        add_markers(data = dplot, x = ~quedal, y = ~vazao, z = ~razao, color = ~tipo,
+            colors = c("#440154FF", "#21908CFF", "#FDE725FF", "red")) %>%
+        layout(scene =
+            list(xaxis = list(titlefont = f1, tickfont = f2, title = "Divis\u00F5es de queda l\u00edquida"),
+                yaxis = list(titlefont = f1, tickfont = f2, title = "Divis\u00F5es de vaz\u00E3o turbinada"),
+                zaxis = list(titlefont = f1, tickfont = f2, title = "Raz\u00E3o entre erros"),
+                camera = list(eye = list(x = 2.1, y = 1, z = 1))),
+            legend = list(font = f1))
+
+    if(plot) print(p)
+
+    invisible(p)
+}
