@@ -1,15 +1,23 @@
-# fixoptgrid
+# perdaprodvar 1.1.2
 
 # New features
 
 * Adiciona método de plot para `varreduraprod` e `gridprod`
 
+### Minor 
+
+* Melhora doc de `extraigrid` e `optgrid` com mais referências aos métodos pertinentes
+* Adiciona testes das novas funcoes de plot
+* Adiciona testes de `optgrid.gamprod`
+* Robustifica um pouco testes de `optgrid.perda`
+
 ## Big fixes
 
 * Corrige determinação de melhor dimensão de grade para produtibilidade. A versão anterior do código
   confundia a saída de `achafronteira` com número de divisões, quando na verdade era o índice no 
-  vetor do número de divisões.
-* Corrige exemplos de `plot.varreduraperda` que estava mostrando plot de grid de perda normal
+  vetor do número de divisões (issue #12)
+* Corrige exemplos de `plot.varreduraperda` que estava mostrando plot de grid de perda normal 
+  (issue #10)
 
 # perdaprodvar 1.0
 
