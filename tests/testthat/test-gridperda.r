@@ -25,7 +25,7 @@ test_that("Grades de perda", {
     # Otimizacao de grade ------------------------------------------------
 
     opt <- optgrid(mod, full.output = TRUE)
-    grd2 <- extraigrid(mod, opt[[2]]$range[opt[[2]]$front$X])
+    grd2 <- extraigrid(mod, 27)
 
     expect_equal(class(opt[[1]]), "gridperda")
     expect_equal(opt[[1]], grd2)
@@ -35,10 +35,10 @@ test_that("Grades de perda", {
     expect_equal(opt[[2]]$range, 5:50)
 
     varr <- opt[[2]]
-    expect_true(all(varr$razao[varr$range >= varr$range[varr$front$X]] < 1.01))
+    expect_true(all(varr$razao[varr$range >= 27] < 1.01))
 
     opt <- optgrid(mod, R = 1.05, range.vazao = 2:100, full.output = TRUE)
-    grd2 <- extraigrid(mod, opt[[2]]$range[opt[[2]]$front$X])
+    grd2 <- extraigrid(mod, 15)
 
     expect_equal(class(opt[[1]]), "gridperda")
     expect_equal(opt[[1]], grd2)
@@ -48,5 +48,5 @@ test_that("Grades de perda", {
     expect_equal(opt[[2]]$range, 2:100)
 
     varr <- opt[[2]]
-    expect_true(all(varr$razao[varr$range >= varr$range[varr$front$X]] < 1.05))
+    expect_true(all(varr$razao[varr$range >= 15] < 1.05))
 })

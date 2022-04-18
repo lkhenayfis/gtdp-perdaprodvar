@@ -27,4 +27,17 @@ test_that("Grades de produtibilidade", {
     # previsao out of bounds
     predna <- predict(grd, newdata = expand.grid(quedal = c(18, 19, 22, 23), vazao = c(-10, -1, 250, 300)))
     expect_true(all(is.na(predna)))
+
+    # Otimizacao da dimensao de grade ------------------------------------
+
+    opt <- optgrid(mod, range.quedal = 15:25, range.vazao = 25:35, full.output = TRUE)
+    grd2 <- extraigrid(mod, c(16, 32))
+
+    expect_equal(class(opt[[1]]), "gridprod")
+    expect_equal(opt[[1]], grd2)
+
+    expect_equal(class(opt[[2]]), "varreduraprod")
+    expect_equal(names(opt[[2]]), c("razao", "range.quedal", "range.vazao", "R", "persis", "front", "minprod"))
+    expect_equal(opt[[2]]$range.quedal, 15:25)
+    expect_equal(opt[[2]]$range.vazao, 25:35)
 })
