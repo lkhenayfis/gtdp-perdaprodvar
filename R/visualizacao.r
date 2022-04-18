@@ -199,9 +199,8 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
     f1 <- list(size = 17, color = "black")
     f2 <- list(size = 12, color = "black")
     p <- plot_ly() %>%
-        add_markers(data = x$dat, type = "scatter3d",
-            x = ~quedal, y = ~vazao, z = ~prod,
-             marker = list(color = "deepskyblue2", size = 12, opacity = 1)) %>%
+        add_markers(data = x$dat, type = "scatter3d", x = ~quedal, y = ~vazao, z = ~prod,
+             marker = list(color = "black")) %>%
         add_surface(x = unique(fitt$quedal), y = unique(fitt$vazao),
             z = t(data.matrix(dcast(fitt, quedal ~ vazao, value.var = "prod"))[, -1]),
             inherit = FALSE) %>%
@@ -213,6 +212,56 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
              legend = list(font = f1)) %>%
         hide_legend() %>%
         hide_colorbar()
+
+    if(plot) print(p)
+
+    invisible(p)
+}
+
+#' Plot De Objetos \code{gridprod}
+#' 
+#' Wrapper para visualização dos dados ajustados e grade de produtibilidade extraída
+#' 
+#' @param x objeto da classe \code{gridprod}
+#' @param plot booleano indicando se o plot deve ser gerado ou apenas retornado invisivelmente
+#' @param ... existe apenas para consistência com a genérica
+#' 
+#' @examples 
+#' 
+#' dat <- agregasemana(dummydata)
+#' mod <- fitgam_prod(dat)
+#' grd <- extraigrid(mod, 20)
+#' 
+#' \dontrun{
+#' plot(grd)
+#' }
+#' 
+#' @return plota dados originais, ajuste realizado e grade de prods extraída
+#' 
+#' @importFrom plotly plot_ly add_markers layout %>%
+#' 
+#' @export
+#' 
+#' @family plots gridprod
+
+plot.gridprod <- function(x, plot = TRUE, ...) {
+
+    grid <- cbind(x$grid, tipo = "Grade")
+    dat  <- cbind(x$model$dat, tipo = "Dados")
+
+    dplot <- rbind(grid, dat)
+
+    f1 <- list(size = 17, color = "black")
+    f2 <- list(size = 12, color = "black")
+    p <- plot_ly() %>%
+        add_markers(data = dplot, x = ~quedal, y = ~vazao, z = ~prod, color = ~tipo,
+             colors = c("black", "#00BFC4")) %>%
+        layout(scene =
+            list(xaxis = list(titlefont = f1, tickfont = f2, title = "Queda l\u00edquida (m)"),
+                yaxis = list(titlefont = f1, tickfont = f2, title = "Vaz\u00E3o turbinada (m<sup>3</sup>/s)"),
+                zaxis = list(titlefont = f1, tickfont = f2, title = "Produtibilidade (MW/m<sup>4</sup>/s)"),
+                camera = list(eye = list(x = -1.5, y = -1.6, z = 1.2))),
+             legend = list(font = f1))
 
     if(plot) print(p)
 
