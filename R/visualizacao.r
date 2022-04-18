@@ -132,7 +132,7 @@ plot.gridperda <- function(x, plot = TRUE, ...) {
 
 plot.varreduraperda <- function(x, plot = TRUE, ...) {
 
-    segs <- razao <- tipo <- X <- NULL
+    segs <- razao <- tipo <- vazao <- NULL
 
     tries <- data.table(segs = x$range, razao = x$razao[, 1])
 
@@ -293,6 +293,8 @@ plot.gridprod <- function(x, plot = TRUE, ...) {
 #' @export
 
 plot.varreduraprod <- function(x, plot = TRUE, ...) {
+
+    quedal <- vazao <- rn <- variable <- persis <- tipo <- NULL
 
     drazao <- as.data.table(x$razao, keep.rownames = TRUE)
     drazao <- melt(drazao, id.vars = "rn", value.name = "razao")

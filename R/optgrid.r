@@ -118,7 +118,7 @@ optgrid <- function(fit, R = 1.01, ..., full.output = FALSE) UseMethod("optgrid"
 
 optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output = FALSE) {
 
-    X <- NULL
+    vazao <- NULL
 
     errofit <- sum(residuals(fit)^2)
 
@@ -161,7 +161,7 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
 
 optgrid.gamprod <- function(fit, R = 1.01, range.quedal = 5:50, range.vazao = 5:50, ..., full.output = FALSE) {
 
-    X <- Y <- NULL
+    quedal <- vazao <- NULL
 
     errofit <- sum(residuals(fit)^2)
 
@@ -283,7 +283,7 @@ achapersistencia <- function(mat) {
 
 achafronteira <- function(mat) {
 
-    X <- Y <- NULL
+    quedal <- vazao <- NULL
 
     range.quedal <- as.numeric(sub("X", "", colnames(mat)))
     range.vazao  <- as.numeric(sub("X", "", rownames(mat)))
