@@ -2,7 +2,7 @@
 % Please edit documentation in R/visualizacao.r
 \name{plot.varreduraperda}
 \alias{plot.varreduraperda}
-\title{Plot Completo De Objetos \code{gridperda}}
+\title{Plot Da Varredura De Número De Divisões Para Perda}
 \usage{
 \method{plot}{varreduraperda}(x, plot = TRUE, ...)
 }
@@ -17,16 +17,16 @@
 plota dados originais, ajuste realizado e grade de perdas extraída
 }
 \description{
-Wrapper para visualização dos modelos contínuos de perda, dados ajustados e grade extraída
+Wrapper para visualização do resultado da varredura realizada na otimização do tamanho de grade
 }
 \examples{
 
 dat <- agregasemana(dummydata)
 mod <- fitgam_perda(dat)
-grd <- extraigrid(mod, 20)
+grd <- optgrid(mod, full.output = TRUE)
 
 \dontrun{
-plot(grd)
+plot(grd[[2]])
 }
 
 }

@@ -105,9 +105,9 @@ plot.gridperda <- function(x, plot = TRUE, ...) {
     invisible(p)
 }
 
-#' Plot Completo De Objetos \code{gridperda}
+#' Plot Da Varredura De Número De Divisões Para Perda
 #' 
-#' Wrapper para visualização dos modelos contínuos de perda, dados ajustados e grade extraída
+#' Wrapper para visualização do resultado da varredura realizada na otimização do tamanho de grade
 #' 
 #' @param x objeto da classe \code{gridperda}
 #' @param plot booleano indicando se o plot deve ser gerado ou apenas retornado invisivelmente
@@ -117,10 +117,10 @@ plot.gridperda <- function(x, plot = TRUE, ...) {
 #' 
 #' dat <- agregasemana(dummydata)
 #' mod <- fitgam_perda(dat)
-#' grd <- extraigrid(mod, 20)
+#' grd <- optgrid(mod, full.output = TRUE)
 #' 
 #' \dontrun{
-#' plot(grd)
+#' plot(grd[[2]])
 #' }
 #' 
 #' @return plota dados originais, ajuste realizado e grade de perdas extraída
