@@ -55,11 +55,21 @@ otimização do número de segmentações da grade \code{\link{optgrid}}
 
 Other metodos gridperda: 
 \code{\link{fitted.gridperda}()},
+\code{\link{optgrid}()},
 \code{\link{predict.gridperda}()},
 \code{\link{residuals.gridperda}()}
 
 Other plots gridperda: 
+\code{\link{optgrid}()},
 \code{\link{plot.gridperda}()}
+
+Other metodos gridpprod: 
+\code{\link{optgrid}()}
+
+Other plots gridpprod: 
+\code{\link{optgrid}()}
 }
 \concept{metodos gridperda}
+\concept{metodos gridpprod}
 \concept{plots gridperda}
+\concept{plots gridpprod}

@@ -39,6 +39,9 @@
 #' @family metodos gridperda
 #' @family plots gridperda
 #' 
+#' @family metodos gridpprod
+#' @family plots gridpprod
+#' 
 #' @export
 
 extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")
@@ -94,6 +97,16 @@ extraigrid <- function(fit, dim, ...) UseMethod("extraigrid")
 #' @return se \code{full.output = FALSE}, a grade parsimoniosa que atenda a razão mínima \code{R}.
 #'     Se \code{full.output = TRUE}, uma lista com a grade no primeiro elemento e a varredura no 
 #'     segundo
+#' 
+#' @seealso extração de grade para dadas dimensões \code{\link{extraigrid}}. Métodos para 
+#'     plot da varredura quando \code{full.output = TRUE}: \code{\link{plot.varreduraperda}} e 
+#'     \code{\link{plot.varreduraprod}}
+#' 
+#' @family metodos gridperda
+#' @family plots gridperda
+#' 
+#' @family metodos gridpprod
+#' @family plots gridpprod
 #' 
 #' @export
 

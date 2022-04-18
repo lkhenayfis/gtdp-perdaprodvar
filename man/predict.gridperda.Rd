@@ -23,6 +23,7 @@ Método \code{predict} para objetos da classe \code{gridperda}
 Other metodos gridperda: 
 \code{\link{extraigrid.gamperda}()},
 \code{\link{fitted.gridperda}()},
+\code{\link{optgrid}()},
 \code{\link{residuals.gridperda}()}
 }
 \concept{metodos gridperda}

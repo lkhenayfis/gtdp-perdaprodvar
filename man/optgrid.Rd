@@ -79,3 +79,28 @@ plot(optgrade[[2]])
 }
 
 }
+\seealso{
+extração de grade para dadas dimensões \code{\link{extraigrid}}. Métodos para
+plot da varredura quando \code{full.output = TRUE}: \code{\link{plot.varreduraperda}} e
+\code{\link{plot.varreduraprod}}
+
+Other metodos gridperda: 
+\code{\link{extraigrid.gamperda}()},
+\code{\link{fitted.gridperda}()},
+\code{\link{predict.gridperda}()},
+\code{\link{residuals.gridperda}()}
+
+Other plots gridperda: 
+\code{\link{extraigrid.gamperda}()},
+\code{\link{plot.gridperda}()}
+
+Other metodos gridpprod: 
+\code{\link{extraigrid.gamperda}()}
+
+Other plots gridpprod: 
+\code{\link{extraigrid.gamperda}()}
+}
+\concept{metodos gridperda}
+\concept{metodos gridpprod}
+\concept{plots gridperda}
+\concept{plots gridpprod}

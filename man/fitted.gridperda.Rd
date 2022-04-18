@@ -20,6 +20,7 @@ Método \code{fitted} para objetos da classe \code{gridperda}
 \seealso{
 Other metodos gridperda: 
 \code{\link{extraigrid.gamperda}()},
+\code{\link{optgrid}()},
 \code{\link{predict.gridperda}()},
 \code{\link{residuals.gridperda}()}
 }

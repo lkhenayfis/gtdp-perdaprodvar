@@ -32,6 +32,7 @@ plot(grd)
 }
 \seealso{
 Other plots gridperda: 
-\code{\link{extraigrid.gamperda}()}
+\code{\link{extraigrid.gamperda}()},
+\code{\link{optgrid}()}
 }
 \concept{plots gridperda}

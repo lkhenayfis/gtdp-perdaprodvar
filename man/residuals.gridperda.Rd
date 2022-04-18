@@ -21,6 +21,7 @@ Método \code{residuals} para objetos da classe \code{gridperda}
 Other metodos gridperda: 
 \code{\link{extraigrid.gamperda}()},
 \code{\link{fitted.gridperda}()},
+\code{\link{optgrid}()},
 \code{\link{predict.gridperda}()}
 }
 \concept{metodos gridperda}
