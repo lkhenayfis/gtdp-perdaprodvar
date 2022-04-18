@@ -136,9 +136,9 @@ plot.varreduraperda <- function(x, plot = TRUE, ...) {
 
     tries <- data.table(segs = x$range, razao = x$razao[, 1])
 
-    ruins    <- cbind(tries[segs <= x$front[1, X]], tipo = "Inadequado")
-    estaveis <- cbind(tries[segs >= x$front[1, X]], tipo = "Est\u00E1vel")
-    front    <- cbind(tries[segs == x$front[1, X]], tipo = "Fronteira")
+    ruins    <- cbind(tries[segs <= x$front[1, vazao]], tipo = "Inadequado")
+    estaveis <- cbind(tries[segs >= x$front[1, vazao]], tipo = "Est\u00E1vel")
+    front    <- cbind(tries[segs == x$front[1, vazao]], tipo = "Fronteira")
 
     dplot <- rbind(ruins, front, estaveis)
     dplot$tipo <- factor(dplot$tipo, levels = unique(dplot$tipo))
@@ -230,7 +230,7 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
 #' 
 #' dat <- agregasemana(dummydata)
 #' mod <- fitgam_prod(dat)
-#' grd <- extraigrid(mod, 20)
+#' grd <- extraigrid(mod, c(20, 20))
 #' 
 #' \dontrun{
 #' plot(grd)

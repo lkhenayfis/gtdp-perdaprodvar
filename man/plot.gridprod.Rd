@@ -23,7 +23,7 @@ Wrapper para visualização dos dados ajustados e grade de produtibilidade extra
 
 dat <- agregasemana(dummydata)
 mod <- fitgam_prod(dat)
-grd <- extraigrid(mod, 20)
+grd <- extraigrid(mod, c(20, 20))
 
 \dontrun{
 plot(grd)

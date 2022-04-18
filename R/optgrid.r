@@ -123,9 +123,9 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
         #range.vazao <- seq(max(range.vazao), max(range.vazao) + diff(range(range.vazao)))
         #optgrid(fit, R, range.vazao = range.vazao, full.output = full.output)
     } else {
-        front  <- achafronteira(persis)
+        front <- achafronteira(persis)
 
-        out <- grades[[which(range.vazao == front[1, quedal])]]
+        out <- grades[[which(range.vazao == front[1, vazao])]]
 
         if(full.output) {
             varredura <- list(razao = razaoerros, range = range.vazao, R = R, front = front)
@@ -155,10 +155,11 @@ optgrid.gamprod <- function(fit, R = 1.01, range.quedal = 5:50, range.vazao = 5:
     ranges <- expand.grid(quedal = range.quedal, vazao = range.vazao)
 
     grades <- lapply(seq(nrow(ranges)), function(i) extraigrid(fit, c(ranges[i, 1], ranges[i, 2])))
-    erros  <- lapply(grades, function(grade) sum(residuals(grade)^2))
+    ranges$erros <- lapply(grades, function(grade) sum(residuals(grade)^2))
 
-    razaoerros <- matrix(unlist(erros) / errofit, length(range.quedal), length(range.vazao),
-        dimnames = list(paste0("X", range.quedal), paste0("X", range.vazao)))
+    razaoerros <- dcast(as.data.table(ranges), vazao ~ quedal, value.var = "erros")
+    razaoerros <- data.matrix(razaoerros[, -1]) / errofit
+    dimnames(razaoerros) <- list(paste0("X", range.vazao), paste0("X", range.quedal))
 
     persis <- achapersistencia(razaoerros <= R)
 
@@ -199,8 +200,8 @@ optgrid.gamprod <- function(fit, R = 1.01, range.quedal = 5:50, range.vazao = 5:
 #' implementada no contexto de otimização do número de segmentações para geração final do grid.
 #' 
 #' @param mat matriz de verdadeiros e falsos resultante da comparação da matriz de razão de erros 
-#'     com um parâmetro de razão mínima. Colunas representam de segmentações de vazão turbinada e
-#'     linhas de queda líquida
+#'     com um parâmetro de razão mínima. Colunas representam de segmentações de queda e linhas de 
+#'     vazão turbinada
 #' 
 #' @return matriz booleana; TRUE na região de convergência e FALSE do contrário
 #' 
@@ -262,7 +263,8 @@ achapersistencia <- function(mat) {
 #' Esta é uma função auxiliar que não deve ser utilizada senão internamente pelo código. É 
 #' implementada no contexto de otimização do número de segmentações para geração final do grid.
 #' 
-#' @param mat matriz de verdadeiros e falsos representando a região de convergência
+#' @param mat matriz de verdadeiros e falsos representando a região de convergência. Colunas e 
+#'     linhas representam mesmas coisas que em \code{\link{achapersistencia}}
 #' 
 #' @return data.table contendo os númeroes de divisões dos pontos de fronteira
 
@@ -270,16 +272,16 @@ achafronteira <- function(mat) {
 
     X <- Y <- NULL
 
-    range.quedal <- as.numeric(sub("X", "", rownames(mat)))
-    range.vazao  <- as.numeric(sub("X", "", colnames(mat)))
+    range.quedal <- as.numeric(sub("X", "", colnames(mat)))
+    range.vazao  <- as.numeric(sub("X", "", rownames(mat)))
 
     # Olha pelos x
-    dx <- apply(mat, 1, function(x) ifelse(length(x) > 1, range.vazao[x][1], NA))
-    dx <- data.table(quedal = range.quedal, vazao = dx)
+    dx <- apply(mat, 1, function(x) ifelse(length(x) > 1, range.quedal[x][1], NA))
+    dx <- data.table(quedal = dx, vazao = range.vazao)
 
     # Olha pelos y
-    dy <- apply(mat, 2, function(y) ifelse(length(y) > 1, range.quedal[y][1], NA))
-    dy <- data.table(quedal = dy, vazao = range.vazao)
+    dy <- apply(mat, 2, function(y) ifelse(length(y) > 1, range.vazao[y][1], NA))
+    dy <- data.table(quedal = range.quedal, vazao = dy)
 
     # Combina os dois e remove possiveis duplicatas
     front <- rbind(dx, dy)

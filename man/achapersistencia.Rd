@@ -8,8 +8,8 @@ achapersistencia(mat)
 }
 \arguments{
 \item{mat}{matriz de verdadeiros e falsos resultante da comparação da matriz de razão de erros
-com um parâmetro de razão mínima. Colunas representam de segmentações de vazão turbinada e
-linhas de queda líquida}
+com um parâmetro de razão mínima. Colunas representam de segmentações de queda e linhas de
+vazão turbinada}
 }
 \value{
 matriz booleana; TRUE na região de convergência e FALSE do contrário

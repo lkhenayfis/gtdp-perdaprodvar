@@ -7,7 +7,8 @@
 achafronteira(mat)
 }
 \arguments{
-\item{mat}{matriz de verdadeiros e falsos representando a região de convergência}
+\item{mat}{matriz de verdadeiros e falsos representando a região de convergência. Colunas e
+linhas representam mesmas coisas que em \code{\link{achapersistencia}}}
 }
 \value{
 data.table contendo os númeroes de divisões dos pontos de fronteira
