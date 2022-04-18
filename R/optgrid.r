@@ -112,7 +112,8 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
     grades <- lapply(range.vazao, function(segs) extraigrid(fit, segs))
     erros  <- lapply(grades, function(grade) sum(residuals(grade)^2))
 
-    razaoerros <- matrix(unlist(erros) / errofit, length(range.vazao))
+    razaoerros <- matrix(unlist(erros) / errofit, length(range.vazao),
+        dimnames = list(paste0("X", range.vazao), "X1"))
 
     persis <- achapersistencia(razaoerros <= R)
 
@@ -124,7 +125,7 @@ optgrid.gamperda <- function(fit, R = 1.01, range.vazao = 5:50, ..., full.output
     } else {
         front  <- achafronteira(persis)
 
-        out <- grades[[front[1, X]]]
+        out <- grades[[which(range.vazao == front[1, quedal])]]
 
         if(full.output) {
             varredura <- list(razao = razaoerros, range = range.vazao, R = R, front = front)
@@ -156,7 +157,8 @@ optgrid.gamprod <- function(fit, R = 1.01, range.quedal = 5:50, range.vazao = 5:
     grades <- lapply(seq(nrow(ranges)), function(i) extraigrid(fit, c(ranges[i, 1], ranges[i, 2])))
     erros  <- lapply(grades, function(grade) sum(residuals(grade)^2))
 
-    razaoerros <- matrix(unlist(erros) / errofit, length(range.quedal), length(range.vazao))
+    razaoerros <- matrix(unlist(erros) / errofit, length(range.quedal), length(range.vazao),
+        dimnames = list(paste0("X", range.quedal), paste0("X", range.vazao)))
 
     persis <- achapersistencia(razaoerros <= R)
 
@@ -170,12 +172,13 @@ optgrid.gamprod <- function(fit, R = 1.01, range.quedal = 5:50, range.vazao = 5:
         #optgrid(fit, R, range.vazao = range.vazao, full.output = full.output)
     } else {
         front <- achafronteira(persis)
-        minprod <- front[which.min(X * Y)]
+        minprod <- front[which.min(quedal * vazao)]
 
-        out <- grades[[which((ranges$Var1 == minprod$X) & (ranges$Var2 == minprod$Y))]]
+        out <- grades[[which((ranges$quedal == minprod$quedal) & (ranges$vazao == minprod$vazao))]]
 
         if(full.output) {
-            varredura <- list(razao = razaoerros, range = range.vazao, R = R, front = front)
+            varredura <- list(razao = razaoerros, range.quedal = range.quedal, range.vazao = range.vazao,
+                R = R, persis = persis, front = front, minprod = minprod)
             class(varredura) <- "varreduraprod"
 
             out <- list(optgrid = out, varredura = varredura)
@@ -261,24 +264,27 @@ achapersistencia <- function(mat) {
 #' 
 #' @param mat matriz de verdadeiros e falsos representando a região de convergência
 #' 
-#' @return data.table contendo as coordenadas na matriz dos pontos de fronteira
+#' @return data.table contendo os númeroes de divisões dos pontos de fronteira
 
 achafronteira <- function(mat) {
 
     X <- Y <- NULL
 
+    range.quedal <- as.numeric(sub("X", "", rownames(mat)))
+    range.vazao  <- as.numeric(sub("X", "", colnames(mat)))
+
     # Olha pelos x
-    dx <- apply(mat, 1, function(x) ifelse(length(x) > 1, which(x)[1], NA))
-    dx <- data.table(X = seq(nrow(mat)), Y = dx)
+    dx <- apply(mat, 1, function(x) ifelse(length(x) > 1, range.vazao[x][1], NA))
+    dx <- data.table(quedal = range.quedal, vazao = dx)
 
     # Olha pelos y
-    dy <- apply(mat, 2, function(y) ifelse(length(y) > 1, which(y)[1], NA))
-    dy <- data.table(X = dy, Y = seq(ncol(mat)))
+    dy <- apply(mat, 2, function(y) ifelse(length(y) > 1, range.quedal[y][1], NA))
+    dy <- data.table(quedal = dy, vazao = range.vazao)
 
     # Combina os dois e remove possiveis duplicatas
     front <- rbind(dx, dy)
     front <- front[complete.cases(front)]
-    front <- front[!duplicated(paste0(X, Y))]
+    front <- front[!duplicated(paste0(quedal, vazao))]
 
     # Retorna
     return(front)

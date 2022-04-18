@@ -136,9 +136,9 @@ plot.varreduraperda <- function(x, plot = TRUE, ...) {
 
     tries <- data.table(segs = x$range, razao = x$razao[, 1])
 
-    ruins    <- cbind(tries[1:x$front[1, X]], tipo = "Inadequado")
-    estaveis <- cbind(tries[x$front[1, X]:length(x$range)], tipo = "Est\u00E1vel")
-    front    <- cbind(tries[x$front[1, X]], tipo = "Fronteira")
+    ruins    <- cbind(tries[segs <= x$front[1, X]], tipo = "Inadequado")
+    estaveis <- cbind(tries[segs >= x$front[1, X]], tipo = "Est\u00E1vel")
+    front    <- cbind(tries[segs == x$front[1, X]], tipo = "Fronteira")
 
     dplot <- rbind(ruins, front, estaveis)
     dplot$tipo <- factor(dplot$tipo, levels = unique(dplot$tipo))
