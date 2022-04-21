@@ -41,12 +41,12 @@ bordasCC <- bordasCC[!apply(bordasCC, 1, function(v) all(is.na(v)))]
 colnames(bordasCC) <- c("usina", paste0(c("quedal", "vazao", "prod"), "_", rep(1:4, each = 3)))
 
 bordasCC <- melt(bordasCC, id.var = "usina", variable.name = "ponto",
-    measure.vars = patterns(queda = "^quedal_", vazao = "^vazao_", prod = "^prod_"))
-bordasCC[, c("queda", "vazao", "prod") := lapply(.(queda, vazao, prod), as.numeric)]
+    measure.vars = patterns(quedal = "^quedal_", vazao = "^vazao_", prod = "^prod_"))
+bordasCC[, c("quedal", "vazao", "prod") := lapply(.(quedal, vazao, prod), as.numeric)]
 
 aux <- bordasCC[usina == oldcod]
 aux[, usina := 9999]
-aux[, queda := renorm(queda, minolds[5], maxolds[5], minnews[5], maxnews[5])]
+aux[, quedal := renorm(quedal, minolds[5], maxolds[5], minnews[5], maxnews[5])]
 aux[, vazao := renorm(vazao, minolds[2], maxolds[2], minnews[2], maxnews[2])]
 
 bordasCC <- rbind(bordasCC, aux)
