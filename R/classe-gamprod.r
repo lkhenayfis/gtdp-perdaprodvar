@@ -10,7 +10,7 @@
 #' 
 #' @return objeto \code{gamprod} com modelo ajustado e dado original
 
-new_gamprod <- function(dat, mod, fitcall) {
+new_gamprod <- function(dat, mod, fitcall, bordas) {
 
     usina <- ponto <- vazao <- NULL
 
@@ -25,6 +25,7 @@ new_gamprod <- function(dat, mod, fitcall) {
     out <- list(model = mod, dat = dat)
     attr(out, "fitcall") <- fitcall
     attr(out, "ranges") <- list(quedal = rangehl, vazao = rangevaz)
+    attr(out, "borda") <- borda[bordas, 3:5, drop = FALSE]
     class(out) <- "gamprod"
 
     return(out)

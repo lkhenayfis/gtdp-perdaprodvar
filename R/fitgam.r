@@ -272,5 +272,5 @@ fitgam_prod <- function(dat, ns.quedal = 10, ns.vazao = 10, ts.quedal = "ps", ts
 
     mod <- mgcv::gam(form, data = dfit)
 
-    new_gamprod(dat, mod, fc)
+    new_gamprod(dat, mod, fc, bordas)
 }

@@ -199,7 +199,8 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
     f1 <- list(size = 17, color = "black")
     f2 <- list(size = 12, color = "black")
     p <- plot_ly() %>%
-        add_markers(data = x$dat, type = "scatter3d", x = ~quedal, y = ~vazao, z = ~prod,
+        add_markers(data = rbind(x$dat, attr(x, "borda")),
+            type = "scatter3d", x = ~quedal, y = ~vazao, z = ~prod,
              marker = list(color = "black")) %>%
         add_surface(x = unique(fitt$quedal), y = unique(fitt$vazao),
             z = t(data.matrix(dcast(fitt, quedal ~ vazao, value.var = "prod"))[, -1]),
@@ -249,12 +250,15 @@ plot.gridprod <- function(x, plot = TRUE, ...) {
     grid <- cbind(x$grid, tipo = "Grade")
     dat  <- cbind(x$model$dat, tipo = "Dados")
 
-    dplot <- rbind(grid, dat)
+    dplot  <- rbind(grid, dat)
+    dborda <- attr(x$model, "borda")
+    dborda[, tipo := "Dados"]
 
     f1 <- list(size = 17, color = "black")
     f2 <- list(size = 12, color = "black")
     p <- plot_ly() %>%
-        add_markers(data = dplot, x = ~quedal, y = ~vazao, z = ~prod, color = ~tipo,
+        add_markers(data = rbind(dplot, dborda),
+            x = ~quedal, y = ~vazao, z = ~prod, color = ~tipo,
              colors = c("black", "#00BFC4")) %>%
         layout(scene =
             list(xaxis = list(titlefont = f1, tickfont = f2, title = "Queda l\u00edquida (m)"),

@@ -1,6 +1,19 @@
+# master 
+
+## New features
+
+* Adiciona atributo `bordas` aos objetos `gamprod`. Inclui estes pontos no plot de `gamprod` e 
+  `gridprod`
+
+## Bug fixes
+
+* Corrige o nome das colunas em `bordasCC`. Antes a coluna de queda se chamava `queda`, sem o l no 
+  final indicando queda líquida. Em função disso ao juntar o dado de bordas com histórico para 
+  ajuste, a coluna `quedal` ficava `NA` nos pontos de borda e eles nao entravam no ajuste.
+
 # perdaprodvar 1.1.2
 
-# New features
+## New features
 
 * Adiciona método de plot para `varreduraprod` e `gridprod`
 
@@ -11,7 +24,7 @@
 * Adiciona testes de `optgrid.gamprod`
 * Robustifica um pouco testes de `optgrid.perda`
 
-## Big fixes
+## Bug fixes
 
 * Corrige determinação de melhor dimensão de grade para produtibilidade. A versão anterior do código
   confundia a saída de `achafronteira` com número de divisões, quando na verdade era o índice no 
