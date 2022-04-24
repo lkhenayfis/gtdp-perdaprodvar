@@ -6,10 +6,8 @@
 \usage{
 optgam_prod(
   dat,
-  range.quedal = 5:30,
-  range.vazao = 5:30,
-  ts.quedal = "ps",
-  ts.vazao = "ps",
+  range = list(5:30, 5:30),
+  ts = c("ps", "ps"),
   bordas = TRUE,
   modo = c("tensor", "multivar", "simples")
 )
@@ -17,12 +15,12 @@ optgam_prod(
 \arguments{
 \item{dat}{\code{data.table} de dados para ajuste. Ver Detalhes}
 
-\item{range.quedal, range.vazao}{vetor de dimensões de base a testar na seleção. Todas as
-combinações serão testadas (isto é, um domínio quadrado é gerado a partir dos ranges). Padrão
-\code{range.quedal = range.vazao = 5:30}}
+\item{range}{lista com dois vetores inteiros indicando dimensões de base em queda líquida e
+vazão, nesta ordem, a testar na seleção. Todas as combinações serão testadas (um domínio
+quadrado é gerado a partir dos ranges)}
 
-\item{ts.quedal, ts.vazao}{tipo de spline utilizada para queda líquida e vazão --
-veja \code{\link[mgcv]{smooth.terms}} para todas as opções. Padrão \code{"ps"} em ambos}
+\item{ts}{vetor de duas strings tipo de spline utilizada para queda líquida e vazão --
+veja \code{\link[mgcv]{smooth.terms}} para mais detalhes sobre as opções}
 
 \item{bordas}{booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros
 indicando quais vértices utilizar. Ver Detalhes}
@@ -38,24 +36,20 @@ Varre uma faixa de dimensões de base, reportando aquela correspondente ao ajust
 }
 \details{
 Os parâmetros recebidos por \code{optgam_prod} são exatamente aqueles de
-\code{\link{fitgam_prod}}, com uma exceção: os argumentos \code{ns.quedal} e \code{ns.vazao} são
-substituídos por \code{range.quedal} e \code{range.vazao}, vetores de inteiros indicando as
-dimensões de base candidatas em cada marginal para seleção.
-Mais detalhes a respeito da estimação e efeito dos argumentos individuais podem ser encontrados
-em \code{\link{fitgam_prod}}
+\code{\link{fitgam_prod}}, com uma exceção: o argumento \code{ns} é substituído por \code{range},
+uma lista de dois vetores de inteiros indicando as dimensões de base candidatas em queda e vazão,
+nesta ordem, para seleção. Mais detalhes a respeito da estimação e efeito dos argumentos
+individuais podem ser encontrados em \code{\link{fitgam_prod}}.
 }
 \examples{
 
 dat <- agregasemana(dummydata)
 
 # execucao limitando a faixa de numero de splines a algo mais baixo
-optfit <- optgam_prod(dat, range.quedal = 5:10, range.vazao = 5:10)
+optfit <- optgam_prod(dat, range = list(5:10, 5:10))
 \dontrun{
 plot(optfit)
 }
-
-# dentre os argumentos de optfit esta a lista 'gamargs', contendo a parametrizacao do gam
-attr(optfit, "gamargs") # ns.vazao corresponde ao numero de nos utilizados no ajuste otimo
 
 }
 \seealso{

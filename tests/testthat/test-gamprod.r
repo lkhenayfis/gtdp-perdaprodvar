@@ -20,7 +20,7 @@ test_that("PROD - Diferentes dimensoes de base", {
 
     dims <- expand.grid(c(5, 7, 10), c(5, 7, 10))
     for(i in seq(nrow(dims))) {
-        mod <- fitgam_prod(dts, dims[i, 1], dims[i, 2])
+        mod <- fitgam_prod(dts, unlist(dims[i, ]))
 
         smooth <- mod$model$smooth[[1]]
         expect_equal(smooth$margin[[1]]$bs.dim, dims[i, 1])
@@ -42,11 +42,11 @@ test_that("PROD - Diferentes splines e modos", {
 
         if((!(tipos[i, 1] %in% c("tp", "ts")) | !(tipos[i, 2] %in% c("tp", "ts"))) & (tipos[i, 3] == "multivar")) {
             expect_error(
-                mod <- fitgam_prod(dts, ts.quedal = tipos[i, 1], ts.vazao = tipos[i, 2], modo = tipos[i, 3])
+                mod <- fitgam_prod(dts, ts = unlist(tipos[i, 1:2]), modo = tipos[i, 3])
             )
             next
         }
-        mod <- fitgam_prod(dts, ts.quedal = tipos[i, 1], ts.vazao = tipos[i, 2])
+        mod <- fitgam_prod(dts, ts = unlist(tipos[i, 1:2]))
 
         smooth <- mod$model$smooth[[1]]
         for(j in seq(2)) {
@@ -77,7 +77,7 @@ test_that("PROD - Metodos", {
 
 test_that("PROD - Otimizacao da dimensao de base", {
     dts <- agregasemana(dummydata)
-    optmod <- optgam_prod(dts, 5:10, 5:10)
+    optmod <- optgam_prod(dts, list(5:10, 5:10))
 
     printout <- capture.output(print(optmod))
     expect_snapshot_value(printout, style = "serialize")

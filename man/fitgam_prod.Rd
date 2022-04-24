@@ -2,14 +2,12 @@
 % Please edit documentation in R/fitgam.r
 \name{fitgam_prod}
 \alias{fitgam_prod}
-\title{Ajuste De Curva Para Produtibilidade}
+\title{Ajuste De Superfície Para Produtibilidade}
 \usage{
 fitgam_prod(
   dat,
-  ns.quedal = 10,
-  ns.vazao = 10,
-  ts.quedal = "ps",
-  ts.vazao = "ps",
+  ns = c(10, 10),
+  ts = c("ps", "ps"),
   bordas = TRUE,
   modo = c("tensor", "multivar", "simples")
 )
@@ -17,10 +15,10 @@ fitgam_prod(
 \arguments{
 \item{dat}{\code{data.table} de dados para ajuste. Ver Detalhes}
 
-\item{ns.quedal, ns.vazao}{dimensão da base em cada eixo expandida para ajuste. Padrão 10 em ambos}
+\item{ns}{vetor dois inteiros, indicando dimensão da base em queda líquida e vazão, nesta ordem}
 
-\item{ts.quedal, ts.vazao}{tipo de spline utilizada para queda líquida e vazão --
-veja \code{\link[mgcv]{smooth.terms}} para todas as opções. Padrão \code{"ps"} em ambos}
+\item{ts}{vetor de duas strings tipo de spline utilizada para queda líquida e vazão,
+respectivamente -- veja \code{\link[mgcv]{smooth.terms}} para mais detalhes sobre as opções}
 
 \item{bordas}{booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros
 indicando quais vértices utilizar. Ver Detalhes}
@@ -42,25 +40,33 @@ de resultados e plots. Desta forma, para garantir o funcionamento apropriado da 
 passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente pelas funções
 fornecidas no pacote.
 
-\code{ts.quedal} e \code{ts.vazao} permitem a especificação do tipo de spline utilizada na
-expansão de base. Todos os tipos definidos em \code{\link[mgcv]{mgcv}} são suportados. Para
-maiores detalhes a respeito das possibilidades e suas descrições, veja
+\code{ts} permite a especificação do tipo de spline utilizada na expansão de base em cada
+marginal. A maioria das opções suportadas pelo pacote \code{mgcv} são utilizáveis, com algumas
+exceções que não condizem com esta aplicação específica. \code{fitgam_prod} suporta as splines
+
+\itemize{
+\item \code{"tp"}: thin-plate regression splines
+\item \code{"ts"}: thin-plate regression splines com encolhimento
+\item \code{"ds"}: duchon splines
+\item \code{"cr"}: cubic regression splines
+\item \code{"cs"}: cubic regression splines com encolhimento
+\item \code{"ps"}: P-splines
+}
+
+Para maiores detalhes a respeito das possibilidades e suas descrições, veja
 \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado  \code{ts.vazao = "ps"}, o que
 corresponde à expansão por P-Splines.
 
 Embora a função ofereça a possibilidade de utilizar ou não as bordas da curva colina como apoio
-para geração do grid, o domínio final é sempre o mesmo:
+para estimação do modelo, o domínio final é sempre o mesmo:
 \itemize{
-\item o grid de produtibilidade sempre cobre da vazão zero até o máximo entre a vazão histórica e
-aquela estipulada no HIDR, ou seja, mesmo que colina tenha bordas em vazões superiores, o
-grid NÃO vai até este ponto, dado que o DECOMP não consultará vazões tão elevadas
+\item o ajuste de produtibilidade sempre cobre da vazão zero até o máximo entre a vazão histórica
+e aquela estipulada no HIDR, ou seja, mesmo que colina tenha bordas em vazões superiores, o
+ajuste NÃO vai até este ponto, dado que o DECOMP não consultará vazões tão elevadas
 \item o domínio de queda líquida, por outro lado, sempre vai da menor a maior queda observadas na
 curva colina, mesmo que a borda não seja contemplada no ajuste. Isto é feito de modo a
-garantir que o grid possua o domínio completo de quedas operáveis pelas máquinas da usina
+garantir que o ajuste possua o domínio completo de quedas operáveis pelas máquinas da usina
 }
-
-Desta forma, a borda só é utilizada como apoio no ajuste do GAM, mas não interfere no domínio
-final do grid ajustado
 
 Ainda no que toca a borda, seu uso pode ser informado de duas formas: um valor lógico ou vetor
 numérico. Caso o primeiro seja informado, todos os pontos da borda são utilizados ou não. Caso
@@ -84,7 +90,8 @@ naturalmente multivariados, que é o caso singular das thin plate regression spl
 \examples{
 
 dat <- agregasemana(dummydata)
-mod <- fitgam_prod(dat, ns.vazao = 10, ts.vazao = "tp")
+# dimensao de base 8 para queda e 10 para vazao -- thin plate splines para queda e vazao
+mod <- fitgam_prod(dat, ns = c(8, 10), ts = c("tp", "tp"))
 
 # valores ajustados, previsao e residuos
 res <- residuals(mod)
