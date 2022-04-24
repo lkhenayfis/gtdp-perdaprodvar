@@ -79,6 +79,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     da <- formals()
     da[match(names(fc[-1]), names(da))] <- fc[-1]
     fc <- as.call(c(fc[[1]], da))
+    fc[-1] <- lapply(fc[-1], eval, envir = parent.frame())
 
     wrn <- paste0("Nao ha cruzamento entre a extrapolacao inferior escolhida e o ajuste do GAM - ",
         "foi utilizado o ponto mais proximo")
@@ -245,6 +246,7 @@ fitgam_prod <- function(dat, ns.quedal = 10, ns.vazao = 10, ts.quedal = "ps", ts
     da <- formals()
     da[match(names(fc[-1]), names(da))] <- fc[-1]
     fc <- as.call(c(fc[[1]], da))
+    fc[-1] <- lapply(fc[-1], eval, envir = parent.frame())
 
     modo <- match.arg(modo)
 
@@ -272,5 +274,5 @@ fitgam_prod <- function(dat, ns.quedal = 10, ns.vazao = 10, ts.quedal = "ps", ts
 
     mod <- mgcv::gam(form, data = dfit)
 
-    new_gamprod(dat, mod, fc, bordas)
+    new_gamprod(dat, mod, fc)
 }

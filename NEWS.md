@@ -1,3 +1,12 @@
+# newmodels
+
+## New fearures
+
+### Minor
+
+* a chamada guardada pelas funções `fitgam` agora avaliam os argumentos antes de retornar os 
+  objetos. Isso é feito para que se tenha um registro exato da parametrização das chamadas caso seja preciso rodá-las com versões posteriores do pacote e comparar resultados operacionais
+
 # master 
 
 ## New features
