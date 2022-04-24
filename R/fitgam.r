@@ -142,7 +142,7 @@ fitgam_perda <- function(dat, ns = 10, ts = "ps", extrap = c(2, 2), quantil = c(
 #' }
 #' 
 #' Para maiores detalhes a respeito das possibilidades e suas descrições, veja
-#' \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado  \code{ts.vazao = "ps"}, o que 
+#' \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado  \code{ts = c("ps", "ps")}, o que 
 #' corresponde à expansão por P-Splines.
 #' 
 #' Adicionalmente às splines denominadas livres, \code{fitgam_prod} também suporta o uso de shape 
@@ -178,8 +178,8 @@ fitgam_perda <- function(dat, ns = 10, ts = "ps", extrap = c(2, 2), quantil = c(
 #' \code{modo = "simples"} implica em um modelo de efeitos aditivos sem iteração, isto é, a função
 #' estimada é da forma \eqn{g(x) = f_1(X_1) + f_2(X_2)}, sem interação entre as variáveis. 
 #' \code{modo = "tensor"} construirá uma função por produto tensor das marginais, isto é, levando em
-#' consideração a interação entre variáveis. \code{modo = "multivar"} só é aplicável quando ambos 
-#' \code{ts.quedal = ts.vazao = "tp"|"ts"}, pois corresponde a modelagem com suavizadores 
+#' consideração a interação entre variáveis. \code{modo = "multivar"} só é aplicável quando 
+#' \code{all(ts %in% c("tp", "ts"))}, pois corresponde a modelagem com suavizadores 
 #' naturalmente multivariados, que é o caso singular das thin plate regression splines.
 #' 
 #' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
@@ -267,7 +267,7 @@ fitgam_prod <- function(dat, ns = c(10, 10), ts = c("ps", "ps"), dist = gaussian
 
     # quando se esta estimando um SC GAM, forca a penalidade para zero pois o modelo ja sera concavo
     if(is_sc) SP <- c(0, 0) else SP <- NULL
-    
+
     CALL <- as.call(list(quote(mgcv::gam), form, quote(dist), quote(dfit), sp = SP))
     if(is_sc) CALL[[1]] <- quote(scam::scam)
 

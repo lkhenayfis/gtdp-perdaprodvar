@@ -47,6 +47,7 @@ fornecidas no pacote.
 \code{ts} permite a especificação do tipo de spline utilizada na expansão de base em cada
 marginal. A maioria das opções suportadas pelo pacote \code{mgcv} são utilizáveis, com algumas
 exceções que não condizem com esta aplicação específica. \code{fitgam_prod} suporta as splines
+livres
 
 \itemize{
 \item \code{"tp"}: thin-plate regression splines
@@ -58,8 +59,15 @@ exceções que não condizem com esta aplicação específica. \code{fitgam_prod
 }
 
 Para maiores detalhes a respeito das possibilidades e suas descrições, veja
-\code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado  \code{ts.vazao = "ps"}, o que
+\code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado  \code{ts = c("ps", "ps")}, o que
 corresponde à expansão por P-Splines.
+
+Adicionalmente às splines denominadas livres, \code{fitgam_prod} também suporta o uso de shape
+constrained P-splines, especificamente uma reparametrização que garante uma superfície côncava no
+domínio de ajuste, via \code{ts = c("cv", "cv")}. Maiores detalhes a respeito desta modelagem
+encontram-se em \code{link[scam]{scam}} e \code{\link[scam]{shape.constrained.smooth.terms}}.
+Embora existam ainda outras diversas parametrizações de shape constraints, apenas a concavidade
+faz sentido para produtibilidade.
 
 Embora a função ofereça a possibilidade de utilizar ou não as bordas da curva colina como apoio
 para estimação do modelo, o domínio final é sempre o mesmo:
@@ -87,8 +95,8 @@ O argumento \code{modo} permite definir a estrutura geral do modelo aditivo.
 \code{modo = "simples"} implica em um modelo de efeitos aditivos sem iteração, isto é, a função
 estimada é da forma \eqn{g(x) = f_1(X_1) + f_2(X_2)}, sem interação entre as variáveis.
 \code{modo = "tensor"} construirá uma função por produto tensor das marginais, isto é, levando em
-consideração a interação entre variáveis. \code{modo = "multivar"} só é aplicável quando ambos
-\code{ts.quedal = ts.vazao = "tp"|"ts"}, pois corresponde a modelagem com suavizadores
+consideração a interação entre variáveis. \code{modo = "multivar"} só é aplicável quando
+\code{all(ts \%in\% c("tp", "ts"))}, pois corresponde a modelagem com suavizadores
 naturalmente multivariados, que é o caso singular das thin plate regression splines.
 }
 \examples{
