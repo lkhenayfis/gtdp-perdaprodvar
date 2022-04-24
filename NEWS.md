@@ -10,6 +10,8 @@
 * Corrige o nome das colunas em `bordasCC`. Antes a coluna de queda se chamava `queda`, sem o l no 
   final indicando queda líquida. Em função disso ao juntar o dado de bordas com histórico para 
   ajuste, a coluna `quedal` ficava `NA` nos pontos de borda e eles nao entravam no ajuste.
+* Corrige escala de produtibilidade na borda da usina dummy. Antes esse dado ficava com a prod 
+  original, sem reescalonamento como é feito no dado dummy, o que introduzia uma inconsistência
 
 # perdaprodvar 1.1.2
 

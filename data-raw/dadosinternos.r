@@ -48,6 +48,7 @@ aux <- bordasCC[usina == oldcod]
 aux[, usina := 9999]
 aux[, quedal := renorm(quedal, minolds[5], maxolds[5], minnews[5], maxnews[5])]
 aux[, vazao := renorm(vazao, minolds[2], maxolds[2], minnews[2], maxnews[2])]
+aux[, prod := renorm(prod, minolds[1], maxolds[1], minnews[1], maxnews[1])]
 
 bordasCC <- rbind(bordasCC, aux)
 
