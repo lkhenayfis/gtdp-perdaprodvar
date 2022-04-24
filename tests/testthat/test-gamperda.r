@@ -29,7 +29,7 @@ test_that("PERDA - Diferentes splines livres", {
     # Testando multiplos tipos de spline ---------------------------------
 
     for(ts in c("ps", "tp", "ts", "cr", "cs", "ds")) {
-        mod <- suppressWarnings(fitgam_perda(dts, ts.vazao = ts))
+        mod <- suppressWarnings(fitgam_perda(dts, ts = ts))
 
         expect_equal(class(mod), "gamperda")
         expect_true(all(mapply("-", mod$dat, dts[, .(vazao, perda)]) == 0))

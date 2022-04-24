@@ -43,14 +43,14 @@
 #' entre curvas. Caso não ocorra interseção, é utilizado o ponto de vazão no qual a distância entre 
 #' elas seja a menor possível e um aviso será emitido.
 #' 
-#' \code{ts.vazao} permite a especificação do tipo de spline utilizada na expansão de base. Todos os 
+#' \code{ts} permite a especificação do tipo de spline utilizada na expansão de base. Todos os 
 #' tipos definidos em \code{\link[mgcv]{mgcv}} são suportados. Para maiores detalhes a respeito das 
 #' possibilidades e suas descrições, veja \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado 
-#' \code{ts.vazao = "ps"}, o que corresponde à expansão por P-Splines.
+#' \code{ts = "ps"}, o que corresponde à expansão por P-Splines.
 #' 
 #' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
-#' @param ns.vazao dimensão da base expandida para ajuste
-#' @param ts.vazao tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
+#' @param ns dimensão da base expandida para ajuste
+#' @param ts tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
 #'     todas as opções
 #' @param extrap vetor inteiro de duas posições indicando o tipo de extrapolação em cada região -- 
 #'     um de \code{c(0, 1, 2)}. Ver Detalhes
@@ -61,9 +61,9 @@
 #' dat <- agregasemana(dummydata)
 #' 
 #' # ajustes com diferentes tipos de splines (com 10 nós em todos os casos)
-#' fit_tp <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "tp")
-#' fit_cr <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "cr")
-#' fit_ps <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "ps")
+#' fit_tp <- fitgam_perda(dat, ns = 10, ts = "tp")
+#' fit_cr <- fitgam_perda(dat, ns = 10, ts = "cr")
+#' fit_ps <- fitgam_perda(dat, ns = 10, ts = "ps")
 #' 
 #' # valores ajustados, previsao e residuos
 #' res <- residuals(fit_tp)
@@ -85,7 +85,7 @@
 #' 
 #' @export
 
-fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
+fitgam_perda <- function(dat, ns = 10, ts = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
 
     vazao <- perda <- NULL
 
@@ -106,7 +106,7 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     # de qualquer jeito, na hora de tirar a grade o valor em vazao = 0 e forcado a ser zero tambem
     if(extrap[1] == 0) dfit <- rbind(dfit, data.table(vazao = 1e-3, perda = 1e-3))
 
-    CALL <- as.call(list(quote(mgcv::gam), perda ~ s(vazao, bs = ts.vazao, k = ns.vazao), data = dfit))
+    CALL <- as.call(list(quote(mgcv::gam), perda ~ s(vazao, bs = ts, k = ns), data = dfit))
 
     mod <- eval(CALL)
 

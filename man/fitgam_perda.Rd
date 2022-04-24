@@ -6,8 +6,8 @@
 \usage{
 fitgam_perda(
   dat,
-  ns.vazao = 10,
-  ts.vazao = "ps",
+  ns = 10,
+  ts = "ps",
   extrap = c(2, 2),
   quantil = c(0.05, 0.95)
 )
@@ -15,13 +15,13 @@ fitgam_perda(
 \arguments{
 \item{dat}{\code{data.table} de dados para ajuste. Ver Detalhes}
 
-\item{ns.vazao}{dimensão da base expandida para ajuste. Padrão 10}
+\item{ns}{dimensão da base expandida para ajuste}
 
-\item{ts.vazao}{tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
-todas as opções. Padrão \code{"ps"}}
+\item{ts}{tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
+todas as opções}
 
-\item{extrap}{vetor de duas posições indicando o tipo de extrapolação em cada região. Ver
-Detalhes. Padrao tipo 2 para ambas as extrapolações}
+\item{extrap}{vetor inteiro de duas posições indicando o tipo de extrapolação em cada região --
+um de \code{c(0, 1, 2)}. Ver Detalhes}
 
 \item{quantil}{quantis para uso na extrapolação. Ver Detalhes}
 }
@@ -39,9 +39,16 @@ de resultados e plots. Desta forma, para garantir o funcionamento apropriado da 
 passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente pelas funções
 fornecidas no pacote.
 
-Para extrapolação, independentemente do tipo, duas partes do dado serão seccionadas:
-correspondente às vazões inferiores a \code{quantil[1]} e outra àquelas superiores a
-\code{quantil[2]}. Caso seja adotada extrapolação tipo 1:
+Tipicamente o dado semanal não possui vazões em valores próximos de zero ou da turbinada efetiva
+máxima. Desta forma é comum que ajustes livres sejam altamente incoerentes nessa região.
+\code{fitgam_perda} permite o uso de extrapolações tanto inferiores quanto superiores através do
+arguemnto \code{extrap}, um vetor de duas posições indicando o tipo de extrapolação a ser
+executado na parte inferior e superior, nesta ordem. Os tipos de extrapolações são indicados por
+um valor em \code{c(0, 1, 2)}
+
+Para tipos 1 ou 2, duas partes do dado serão seccionadas: uma correspondente às vazões inferiores
+a \code{quantil[1]} da vazão e outra àquelas superiores a \code{quantil[2]} da vazão. Caso seja
+adotada extrapolação tipo 1:
 \enumerate{
 \item Para região inferior, uma equação do tipo \eqn{kQ^2} será ajustada entre a origem e o ponto de
 de menor perda
@@ -54,23 +61,31 @@ Se for selecionada a extrapolação do tipo 2
 \item Ajusta-se uma curva \eqn{a + kQ^2} aos pontos da região superior
 }
 
+Tipo 0 corresponde à extrapolação natural, isto é, extensão do ajuste contínuo realizado sobre
+\code{dat} até 0 e vazão turbinada efetiva máxima. No caso da parte superior, ajustes por splines
+são naturalmente estruturados para projetar a última tendência de forma linear, de modo que
+normalmente não deve gerar problemas. No caso de extrapolação inferior, quando selecionado tipo 0
+será adicionado a \code{dat} um ponto próximo a 0, nas coordenadas \code{c(1e-3, 1e-3)}. Não é
+possível adicionar um ponto exatamente em zero pois geraria erro quando se estima um modelo com
+distribuição com suporte apenas nos reais positivos.
+
 Uma vez realizadas as extrapolações, o ajuste final é composto chaveando modelos no cruzamento
 entre curvas. Caso não ocorra interseção, é utilizado o ponto de vazão no qual a distância entre
 elas seja a menor possível e um aviso será emitido.
 
-\code{ts.vazao} permite a especificação do tipo de spline utilizada na expansão de base. Todos os
+\code{ts} permite a especificação do tipo de spline utilizada na expansão de base. Todos os
 tipos definidos em \code{\link[mgcv]{mgcv}} são suportados. Para maiores detalhes a respeito das
 possibilidades e suas descrições, veja \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado
-\code{ts.vazao = "ps"}, o que corresponde à expansão por P-Splines.
+\code{ts = "ps"}, o que corresponde à expansão por P-Splines.
 }
 \examples{
 
 dat <- agregasemana(dummydata)
 
 # ajustes com diferentes tipos de splines (com 10 nÃ³s em todos os casos)
-fit_tp <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "tp")
-fit_cr <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "cr")
-fit_ps <- fitgam_perda(dat, ns.vazao = 10, ts.vazao = "ps")
+fit_tp <- fitgam_perda(dat, ns = 10, ts = "tp")
+fit_cr <- fitgam_perda(dat, ns = 10, ts = "cr")
+fit_ps <- fitgam_perda(dat, ns = 10, ts = "ps")
 
 # valores ajustados, previsao e residuos
 res <- residuals(fit_tp)

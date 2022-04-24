@@ -62,7 +62,7 @@ corresponde à menor grade possível que atende confiavelmente ao critério de c
 # otimizando grade de perdas -----------------------------------------------
 
 dat <- agregasemana(dummydata)
-ajuste <- fitgam_perda(dat, ns.vazao = 5)
+ajuste <- fitgam_perda(dat, ns = 5)
 
 # roda otimizacao do numero de segmentacoes sem retornar varredura
 optgrade <- optgrid(ajuste, range.vazao = 10:60)
