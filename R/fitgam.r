@@ -106,7 +106,14 @@ fitgam_perda <- function(dat, ns = 10, ts = "ps", extrap = c(2, 2), quantil = c(
     # de qualquer jeito, na hora de tirar a grade o valor em vazao = 0 e forcado a ser zero tambem
     if(extrap[1] == 0) dfit <- rbind(dfit, data.table(vazao = 1e-3, perda = 1e-3))
 
+    free_splines  <- c("tp", "ts", "ds", "cr", "cs", "ps")
+    shape_splines <- c("mpi", "cx")
+
+    is_fs <- all(ts %in% free_splines)
+    is_sc <- all(ts %in% shape_splines)
+
     CALL <- as.call(list(quote(mgcv::gam), perda ~ s(vazao, bs = ts, k = ns), data = dfit))
+    if(is_sc) CALL[[1]] <- quote(scam::scam)
 
     mod <- eval(CALL)
 

@@ -48,6 +48,27 @@ test_that("PERDA - Diferentes splines livres", {
     }
 })
 
+test_that("PERDA - Shape constrained splines", {
+    dts <- agregasemana(dummydata)
+
+    # Testando multiplos tipos de spline ---------------------------------
+
+    for(ts in c("mpi", "cx")) {
+        mod <- suppressWarnings(fitgam_perda(dts, ts = ts))
+
+        expect_equal(class(mod), "gamperda")
+        expect_true(all(mapply("-", mod$dat, dts[, .(vazao, perda)]) == 0))
+
+        expect_equal(length(mod$model), 3)
+        expect_equal(sapply(mod$model, class), list("lm", c("scam", "glm", "lm"), "lm"))
+
+        smooth <- mod$model[[2]]$smooth[[1]]
+        expect_equal(class(smooth)[1], switch(ts, "mpi" = "mpi.smooth", cx = "cx.smooth"))
+
+        expect_snapshot_value(fitted(mod$model[[2]]), style = "serialize")
+    }
+})
+
 test_that("PERDA - Diferentes tipos de extrapolacao e quantis", {
     dts <- agregasemana(dummydata)
 
