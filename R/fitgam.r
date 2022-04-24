@@ -52,6 +52,8 @@
 #' @param ns dimensão da base expandida para ajuste
 #' @param ts tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
 #'     todas as opções
+#' @param dist objeto da classe \code{family} indicando a distribuição e link a serem usados no 
+#'     ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.
 #' @param extrap vetor inteiro de duas posições indicando o tipo de extrapolação em cada região -- 
 #'     um de \code{c(0, 1, 2)}. Ver Detalhes
 #' @param quantil quantis para uso na extrapolação. Ver Detalhes
@@ -85,7 +87,8 @@
 #' 
 #' @export
 
-fitgam_perda <- function(dat, ns = 10, ts = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
+fitgam_perda <- function(dat, ns = 10, ts = "ps", dist = gaussian(),
+    extrap = c(2, 2), quantil = c(.05, .95)) {
 
     vazao <- perda <- NULL
 
@@ -112,7 +115,9 @@ fitgam_perda <- function(dat, ns = 10, ts = "ps", extrap = c(2, 2), quantil = c(
     is_fs <- all(ts %in% free_splines)
     is_sc <- all(ts %in% shape_splines)
 
-    CALL <- as.call(list(quote(mgcv::gam), perda ~ s(vazao, bs = ts, k = ns), data = dfit))
+    form <- perda ~ s(vazao, bs = ts, k = ns)
+
+    CALL <- as.call(list(quote(mgcv::gam), form, quote(dist), quote(dfit)))
     if(is_sc) CALL[[1]] <- quote(scam::scam)
 
     mod <- eval(CALL)

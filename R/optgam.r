@@ -14,6 +14,8 @@
 #' @param range vetor de dimensões de base a testar na seleção
 #' @param ts tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
 #'     \code{link[mgcv]{gam}} e Detalhes
+#' @param dist objeto da classe \code{family} indicando a distribuição e link a serem usados no 
+#'     ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.
 #' @param extrap vetor de duas posições indicando o tipo de extrapolação em cada região. Ver 
 #'     Detalhes
 #' @param quantil quantis para uso na extrapolação. Ver Detalhes
@@ -37,9 +39,10 @@
 #' 
 #' @export
 
-optgam_perda <- function(dat, range = 5:30, ts = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
+optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
+    extrap = c(2, 2), quantil = c(.05, .95)) {
 
-    fitgams <- lapply(range, function(ns) fitgam_perda(dat, ns, ts, extrap, quantil))
+    fitgams <- lapply(range, function(ns) fitgam_perda(dat, ns, ts, dist, extrap, quantil))
     BICs    <- sapply(fitgams, BIC)
 
     optgam <- fitgams[[which.min(BICs)]]

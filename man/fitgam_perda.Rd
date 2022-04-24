@@ -8,6 +8,7 @@ fitgam_perda(
   dat,
   ns = 10,
   ts = "ps",
+  dist = gaussian(),
   extrap = c(2, 2),
   quantil = c(0.05, 0.95)
 )
@@ -19,6 +20,9 @@ fitgam_perda(
 
 \item{ts}{tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
 todas as opções}
+
+\item{dist}{objeto da classe \code{family} indicando a distribuição e link a serem usados no
+ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.}
 
 \item{extrap}{vetor inteiro de duas posições indicando o tipo de extrapolação em cada região --
 um de \code{c(0, 1, 2)}. Ver Detalhes}

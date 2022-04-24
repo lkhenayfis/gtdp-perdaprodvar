@@ -5,6 +5,10 @@
 * Adiciona suporte a outras distribuições no ajuste dos GAM de produtibilidade através do parâmetro 
   `dist`
 * Adiciona suporte a shape constrained splines em ajustes de produtibilidade
+* Adiciona suporte a outras distribuições no ajuste dos GAM de perda através do parâmetro 
+  `dist`
+* Adiciona suporte a shape constrained splines em ajustes de perda
+* Adiciona suporte a `gamperda` sem extrapolacao
 
 ### Minor
 

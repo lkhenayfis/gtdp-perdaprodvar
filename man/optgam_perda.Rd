@@ -8,6 +8,7 @@ optgam_perda(
   dat,
   range = 5:30,
   ts = "ps",
+  dist = gaussian(),
   extrap = c(2, 2),
   quantil = c(0.05, 0.95)
 )
@@ -19,6 +20,9 @@ optgam_perda(
 
 \item{ts}{tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
 \code{link[mgcv]{gam}} e Detalhes}
+
+\item{dist}{objeto da classe \code{family} indicando a distribuição e link a serem usados no
+ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.}
 
 \item{extrap}{vetor de duas posições indicando o tipo de extrapolação em cada região. Ver
 Detalhes}

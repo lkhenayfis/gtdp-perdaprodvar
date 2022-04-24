@@ -69,6 +69,21 @@ test_that("PERDA - Shape constrained splines", {
     }
 })
 
+test_that("PROD - Diferentes distribuicoes", {
+    dts <- agregasemana(dummydata)
+    mod <- suppressWarnings(fitgam_perda(dts, dist = Gamma(link = "log")))
+
+    printout <- capture.output(print(mod))
+    expect_snapshot_value(printout, style = "serialize")
+
+    expect_equal(class(mod), "gamperda")
+    expect_true(all(mapply("-", mod$dat, dts[, .(vazao, perda)]) == 0))
+    expect_equal(sapply(mod$model, class), list("lm", c("gam", "glm", "lm"), "lm"))
+
+    expect_snapshot_value(AIC(mod), style = "serialize")
+    expect_snapshot_value(BIC(mod), style = "serialize")
+})
+
 test_that("PERDA - Diferentes tipos de extrapolacao e quantis", {
     dts <- agregasemana(dummydata)
 
