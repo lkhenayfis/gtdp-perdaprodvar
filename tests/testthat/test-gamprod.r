@@ -61,6 +61,21 @@ test_that("PROD - Diferentes splines e modos", {
     }
 })
 
+test_that("PROD - Diferentes distribuicoes", {
+    dts <- agregasemana(dummydata)
+    mod <- fitgam_prod(dts, dist = Gamma(link = "log"))
+
+    printout <- capture.output(print(mod))
+    expect_snapshot_value(printout, style = "serialize")
+
+    expect_equal(class(mod), "gamprod")
+    expect_true(all(mapply("-", mod$dat, dts[, .(quedal, vazao, prod)]) == 0))
+    expect_equal(class(mod$model), c("gam", "glm", "lm"))
+
+    expect_snapshot_value(AIC(mod), style = "serialize")
+    expect_snapshot_value(BIC(mod), style = "serialize")
+})
+
 test_that("PROD - Metodos", {
     dts <- agregasemana(dummydata)
 

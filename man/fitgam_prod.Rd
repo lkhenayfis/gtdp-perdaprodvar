@@ -8,6 +8,7 @@ fitgam_prod(
   dat,
   ns = c(10, 10),
   ts = c("ps", "ps"),
+  dist = gaussian(),
   bordas = TRUE,
   modo = c("tensor", "multivar", "simples")
 )
@@ -19,6 +20,9 @@ fitgam_prod(
 
 \item{ts}{vetor de duas strings tipo de spline utilizada para queda líquida e vazão,
 respectivamente -- veja \code{\link[mgcv]{smooth.terms}} para mais detalhes sobre as opções}
+
+\item{dist}{objeto da classe \code{family} indicando a distribuição e link a serem usados no
+ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.}
 
 \item{bordas}{booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros
 indicando quais vértices utilizar. Ver Detalhes}

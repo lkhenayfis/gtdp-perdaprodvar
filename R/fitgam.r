@@ -214,6 +214,8 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 #' @param ns vetor dois inteiros, indicando dimensão da base em queda líquida e vazão, nesta ordem
 #' @param ts vetor de duas strings tipo de spline utilizada para queda líquida e vazão, 
 #'     respectivamente -- veja \code{\link[mgcv]{smooth.terms}} para mais detalhes sobre as opções
+#' @param dist objeto da classe \code{family} indicando a distribuição e link a serem usados no 
+#'     ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.
 #' @param bordas booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros 
 #'     indicando quais vértices utilizar. Ver Detalhes
 #' @param modo um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de 
@@ -245,8 +247,8 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 #' 
 #' @export
 
-fitgam_prod <- function(dat, ns = c(10, 10), ts = c("ps", "ps"), bordas = TRUE,
-    modo = c("tensor", "multivar", "simples")) {
+fitgam_prod <- function(dat, ns = c(10, 10), ts = c("ps", "ps"), dist = gaussian(),
+    bordas = TRUE, modo = c("tensor", "multivar", "simples")) {
 
     usina <- vazao <- ponto <- NULL
 
@@ -282,7 +284,7 @@ fitgam_prod <- function(dat, ns = c(10, 10), ts = c("ps", "ps"), bordas = TRUE,
         form <- as.formula(paste0("prod ~ ", term))
     }
 
-    mod <- mgcv::gam(form, data = dfit)
+    mod <- mgcv::gam(form, family = dist, data = dfit)
 
     new_gamprod(dat, mod, fc)
 }

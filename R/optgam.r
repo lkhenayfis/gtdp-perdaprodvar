@@ -64,6 +64,8 @@ optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2,
 #'     quadrado é gerado a partir dos ranges)
 #' @param ts vetor de duas strings tipo de spline utilizada para queda líquida e vazão -- 
 #'     veja \code{\link[mgcv]{smooth.terms}} para mais detalhes sobre as opções
+#' @param dist objeto da classe \code{family} indicando a distribuição e link a serem usados no 
+#'     ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.
 #' @param bordas booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros 
 #'     indicando quais vértices utilizar. Ver Detalhes
 #' @param modo um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de 
@@ -88,13 +90,13 @@ optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2,
 #' 
 #' @export
 
-optgam_prod <- function(dat, range = list(5:30, 5:30), ts = c("ps", "ps"),
+optgam_prod <- function(dat, range = list(5:30, 5:30), ts = c("ps", "ps"), dist = gaussian(),
     bordas = TRUE, modo = c("tensor", "multivar", "simples")) {
 
     ranges <- expand.grid(quedal = range[[1]], vazao = range[[2]])
 
     fitgams <- lapply(seq(nrow(ranges)), function(i)
-        fitgam_prod(dat, unlist(ranges[i, ]), ts, bordas, modo)
+        fitgam_prod(dat, unlist(ranges[i, ]), ts, dist, bordas, modo)
     )
     BICs <- sapply(fitgams, BIC)
 

@@ -64,7 +64,7 @@ print.gamprod <- function(x, ...) {
 
 predict.gamprod <- function(object, newdata, ...) {
 
-    pred <- predict(object$model, newdata = newdata)
+    pred <- predict(object$model, newdata = newdata, type = "response")
 
     return(pred)
 }

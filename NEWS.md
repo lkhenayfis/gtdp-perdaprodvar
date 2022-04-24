@@ -2,6 +2,9 @@
 
 ## New fearures
 
+* Adiciona suporte a outras distribuições no ajuste dos GAM de produtibilidade através do parâmetro 
+  `dist`
+
 ### Minor
 
 * a chamada guardada pelas funções `fitgam` agora avaliam os argumentos antes de retornar os 
