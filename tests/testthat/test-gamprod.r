@@ -28,10 +28,18 @@ test_that("PROD - Diferentes dimensoes de base", {
     }
 })
 
-test_that("PROD - Diferentes splines e modos", {
+test_that("PROD - Diferentes splines livres e modos", {
     dts <- agregasemana(dummydata)
 
     # Testando multiplos tipos de spline e modos -------------------------
+
+    # bases nao suportadas pelo pacote
+    expect_error(mod <- fitgam_prod(dts, ts = c("cc", "ps")))
+    expect_error(mod <- fitgam_prod(dts, ts = c("cp", "ps")))
+    expect_error(mod <- fitgam_prod(dts, ts = c("re", "ps")))
+    expect_error(mod <- fitgam_prod(dts, ts = c("mrf", "ps")))
+    expect_error(mod <- fitgam_prod(dts, ts = c("gp", "ps")))
+    expect_error(mod <- fitgam_prod(dts, ts = c("so", "ps")))
 
     tipos <- expand.grid(c("ps", "tp", "ts", "cr", "cs", "ds"),
         c("ps", "tp", "ts", "cr", "cs", "ds"),
@@ -57,8 +65,30 @@ test_that("PROD - Diferentes splines e modos", {
             )
         }
 
-        expect_snapshot_value(fitted(mod$model), style = "serialize", )
+        expect_snapshot_value(fitted(mod$model), style = "serialize")
     }
+})
+
+test_that("PROD - Shape Constrained Splines", {
+    dts <- agregasemana(dummydata)
+    
+    expect_error(mod <- fitgam_prod(dts, ts = c("cv", "cv")))
+    expect_error(mod <- fitgam_prod(dts, ts = c("cv", "cv"), modo = "multivar"))
+    expect_error(mod <- fitgam_prod(dts, ts = c("cv", "tp")))
+
+    mod <- fitgam_prod(dts, ts = c("cv", "cv"), modo = "simples")
+
+    expect_snapshot_value(fitted(mod$model), style = "serialize")
+
+    expect_equal(class(mod), "gamprod")
+    expect_true(all(mapply("-", mod$dat, dts[, .(quedal, vazao, prod)]) == 0))
+    expect_equal(class(mod$model), c("scam", "glm", "lm"))
+
+    smooth <- mod$model$smooth
+    expect_equal(class(smooth[[1]])[1], "cv.smooth")
+    expect_equal(class(smooth[[2]])[1], "cv.smooth")
+    expect_equal(unname(smooth[[1]]$sp), 0)
+    expect_equal(unname(smooth[[2]]$sp), 0)
 })
 
 test_that("PROD - Diferentes distribuicoes", {

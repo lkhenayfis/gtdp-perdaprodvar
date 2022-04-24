@@ -165,7 +165,8 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 #' 
 #' \code{ts} permite a especificação do tipo de spline utilizada na expansão de base em cada 
 #' marginal. A maioria das opções suportadas pelo pacote \code{mgcv} são utilizáveis, com algumas 
-#' exceções que não condizem com esta aplicação específica. \code{fitgam_prod} suporta as splines
+#' exceções que não condizem com esta aplicação específica. \code{fitgam_prod} suporta as splines 
+#' livres
 #' 
 #' \itemize{
 #' \item \code{"tp"}: thin-plate regression splines
@@ -179,6 +180,13 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
 #' Para maiores detalhes a respeito das possibilidades e suas descrições, veja
 #' \code{\link[mgcv]{smooth.terms}}. Por padrão é utilizado  \code{ts.vazao = "ps"}, o que 
 #' corresponde à expansão por P-Splines.
+#' 
+#' Adicionalmente às splines denominadas livres, \code{fitgam_prod} também suporta o uso de shape 
+#' constrained P-splines, especificamente uma reparametrização que garante uma superfície côncava no
+#' domínio de ajuste, via \code{ts = c("cv", "cv")}. Maiores detalhes a respeito desta modelagem 
+#' encontram-se em \code{link[scam]{scam}} e \code{\link[scam]{shape.constrained.smooth.terms}}. 
+#' Embora existam ainda outras diversas parametrizações de shape constraints, apenas a concavidade 
+#' faz sentido para produtibilidade.
 #' 
 #' Embora a função ofereça a possibilidade de utilizar ou não as bordas da curva colina como apoio 
 #' para estimação do modelo, o domínio final é sempre o mesmo:
@@ -266,25 +274,40 @@ fitgam_prod <- function(dat, ns = c(10, 10), ts = c("ps", "ps"), dist = gaussian
 
     dfit <- rbind(dat, as.data.table(borda[bordas, 3:5, drop = FALSE]), fill = TRUE)
 
+    free_splines  <- c("tp", "ts", "ds", "cr", "cs", "ps")
+    shape_splines <- c("cv")
+
+    is_fs <- all(ts %in% free_splines)
+    is_sc <- all(ts %in% shape_splines)
+
+    if(!(is_fs | is_sc)) stop("'ts' contem um tipo de spline nao suportado")
+
     if(modo == "simples") {
         term1 <- paste0("s(quedal, bs = '", ts[1], "', k = ", ns[1], ")")
         term2 <- paste0("s(vazao, bs = '", ts[2], "', k = ", ns[2], ")")
         form <- as.formula(paste0("prod ~ ", term1, " + ", term2))
     } else if(modo == "multivar") {
         if(!all(ts %in% c("tp", "ts"))) {
-            stop("modo multivar so suporta tipos de spline 'tp'")
+            stop("modo multivar so suporta tipos de spline 'tp' ou 'ts'")
         }
 
         term <- paste0("s(quedal, vazao, bs = 'tp', k = c(", ns[1], ", ", ns[2], "))")
         form <- as.formula(paste0("prod ~ ", term))
     } else {
+        if(is_sc) stop("Splines marginais 'cv' nao sao suportadas em produto tensor -- use modo = 'simples'")
         termbs <- paste0(ts, collapse = "', '")
         termns <- paste0(ns, collapse = ", ")
         term <- paste0("te(quedal, vazao, bs = c('", termbs, "'), k = c(", termns, "))")
         form <- as.formula(paste0("prod ~ ", term))
     }
 
-    mod <- mgcv::gam(form, family = dist, data = dfit)
+    # quando se esta estimando um SC GAM, forca a penalidade para zero pois o modelo ja sera concavo
+    if(is_sc) SP <- c(0, 0) else SP <- NULL
+    
+    CALL <- as.call(list(quote(mgcv::gam), form, quote(dist), quote(dfit), sp = SP))
+    if(is_sc) CALL[[1]] <- quote(scam::scam)
+
+    mod <- eval(CALL)
 
     new_gamprod(dat, mod, fc)
 }

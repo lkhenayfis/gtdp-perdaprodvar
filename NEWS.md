@@ -4,6 +4,7 @@
 
 * Adiciona suporte a outras distribuições no ajuste dos GAM de produtibilidade através do parâmetro 
   `dist`
+* Adiciona suporte a shape constrained splines em ajustes de produtibilidade
 
 ### Minor
 
