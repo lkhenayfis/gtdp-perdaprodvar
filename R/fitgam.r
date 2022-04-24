@@ -11,9 +11,16 @@
 #' passado em \code{dat} deve ter sido lido e (possivelmente) agregado semanalmente pelas funções 
 #' fornecidas no pacote.
 #' 
-#' Para extrapolação, independentemente do tipo, duas partes do dado serão seccionadas: 
-#' correspondente às vazões inferiores a \code{quantil[1]} e outra àquelas superiores a 
-#' \code{quantil[2]}. Caso seja adotada extrapolação tipo 1:
+#' Tipicamente o dado semanal não possui vazões em valores próximos de zero ou da turbinada efetiva
+#' máxima. Desta forma é comum que ajustes livres sejam altamente incoerentes nessa região. 
+#' \code{fitgam_perda} permite o uso de extrapolações tanto inferiores quanto superiores através do
+#' arguemnto \code{extrap}, um vetor de duas posições indicando o tipo de extrapolação a ser 
+#' executado na parte inferior e superior, nesta ordem. Os tipos de extrapolações são indicados por
+#' um valor em \code{c(0, 1, 2)}
+#' 
+#' Para tipos 1 ou 2, duas partes do dado serão seccionadas: uma correspondente às vazões inferiores
+#' a \code{quantil[1]} da vazão e outra àquelas superiores a \code{quantil[2]} da vazão. Caso seja 
+#' adotada extrapolação tipo 1:
 #' 
 #' 1. Para região inferior, uma equação do tipo \eqn{kQ^2} será ajustada entre a origem e o ponto de
 #'    de menor perda
@@ -23,6 +30,14 @@
 #' 
 #' 1. Ajusta-se uma curva \eqn{kQ^2} aos pontos da região inferior
 #' 1. Ajusta-se uma curva \eqn{a + kQ^2} aos pontos da região superior
+#' 
+#' Tipo 0 corresponde à extrapolação natural, isto é, extensão do ajuste contínuo realizado sobre 
+#' \code{dat} até 0 e vazão turbinada efetiva máxima. No caso da parte superior, ajustes por splines
+#' são naturalmente estruturados para projetar a última tendência de forma linear, de modo que 
+#' normalmente não deve gerar problemas. No caso de extrapolação inferior, quando selecionado tipo 0
+#' será adicionado a \code{dat} um ponto próximo a 0, nas coordenadas \code{c(1e-3, 1e-3)}. Não é 
+#' possível adicionar um ponto exatamente em zero pois geraria erro quando se estima um modelo com 
+#' distribuição com suporte apenas nos reais positivos.
 #' 
 #' Uma vez realizadas as extrapolações, o ajuste final é composto chaveando modelos no cruzamento 
 #' entre curvas. Caso não ocorra interseção, é utilizado o ponto de vazão no qual a distância entre 
@@ -34,11 +49,11 @@
 #' \code{ts.vazao = "ps"}, o que corresponde à expansão por P-Splines.
 #' 
 #' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
-#' @param ns.vazao dimensão da base expandida para ajuste. Padrão 10
+#' @param ns.vazao dimensão da base expandida para ajuste
 #' @param ts.vazao tipo de spline utilizada para vazão -- veja \code{\link[mgcv]{smooth.terms}} para
-#'     todas as opções. Padrão \code{"ps"}
-#' @param extrap vetor de duas posições indicando o tipo de extrapolação em cada região. Ver 
-#'     Detalhes. Padrao tipo 2 para ambas as extrapolações
+#'     todas as opções
+#' @param extrap vetor inteiro de duas posições indicando o tipo de extrapolação em cada região -- 
+#'     um de \code{c(0, 1, 2)}. Ver Detalhes
 #' @param quantil quantis para uso na extrapolação. Ver Detalhes
 #' 
 #' @examples
@@ -81,75 +96,24 @@ fitgam_perda <- function(dat, ns.vazao = 10, ts.vazao = "ps", extrap = c(2, 2), 
     fc <- as.call(c(fc[[1]], da))
     fc[-1] <- lapply(fc[-1], eval, envir = parent.frame())
 
-    wrn <- paste0("Nao ha cruzamento entre a extrapolacao inferior escolhida e o ajuste do GAM - ",
-        "foi utilizado o ponto mais proximo")
+    if(!(all(extrap %in% 0:2))) stop("extrap so pode assumir valor 0, 1 ou 2")
 
-    if(!(all(extrap %in% 1:2))) stop("extrap so pode assumir valor 1 ou 2")
+    dfit <- copy(dat[, list(vazao, perda)])
 
-    mod  <- mgcv::gam(perda ~ s(vazao, bs = ts.vazao, k = ns.vazao), data = dat)
+    # se nao tiver extrap inferior, e add um ponto proximo de zero para auxiliar o ajuste
+    # esse ponto nao pode ser zero cravado porque vai dar erro quando usar distribuicoes com
+    # suporte so nos positivos
+    # de qualquer jeito, na hora de tirar a grade o valor em vazao = 0 e forcado a ser zero tambem
+    if(extrap[1] == 0) dfit <- rbind(dfit, data.table(vazao = 1e-3, perda = 1e-3))
 
-    # Extrapolacao inferior ----------------------------------------------
+    CALL <- as.call(list(quote(mgcv::gam), perda ~ s(vazao, bs = ts.vazao, k = ns.vazao), data = dfit))
 
-    dI <- dat[vazao < quantile(vazao, quantil[1])]
+    mod <- eval(CALL)
 
-    if(extrap[1] == 1) {
-        coefI  <- dI[which.min(perda), predict(mod, .SD) / vazao^2]
-        corteI <- dI[which.min(perda), vazao][1]
-    } else {
-        r     <- lm(perda ~ I(vazao^2) - 1, data = dI, )
-        coefI <- r$coefficients
+    inf <- extrapperda_inf(dat, mod, extrap[1], quantil[1])
+    sup <- extrapperda_sup(dat, mod, extrap[2], quantil[2])
 
-        vx <- seq(0, max(dI$vazao), length.out = 1000)
-        vextrap <- coefI * vx^2
-        vgam    <- predict(mod, newdata = data.frame(vazao = vx))
-
-        vdiff <- vextrap - vgam
-        vsign <- sign(vdiff)
-        corteI <- which(diff(vsign) != 0)
-
-        if(length(corteI) != 0) {
-            corteI <- vx[corteI + 1][1]
-        } else {
-            corteI <- which.min(abs(vdiff))
-            corteI <- vx[corteI][1]
-            warning(wrn)
-        }
-    }
-
-    # Extrapolacao superior ----------------------------------------------
-
-    dS <- dat[vazao > quantile(vazao, quantil[2])]
-    vx <- seq(min(min(dS$vazao), attr(dat, "qmax")), attr(dat, "qmax"), length.out = 1000)
-
-    if(extrap[2] == 1) {
-        coefS <- dS[which.max(vazao), perda / vazao^2]
-        coefS <- c(0, coefS)
-    } else {
-        X   <- cbind(1, dS$vazao^2)
-        Y   <- dS$perda
-        e   <- matrix(c(1, 0, 0, 1), 2)
-        f   <- c(0, 0)
-        coefS <- lsei::lsei(X, Y, e = e, f = f)
-    }
-
-    vextrap <- coefS[1] + coefS[2] * vx^2
-    vgam    <- predict(mod, newdata = data.frame(vazao = vx))
-
-    vdiff <- vextrap - vgam
-    vsign <- sign(vdiff)
-    corteS <- which(diff(vsign) != 0)
-
-    if(length(corteS) != 0) {
-        corteS <- vx[corteS + 1][1]
-    } else {
-        corteS <- which.min(abs(vdiff))
-        corteS <- vx[corteS][1]
-        warning(wrn)
-    }
-
-    # Monta objeto de saida ----------------------------------------------
-
-    new_gamperda(dat, mod, coefI, coefS, corteI, corteS, fc)
+    new_gamperda(dat, mod, inf[[1]], sup[[1]], inf[[2]], sup[[2]], fc)
 }
 
 #' Ajuste De Superfície Para Produtibilidade
@@ -310,4 +274,99 @@ fitgam_prod <- function(dat, ns = c(10, 10), ts = c("ps", "ps"), dist = gaussian
     mod <- eval(CALL)
 
     new_gamprod(dat, mod, fc)
+}
+
+# HELPERS ------------------------------------------------------------------------------------------
+
+#' Extrapolações Para Ajuste De Perdas
+#' 
+#' Funções auxiliares para \code{fitgam_perda}
+#' 
+#' @param dat dado ajustado
+#' @param mod modelo continuo estimado 
+#' @param tipo tipo de extrapolacao. Um entre 0, 1 ou 2
+#' @param quant_inf,quant_sup o quantil para extracao do dado ajustado na extrapolacao
+#' 
+#' @return lista de dois elementos: o vetor de coeficientes ajustado e valor do corte no domínio
+#' 
+#' @name extrapperda
+NULL
+
+#' @rdname extrapperda
+
+extrapperda_inf <- function(dat, mod, tipo, quant_inf) {
+
+    if(tipo == 0) return(list(NA, -1))
+
+    wrn <- paste0("Nao ha cruzamento entre a extrapolacao inferior escolhida e o ajuste do GAM - ",
+        "foi utilizado o ponto mais proximo")
+
+    dI <- dat[vazao < quantile(vazao, quant_inf)]
+
+    if(tipo == 1) {
+        coefI  <- dI[which.min(perda), predict(mod, .SD) / vazao^2]
+        corteI <- dI[which.min(perda), vazao][1]
+    } else {
+        r     <- lm(perda ~ I(vazao^2) - 1, data = dI, )
+        coefI <- r$coefficients
+
+        vx <- seq(0, max(dI$vazao), length.out = 1000)
+        vextrap <- coefI * vx^2
+        vgam    <- predict(mod, newdata = data.frame(vazao = vx))
+
+        vdiff <- vextrap - vgam
+        vsign <- sign(vdiff)
+        corteI <- which(diff(vsign) != 0)
+
+        if(length(corteI) != 0) {
+            corteI <- vx[corteI + 1][1]
+        } else {
+            corteI <- which.min(abs(vdiff))
+            corteI <- vx[corteI][1]
+            warning(wrn)
+        }
+    }
+
+    return(list(coefI, corteI))
+}
+
+#' @rdname extrapperda
+
+extrapperda_sup <- function(dat, mod, tipo, quant_sup) {
+
+    if(tipo == 0) return(list(rep(NA, 2), Inf))
+
+    wrn <- paste0("Nao ha cruzamento entre a extrapolacao superior escolhida e o ajuste do GAM - ",
+        "foi utilizado o ponto mais proximo")
+
+    dS <- dat[vazao > quantile(vazao, quant_sup)]
+    vx <- seq(min(min(dS$vazao), attr(dat, "qmax")), attr(dat, "qmax"), length.out = 1000)
+
+    if(tipo == 1) {
+        coefS <- dS[which.max(vazao), perda / vazao^2]
+        coefS <- c(0, coefS)
+    } else {
+        X   <- cbind(1, dS$vazao^2)
+        Y   <- dS$perda
+        e   <- matrix(c(1, 0, 0, 1), 2)
+        f   <- c(0, 0)
+        coefS <- lsei::lsei(X, Y, e = e, f = f)
+    }
+
+    vextrap <- coefS[1] + coefS[2] * vx^2
+    vgam    <- predict(mod, newdata = data.frame(vazao = vx))
+
+    vdiff <- vextrap - vgam
+    vsign <- sign(vdiff)
+    corteS <- which(diff(vsign) != 0)
+
+    if(length(corteS) != 0) {
+        corteS <- vx[corteS + 1][1]
+    } else {
+        corteS <- which.min(abs(vdiff))
+        corteS <- vx[corteS][1]
+        warning(wrn)
+    }
+
+    return(list(coefS, corteS))
 }

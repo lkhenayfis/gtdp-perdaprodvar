@@ -27,6 +27,7 @@ extraigrid.gamperda <- function(fit, dim, ...) {
 new_gridperda <- function(perda, vazao, fit) {
 
     gridperda <- data.table(vazao = vazao, perda = perda)
+    gridperda[vazao == 0, perda := 0]
 
     out <- list(grid = gridperda, model = fit)
     class(out) <- "gridperda"
