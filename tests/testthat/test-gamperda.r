@@ -1,4 +1,4 @@
-test_that("Modelagem continua de perdas", {
+test_that("Fit de modelo para perda", {
     dts <- agregasemana(dummydata)
     mod <- suppressWarnings(fitgam_perda(dts))
 
@@ -8,6 +8,11 @@ test_that("Modelagem continua de perdas", {
     expect_snapshot_value(AIC(mod), style = "serialize")
     expect_snapshot_value(BIC(mod), style = "serialize")
 
+})
+
+test_that("PERDA - Diferentes dimensoes de base", {
+    dts <- agregasemana(dummydata)
+
     # Testando diferentes dimensoes de base ------------------------------
 
     for(n in c(5, 10, 15, 20)) {
@@ -16,11 +21,15 @@ test_that("Modelagem continua de perdas", {
         smooth <- mod$model[[2]]$smooth[[1]]
         expect_equal(smooth$bs.dim, n)
     }
+})
+
+test_that("PERDA - Diferentes splines livres", {
+    dts <- agregasemana(dummydata)
 
     # Testando multiplos tipos de spline ---------------------------------
 
     for(ts in c("ps", "tp", "ts", "cr", "cs", "ds")) {
-        mod <- suppressWarnings(fitgam_perda(dts, ts.vazao = ts))
+        mod <- suppressWarnings(fitgam_perda(dts, ts = ts))
 
         expect_equal(class(mod), "gamperda")
         expect_true(all(mapply("-", mod$dat, dts[, .(vazao, perda)]) == 0))
@@ -37,6 +46,54 @@ test_that("Modelagem continua de perdas", {
 
         expect_snapshot_value(fitted(mod$model[[2]]), style = "serialize")
     }
+})
+
+test_that("PERDA - Shape constrained splines", {
+    dts <- agregasemana(dummydata)
+
+    # Testando multiplos tipos de spline ---------------------------------
+
+    for(ts in c("mpi", "cx")) {
+        mod <- suppressWarnings(fitgam_perda(dts, ts = ts))
+
+        expect_equal(class(mod), "gamperda")
+        expect_true(all(mapply("-", mod$dat, dts[, .(vazao, perda)]) == 0))
+
+        expect_equal(length(mod$model), 3)
+        expect_equal(sapply(mod$model, class), list("lm", c("scam", "glm", "lm"), "lm"))
+
+        smooth <- mod$model[[2]]$smooth[[1]]
+        expect_equal(class(smooth)[1], switch(ts, "mpi" = "mpi.smooth", cx = "cx.smooth"))
+
+        expect_snapshot_value(fitted(mod$model[[2]]), style = "serialize")
+    }
+})
+
+test_that("PROD - Diferentes distribuicoes", {
+    dts <- agregasemana(dummydata)
+    mod <- suppressWarnings(fitgam_perda(dts, dist = Gamma(link = "log")))
+
+    printout <- capture.output(print(mod))
+    expect_snapshot_value(printout, style = "serialize")
+
+    expect_equal(class(mod), "gamperda")
+    expect_true(all(mapply("-", mod$dat, dts[, .(vazao, perda)]) == 0))
+    expect_equal(sapply(mod$model, class), list("lm", c("gam", "glm", "lm"), "lm"))
+
+    expect_snapshot_value(AIC(mod), style = "serialize")
+    expect_snapshot_value(BIC(mod), style = "serialize")
+})
+
+test_that("PERDA - Diferentes tipos de extrapolacao e quantis", {
+    dts <- agregasemana(dummydata)
+
+    # Sem extrapolacao ---------------------------------------------------
+
+    mod_00 <- fitgam_perda(dts, extrap = c(0, 0))
+
+    expect_equal(coefficients(mod_00$model[[1]]), c(0, NA))
+    expect_equal(coefficients(mod_00$model[[3]]), c(NA, NA))
+    expect_equal(unname(attr(mod_00, "cortes")), c(-1, Inf))
 
     # Testando tipos de extrapolacao -------------------------------------
 
@@ -50,13 +107,18 @@ test_that("Modelagem continua de perdas", {
     expect_equal(coefficients(mod_21$model[[1]]), coefficients(mod_22$model[[1]]))
     expect_equal(coefficients(mod_12$model[[3]]), coefficients(mod_22$model[[3]]))
 
+    expect_equal(attr(mod_11, "cortes")[1], attr(mod_12, "cortes")[1])
+    expect_equal(attr(mod_11, "cortes")[2], attr(mod_21, "cortes")[2])
+    expect_equal(attr(mod_12, "cortes")[2], attr(mod_22, "cortes")[2])
+    expect_equal(attr(mod_21, "cortes")[1], attr(mod_22, "cortes")[1])
+
     expect_equal(coefficients(mod_11$model[[3]])[1], 0)
     expect_equal(coefficients(mod_21$model[[3]])[1], 0)
     expect_true(coefficients(mod_12$model[[3]])[1] != 0)
     expect_true(coefficients(mod_22$model[[3]])[1] != 0)
 
-    expect_equal(unname(attr(mod_11, "cortes")[1]), min(mod$dat$vazao))
-    expect_equal(unname(attr(mod_12, "cortes")[1]), min(mod$dat$vazao))
+    expect_equal(unname(attr(mod_11, "cortes")[1]), min(mod_11$dat$vazao))
+    expect_equal(unname(attr(mod_12, "cortes")[1]), min(mod_12$dat$vazao))
 
     # Testando diferentes quantis ----------------------------------------
 
@@ -64,6 +126,11 @@ test_that("Modelagem continua de perdas", {
     expect_warning(mod2 <- fitgam_perda(dts, quantil = c(.025, .975)))
     expect_warning(mod3 <- fitgam_perda(dts, quantil = c(.05, .95)))
     mod4 <- fitgam_perda(dts, quantil = c(.1, .9))
+
+})
+
+test_that("PERDA - Metodos", {
+    dts <- agregasemana(dummydata)
 
     # Testando metodos ---------------------------------------------------
 

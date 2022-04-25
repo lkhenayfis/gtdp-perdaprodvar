@@ -5,18 +5,19 @@
 #' Varre uma faixa de dimensões de base, reportando aquela correspondente ao ajuste de menor BIC
 #' 
 #' Os parâmetros recebidos por \code{optgam_perda} são exatamente aqueles de 
-#' \code{\link{fitgam_perda}}, com uma exceção: o argumento \code{ns.vazao} é substituído por 
-#' \code{range.vazao}, um vetor de inteiros indicando as dimensões de base candidatas para seleção.
+#' \code{\link{fitgam_perda}}, com uma exceção: o argumento \code{ns} é substituído por 
+#' \code{range}, um vetor de inteiros indicando as dimensões de base candidatas para seleção.
 #' Mais detalhes a respeito da estimação e efeito dos argumentos individuais podem ser encontrados 
 #' em \code{\link{fitgam_perda}}
 #' 
 #' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
-#' @param range.vazao vetor de dimensões de base a testar na seleção. Padrão 
-#'     \code{range.vazao = 5:30}
-#' @param ts.vazao tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
-#'     \code{link[mgcv]{gam}} e Detalhes. Padrao "ps"
+#' @param range vetor de dimensões de base a testar na seleção
+#' @param ts tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
+#'     \code{link[mgcv]{gam}} e Detalhes
+#' @param dist objeto da classe \code{family} indicando a distribuição e link a serem usados no 
+#'     ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.
 #' @param extrap vetor de duas posições indicando o tipo de extrapolação em cada região. Ver 
-#'     Detalhes. Padrao tipo 2 para ambas as extrapolações
+#'     Detalhes
 #' @param quantil quantis para uso na extrapolação. Ver Detalhes
 #' 
 #' @examples 
@@ -24,7 +25,7 @@
 #' dat <- agregasemana(dummydata)
 #' 
 #' # execucao limitando a faixa de numero de splines a algo mais baixo
-#' optfit <- optgam_perda(dat, range.vazao = 5:10)
+#' optfit <- optgam_perda(dat, range = 5:10)
 #' \dontrun{
 #' plot(optfit)
 #' }
@@ -38,9 +39,10 @@
 #' 
 #' @export
 
-optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2, 2), quantil = c(.05, .95)) {
+optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
+    extrap = c(2, 2), quantil = c(.05, .95)) {
 
-    fitgams <- lapply(range.vazao, function(ns) fitgam_perda(dat, ns, ts.vazao, extrap, quantil))
+    fitgams <- lapply(range, function(ns) fitgam_perda(dat, ns, ts, dist, extrap, quantil))
     BICs    <- sapply(fitgams, BIC)
 
     optgam <- fitgams[[which.min(BICs)]]
@@ -53,18 +55,19 @@ optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2,
 #' Varre uma faixa de dimensões de base, reportando aquela correspondente ao ajuste de menor BIC
 #' 
 #' Os parâmetros recebidos por \code{optgam_prod} são exatamente aqueles de 
-#' \code{\link{fitgam_prod}}, com uma exceção: os argumentos \code{ns.quedal} e \code{ns.vazao} são
-#' substituídos por \code{range.quedal} e \code{range.vazao}, vetores de inteiros indicando as 
-#' dimensões de base candidatas em cada marginal para seleção.
-#' Mais detalhes a respeito da estimação e efeito dos argumentos individuais podem ser encontrados 
-#' em \code{\link{fitgam_prod}}
+#' \code{\link{fitgam_prod}}, com uma exceção: o argumento \code{ns} é substituído por \code{range}, 
+#' uma lista de dois vetores de inteiros indicando as dimensões de base candidatas em queda e vazão,
+#' nesta ordem, para seleção. Mais detalhes a respeito da estimação e efeito dos argumentos 
+#' individuais podem ser encontrados em \code{\link{fitgam_prod}}.
 #' 
 #' @param dat \code{data.table} de dados para ajuste. Ver Detalhes
-#' @param range.quedal,range.vazao vetor de dimensões de base a testar na seleção. Todas as
-#'     combinações serão testadas (isto é, um domínio quadrado é gerado a partir dos ranges). Padrão
-#'     \code{range.quedal = range.vazao = 5:30}
-#' @param ts.quedal,ts.vazao tipo de spline utilizada para queda líquida e vazão -- 
-#'     veja \code{\link[mgcv]{smooth.terms}} para todas as opções. Padrão \code{"ps"} em ambos
+#' @param range lista com dois vetores inteiros indicando dimensões de base em queda líquida e 
+#'     vazão, nesta ordem, a testar na seleção. Todas as combinações serão testadas (um domínio 
+#'     quadrado é gerado a partir dos ranges)
+#' @param ts vetor de duas strings tipo de spline utilizada para queda líquida e vazão -- 
+#'     veja \code{\link[mgcv]{smooth.terms}} para mais detalhes sobre as opções
+#' @param dist objeto da classe \code{family} indicando a distribuição e link a serem usados no 
+#'     ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.
 #' @param bordas booleano indicando o uso ou não de bordas; alternativamente, um vetor de inteiros 
 #'     indicando quais vértices utilizar. Ver Detalhes
 #' @param modo um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de 
@@ -75,13 +78,10 @@ optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2,
 #' dat <- agregasemana(dummydata)
 #' 
 #' # execucao limitando a faixa de numero de splines a algo mais baixo
-#' optfit <- optgam_prod(dat, range.quedal = 5:10, range.vazao = 5:10)
+#' optfit <- optgam_prod(dat, range = list(5:10, 5:10))
 #' \dontrun{
 #' plot(optfit)
 #' }
-#' 
-#' # dentre os argumentos de optfit esta a lista 'gamargs', contendo a parametrizacao do gam
-#' attr(optfit, "gamargs") # ns.vazao corresponde ao numero de nos utilizados no ajuste otimo
 #' 
 #' @return objeto \code{gamprod} contendo GAM e extrapolações estimadas
 #' 
@@ -92,13 +92,13 @@ optgam_perda <- function(dat, range.vazao = 5:30, ts.vazao = "ps", extrap = c(2,
 #' 
 #' @export
 
-optgam_prod <- function(dat, range.quedal = 5:30, range.vazao = 5:30, ts.quedal = "ps", ts.vazao = "ps",
+optgam_prod <- function(dat, range = list(5:30, 5:30), ts = c("ps", "ps"), dist = gaussian(),
     bordas = TRUE, modo = c("tensor", "multivar", "simples")) {
 
-    ranges <- expand.grid(quedal = range.quedal, vazao = range.vazao)
+    ranges <- expand.grid(quedal = range[[1]], vazao = range[[2]])
 
     fitgams <- lapply(seq(nrow(ranges)), function(i)
-        fitgam_prod(dat, ranges[i, 1], ranges[i, 2], ts.quedal, ts.vazao, bordas, modo)
+        fitgam_prod(dat, unlist(ranges[i, ]), ts, dist, bordas, modo)
     )
     BICs <- sapply(fitgams, BIC)
 

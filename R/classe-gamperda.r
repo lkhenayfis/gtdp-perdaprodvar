@@ -77,7 +77,9 @@ predict.gamperda <- function(object, newdata, ...) {
 
     sect <- findInterval(data$vazao, attr(object, "cortes")) + 1
     pred <- split(data, sect)
-    pred <- lapply(names(pred), function(i) predict(object$model[[as.numeric(i)]], newdata = pred[[i]]))
+    pred <- lapply(names(pred), function(i)
+        predict(object$model[[as.numeric(i)]], newdata = pred[[i]], type = "response")
+    )
 
     ordem <- split(seq(nrow(data)), sect)
     pred  <- unlist(pred)

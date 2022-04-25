@@ -1,3 +1,22 @@
+# newmodels
+
+## New fearures
+
+* Adiciona suporte a outras distribuições no ajuste dos GAM de produtibilidade através do parâmetro 
+  `dist`
+* Adiciona suporte a shape constrained splines em ajustes de produtibilidade
+* Adiciona suporte a outras distribuições no ajuste dos GAM de perda através do parâmetro 
+  `dist`
+* Adiciona suporte a shape constrained splines em ajustes de perda
+* Adiciona suporte a `gamperda` sem extrapolacao
+
+### Minor
+
+* a chamada guardada pelas funções `fitgam` agora avaliam os argumentos antes de retornar os 
+  objetos. Isso é feito para que se tenha um registro exato da parametrização das chamadas caso seja preciso rodá-las com versões posteriores do pacote e comparar resultados operacionais
+* `(fit|opt)gam_prod` agora recebem um vetor de duas posições indicando o tipo de splines e um vetor
+  (fit) ou lista (opt) indicando dimensão de base
+
 # master 
 
 ## New features

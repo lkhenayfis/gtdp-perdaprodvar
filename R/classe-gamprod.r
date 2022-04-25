@@ -10,7 +10,7 @@
 #' 
 #' @return objeto \code{gamprod} com modelo ajustado e dado original
 
-new_gamprod <- function(dat, mod, fitcall, bordas) {
+new_gamprod <- function(dat, mod, fitcall) {
 
     usina <- ponto <- vazao <- NULL
 
@@ -18,6 +18,7 @@ new_gamprod <- function(dat, mod, fitcall, bordas) {
 
     borda <- bordasCC[usina == attr(dat, "cod")]
     borda[ponto %in% 3:4, vazao := vazao * attr(dat, "nmaq")]
+    bordas <- fitcall$bordas
 
     rangevaz <- c(0, max(max(dat$vazao), attr(dat, "qmax")))
     rangehl  <- c(min(min(dat$quedal), min(borda$queda)), max(max(dat$quedal), max(borda$queda)))
@@ -63,7 +64,7 @@ print.gamprod <- function(x, ...) {
 
 predict.gamprod <- function(object, newdata, ...) {
 
-    pred <- predict(object$model, newdata = newdata)
+    pred <- predict(object$model, newdata = newdata, type = "response")
 
     return(pred)
 }

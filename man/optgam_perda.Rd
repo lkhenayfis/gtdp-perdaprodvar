@@ -6,8 +6,9 @@
 \usage{
 optgam_perda(
   dat,
-  range.vazao = 5:30,
-  ts.vazao = "ps",
+  range = 5:30,
+  ts = "ps",
+  dist = gaussian(),
   extrap = c(2, 2),
   quantil = c(0.05, 0.95)
 )
@@ -15,14 +16,16 @@ optgam_perda(
 \arguments{
 \item{dat}{\code{data.table} de dados para ajuste. Ver Detalhes}
 
-\item{range.vazao}{vetor de dimensões de base a testar na seleção. Padrão
-\code{range.vazao = 5:30}}
+\item{range}{vetor de dimensões de base a testar na seleção}
 
-\item{ts.vazao}{tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
-\code{link[mgcv]{gam}} e Detalhes. Padrao "ps"}
+\item{ts}{tipo de spline utilizada para vazao -- um de \code{c("tp", "cr", "ps")}; veja
+\code{link[mgcv]{gam}} e Detalhes}
+
+\item{dist}{objeto da classe \code{family} indicando a distribuição e link a serem usados no
+ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais informações.}
 
 \item{extrap}{vetor de duas posições indicando o tipo de extrapolação em cada região. Ver
-Detalhes. Padrao tipo 2 para ambas as extrapolações}
+Detalhes}
 
 \item{quantil}{quantis para uso na extrapolação. Ver Detalhes}
 }
@@ -34,8 +37,8 @@ Varre uma faixa de dimensões de base, reportando aquela correspondente ao ajust
 }
 \details{
 Os parâmetros recebidos por \code{optgam_perda} são exatamente aqueles de
-\code{\link{fitgam_perda}}, com uma exceção: o argumento \code{ns.vazao} é substituído por
-\code{range.vazao}, um vetor de inteiros indicando as dimensões de base candidatas para seleção.
+\code{\link{fitgam_perda}}, com uma exceção: o argumento \code{ns} é substituído por
+\code{range}, um vetor de inteiros indicando as dimensões de base candidatas para seleção.
 Mais detalhes a respeito da estimação e efeito dos argumentos individuais podem ser encontrados
 em \code{\link{fitgam_perda}}
 }
@@ -44,7 +47,7 @@ em \code{\link{fitgam_perda}}
 dat <- agregasemana(dummydata)
 
 # execucao limitando a faixa de numero de splines a algo mais baixo
-optfit <- optgam_perda(dat, range.vazao = 5:10)
+optfit <- optgam_perda(dat, range = 5:10)
 \dontrun{
 plot(optfit)
 }
