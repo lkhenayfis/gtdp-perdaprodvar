@@ -42,6 +42,17 @@
 optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
     extrap = c(2, 2), quantil = c(.05, .95)) {
 
+    vazao <- perda <- NULL
+
+    maxdim <- sum(complete.cases(dat[, list(vazao, perda)]))
+
+    if(any(range > maxdim)) {
+        range  <- range[range <= maxdim]
+        warning("'range' contem valores maiores que o numero de pontos em 'dat' -- encolhendo")
+    }
+
+    if(length(range) == 0) stop("Ha menos pontos em 'dat' do que o menor valor de 'range'")
+
     fitgams <- lapply(range, function(ns) fitgam_perda(dat, ns, ts, dist, extrap, quantil))
     BICs    <- sapply(fitgams, BIC)
 
@@ -95,7 +106,18 @@ optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
 optgam_prod <- function(dat, range = list(5:30, 5:30), ts = c("ps", "ps"), dist = gaussian(),
     bordas = TRUE, modo = c("tensor", "multivar", "simples")) {
 
+    quedal <- vazao <- prod <- NULL
+
     ranges <- expand.grid(quedal = range[[1]], vazao = range[[2]])
+
+    maxdim <- sum(complete.cases(dat[, list(quedal, vazao, prod)]))
+
+    if(any((ranges$quedal * ranges$vazao) > maxdim)) {
+        ranges <- ranges[(ranges$quedal * ranges$vazao) <= maxdim, ]
+        warning("'range' contem valores cujo produto e menor que o numero de pontos em 'dat' -- encolhendo")
+    }
+
+    if(nrow(ranges) == 0) stop("Ha menos pontos em 'dat' do que o menor produto entre 'ranges'")
 
     fitgams <- lapply(seq(nrow(ranges)), function(i)
         fitgam_prod(dat, unlist(ranges[i, ]), ts, dist, bordas, modo)

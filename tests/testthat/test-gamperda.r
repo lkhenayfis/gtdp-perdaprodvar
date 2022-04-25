@@ -156,4 +156,14 @@ test_that("PERDA - Otimizacao da dimensao de base", {
 
     expect_snapshot_value(AIC(optmod), style = "serialize")
     expect_snapshot_value(BIC(optmod), style = "serialize")
+
+    # Encolhendo range ---------------------------------------------------
+
+    dts2 <- dts[1:10]
+
+    # encolhendo um pouco o range
+    expect_warning(optgam_perda(dts2, 5:15, extrap = c(0, 0)))
+
+    # range maior do que o numero de pontos -- erro
+    expect_error(expect_warning(optgam_perda(dts2, 11:15, extrap = c(0, 0))))
 })

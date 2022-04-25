@@ -1,3 +1,12 @@
+# master
+
+## New features
+
+* `optgam_perda` e `optgam_prod` agora fazem uma consistência dos valores de range fornecidos: para
+  perda o vetor `range` é encolhido apenas para os valores menores que o número de pontos; para 
+  produtibilidade o data.frame resultante das combinações entre os vetores em `range` é encolhido 
+  para as linhas nas quais o produto entre dimensões é menor que o número de pontos
+
 # perdaprodvar 1.2
 
 ## New features

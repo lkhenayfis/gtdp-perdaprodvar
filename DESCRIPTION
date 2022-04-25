@@ -1,6 +1,6 @@
 Package: perdaprodvar
 Title: Modelagem De Dados De Perda E Produtibillidade E Extração De Grades
-Version: 1.2
+Version: 1.2.0.9000
 Authors@R: 
     person(given = "Lucas",
            family = "Khenayfis",
