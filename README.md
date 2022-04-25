@@ -26,7 +26,10 @@ deve ser instalado diretamente a partir do repositorio utilizando:
 
 ``` r
 # Caso a biblioteca remotes nao esteja instalada, execute install.packages("remotes") primeiro
-remotes::install_github("lkhenayfis/gtdp-perdaprodvar", build_vignettes = TRUE)
+# 1: instalando a ultima versao fechada
+remotes::install_github("lkhenayfis/gtdp-perdaprodvar@*release")
+# 2: instalando a versao de desenvolvimento
+remotes::install_github("lkhenayfis/gtdp-perdaprodvar")
 ```
 
 ## Exemplo de uso
