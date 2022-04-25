@@ -27,7 +27,11 @@ leplanilha <- function(arq) {
 
     Qef <- datahora <- data <- hora <- patamar <- energia <- vazao <- nmont <- njus <- quedal <- NULL
 
+    letrasExcel <- c(LETTERS, c(t(outer(LETTERS, LETTERS, paste0))))
+
     options(readxl.show_progress = FALSE)
+
+    # Leitura de Cadastro ------------------------------------------------
 
     usina <- read_xlsx(arq, sheet = "Cadastro", range = "C1:C2", col_names = FALSE, .name_repair = "minimal")
     nome <- as.character(usina[1, 1])
@@ -38,52 +42,57 @@ leplanilha <- function(arq) {
     qmax  <- maqs[, sum(Qef)]
     nmaq <- maqs[, .N]
 
+    # Leitura de Aberturas -----------------------------------------------
+
     info <- read_xlsx(arq, sheet = "Abertura(1)", range = "G13:G18", .name_repair = "minimal")
     info <- data.matrix(info)
     G   <- as.numeric(ifelse(!is.na(info[4, ]), info[4, ], info[1, ]))
     rho <- as.numeric(ifelse(!is.na(info[5, ]), info[5, ], info[2, ]))
 
-    classes <- c("date", "numeric",  "numeric", "numeric", "text", "text")
-    rend <- read_xlsx(arq, sheet = "Rendimento Usina (hora)", .name_repair = "minimal",
-                     range = "A2:F87650", col_types = classes)
-    rend <- setDT(rend)
-    rend <- rend[apply(rend, 1, function(r) !all(is.na(r)))]
-    colnames(rend) <- c("data", "hora", "rend", "energia", "diasem", "patamar")
-    rend[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
+    # Leitura de Rendimentos ---------------------------------------------
+
+    rend <- leaba(arq, "Rendimento Usina (hora)", "A2:F87650",
+        c("data", "hora", "rend", "energia", "diasem", "patamar"),
+        c("date", "numeric",  "numeric", "numeric", "text", "text"))
+
     rend[, prod := rend * rho * G * 1e-6]
     rend <- rend[, list(datahora, patamar, energia, prod)]
     setkey(rend, datahora)
 
-    turb <- read_xlsx(arq, sheet = "QTurb", skip = 1, .name_repair = "minimal",
-        range = paste0("A2:", LETTERS[2 + nmaq + 1], "87650"))
-    turb <- setDT(turb)
-    turb <- turb[apply(turb, 1, function(r) !all(is.na(r)))]
-    colnames(turb) <- c("data", "hora", paste0("vaz_maq", seq(nmaq)), "vazao")
-    turb[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
+    # Leitura de Vazao Turbinada -----------------------------------------
+
+    turb <- leaba(arq, "QTurb", paste0("A2:", letrasExcel[2 + nmaq + 1], "87650"),
+        c("data", "hora", paste0("vaz_maq", seq(nmaq)), "vazao"),
+        c("date", rep("numeric", 1 + nmaq + 1)))
+
     nmaqs <- turb[, lapply(.SD, function(x) is.na(x) | (x == 0)), .SDcols = names(turb) %like% "vaz_maq"]
     turb[, nmaq := rowSums(!nmaqs)]
+
     turb <- turb[, list(datahora, vazao, nmaq)]
     setkey(turb, datahora)
 
-    quedab <- read_xlsx(arq, sheet = "Dados", range = "A2:E87650", .name_repair = "minimal")
-    setDT(quedab)
-    quedab <- quedab[apply(quedab, 1, function(r) !all(is.na(r)))]
-    colnames(quedab) <- c("data", "hora", "XXX", "nmont", "njus")
-    quedab[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
+    # Leitura de Dados Hidrologicos --------------------------------------
+
+    quedab <- leaba(arq, "Dados", "A2:E87650",
+        c("data", "hora", "XXX", "nmont", "njus"),
+        c("date", rep("numeric", 4)))
+
     quedab[, quedab := nmont - njus]
     quedab <- quedab[, list(datahora, nmont, quedab)]
     setkey(quedab, datahora)
 
-    perda <- read_xlsx(arq, sheet = "Perda Usina (hora)", .name_repair = "minimal",
-                     range = "A2:C87650")
-    setDT(perda)
-    perda <- perda[apply(perda, 1, function(r) !all(is.na(r)))]
-    colnames(perda) <- c("data", "hora", "perda")
-    perda[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
+    # Leitura de Perdas --------------------------------------------------
+
+    perda <- leaba(arq, "Perda Usina (hora)", "A2:C87650",
+        c("data", "hora", "perda"),
+        c("date", rep("numeric", 2)))
+
     perda <- perda[, list(datahora, perda)]
     setkey(perda, datahora)
 
-    out <- Reduce(function(d1, d2) merge(d1, d2, all = TRUE), list(rend, turb, quedab, perda))
+    # Junta tudo ---------------------------------------------------------
+
+    out <- Reduce(function(d1, d2) merge(d1, d2, all = FALSE), list(rend, turb, quedab, perda))
     out[, quedal := quedab - perda]
     out[, quedab := NULL]
 
@@ -91,6 +100,32 @@ leplanilha <- function(arq) {
     attr(out, "nome") <- nome
     attr(out, "nmaq") <- nmaq
     attr(out, "qmax") <- qmax
+
+    return(out)
+}
+
+#' Leitura De Uma Aba Da Planilha Padrão
+#' 
+#' Função interna para leitura das múltiplas abas da planilha padrão
+#' 
+#' @param arq caminho completo da planilha
+#' @param aba nome ou índice da aba a ser lida
+#' @param range range no formato excel de células para ler, incluindo celulas com nome das colunas
+#' @param nomes nomes para atribuir às colunas
+#' @param tipos tipo de dado em cada coluna sendo lida
+#' 
+#' @return \code{data.table} contendo o range na aba especificados
+
+leaba <- function(arq, aba, range, nomes, tipos) {
+
+    out <- read_xlsx(arq, sheet = aba, range = range, col_types = tipos, .name_repair = "minimal")
+    out <- setDT(out)
+    colnames(out) <- nomes
+
+    allNA <- out[, Reduce("&", lapply(.SD, is.na))]
+    out <- out[!allNA]
+
+    out[, datahora := as.POSIXct(paste0(data, " ", hora - 1, ":00"), format = "%Y-%m-%d %H:%M", "GMT")]
 
     return(out)
 }
