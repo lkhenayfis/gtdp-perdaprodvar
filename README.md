@@ -81,8 +81,8 @@ Uma vez que o dado foi lido, podemos prosseguir para sua modelagem.
 dado_semanal <- agregasemana(dummydata) # dummydata e um dado embutido no pacote para exemplos
 
 # ajuste de modelos para perda
-mod1 <- fitgam_perda(dado_semanal, ns.vazao = 7, ts.vazao = "ps")
-mod2 <- fitgam_perda(dado_semanal, ns.vazao = 7, ts.vazao = "tp")
+mod1 <- fitgam_perda(dado_semanal, ns = 7, ts = "ps")
+mod2 <- fitgam_perda(dado_semanal, ns = 7, ts = "tp")
 
 plot(mod1, mod2)
 ```
