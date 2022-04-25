@@ -181,9 +181,13 @@ agregasemana.data.table <- function(dat, min.horas = .9) {
 
     datsem <- copy(dat)
 
-    diasem <- wday(datsem$datahora)
-    hora   <- hour(datsem$datahora)
-    inisem <- datsem$datahora[(diasem == 7) & (hora == 0)]
+    # a leitura da planilha pradrao nao garante que todas as datas estarao la. Desta forma, e melhor
+    # gerar um vetor com +- uma semana do qual identificar os comecos de semana para classificacao
+    rangedatas <- seq(min(datsem$datahora) - 168 * 3600, max(datsem$datahora) + 168 * 3600, "hour")
+
+    diasem <- wday(rangedatas)
+    hora   <- hour(rangedatas)
+    inisem <- rangedatas[(diasem == 7) & (hora == 0)]
 
     datsem[, semana := findInterval(datahora, inisem)]
     datsem <- datsem[semana != 0]
@@ -191,7 +195,7 @@ agregasemana.data.table <- function(dat, min.horas = .9) {
     datsem <- datsem[(semana != length(inisem)) | (length(inisem) == 1)]
     datsem <- datsem[, regvale := complete.cases(datsem)]
 
-    datsem[, semanafull := mean(regvale) > min.horas, by = semana]
+    datsem[, semanafull := sum(regvale) > (min.horas * 168), by = semana]
 
     # funcao alternativa para weighted.mean, que so corta NA de x e nao dos pesos
     wm2 <- function(x, w) sum(x * w, na.rm = TRUE) / sum(w, na.rm = TRUE)
