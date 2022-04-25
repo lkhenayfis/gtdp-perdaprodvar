@@ -117,8 +117,8 @@ test_that("PERDA - Diferentes tipos de extrapolacao e quantis", {
     expect_true(coefficients(mod_12$model[[3]])[1] != 0)
     expect_true(coefficients(mod_22$model[[3]])[1] != 0)
 
-    expect_equal(unname(attr(mod_11, "cortes")[1]), min(mod$dat$vazao))
-    expect_equal(unname(attr(mod_12, "cortes")[1]), min(mod$dat$vazao))
+    expect_equal(unname(attr(mod_11, "cortes")[1]), min(mod_11$dat$vazao))
+    expect_equal(unname(attr(mod_12, "cortes")[1]), min(mod_12$dat$vazao))
 
     # Testando diferentes quantis ----------------------------------------
 

@@ -308,6 +308,8 @@ NULL
 
 extrapperda_inf <- function(dat, mod, tipo, quant_inf) {
 
+    vazao <- perda <- NULL
+
     if(tipo == 0) return(list(NA, -1))
 
     wrn <- paste0("Nao ha cruzamento entre a extrapolacao inferior escolhida e o ajuste do GAM - ",
@@ -345,6 +347,8 @@ extrapperda_inf <- function(dat, mod, tipo, quant_inf) {
 #' @rdname extrapperda
 
 extrapperda_sup <- function(dat, mod, tipo, quant_sup) {
+
+    vazao <- perda <- NULL
 
     if(tipo == 0) return(list(rep(NA, 2), Inf))
 
