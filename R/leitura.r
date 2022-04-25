@@ -118,6 +118,8 @@ leplanilha <- function(arq) {
 
 leaba <- function(arq, aba, range, nomes, tipos) {
 
+    data <- hora <- datahora <- NULL
+
     out <- read_xlsx(arq, sheet = aba, range = range, col_types = tipos, .name_repair = "minimal")
     out <- setDT(out)
     colnames(out) <- nomes

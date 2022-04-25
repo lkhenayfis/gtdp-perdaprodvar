@@ -247,6 +247,8 @@ plot.gamprod <- function(x, plot = TRUE, ...) {
 
 plot.gridprod <- function(x, plot = TRUE, ...) {
 
+    tipo <- NULL
+
     grid <- cbind(x$grid, tipo = "Grade")
     dat  <- cbind(x$model$dat, tipo = "Dados")
 

@@ -1,28 +1,30 @@
-# newmodels
-
-## New fearures
-
-* Adiciona suporte a outras distribuições no ajuste dos GAM de produtibilidade através do parâmetro 
-  `dist`
-* Adiciona suporte a shape constrained splines em ajustes de produtibilidade
-* Adiciona suporte a outras distribuições no ajuste dos GAM de perda através do parâmetro 
-  `dist`
-* Adiciona suporte a shape constrained splines em ajustes de perda
-* Adiciona suporte a `gamperda` sem extrapolacao
-
-### Minor
-
-* a chamada guardada pelas funções `fitgam` agora avaliam os argumentos antes de retornar os 
-  objetos. Isso é feito para que se tenha um registro exato da parametrização das chamadas caso seja preciso rodá-las com versões posteriores do pacote e comparar resultados operacionais
-* `(fit|opt)gam_prod` agora recebem um vetor de duas posições indicando o tipo de splines e um vetor
-  (fit) ou lista (opt) indicando dimensão de base
-
-# master 
+# perdaprodvar 1.2
 
 ## New features
 
+* `leplanilha` mais robusta. Todos os tipos de dado esperados por coluna nas planilhas Excel são 
+  agora especificados; o tratamento de linhas completamente vazias foi melhorado e agilizado.
+* `agregasemana` agora está adequada para receber históricos horários com datas faltantes. Antes era
+  assumido que todas as linhas estariam lá, o que poderia levar a médias semanais mal calculadas ou
+  erradas
+* Funções para ajuste de GAM agora suportam outras distribuições. Foi incluído em `fitgam_perda` e 
+  `fitgam_prod` um argumento `dist` através do qual é possível informar qual distribuição deve ser 
+  considerada no ajuste.
+* Funções para ajuste de GAM agora suportam bases de splines com restrição de forma. Para perdas é
+  possível especificar bases que formam funções convexas ou monotonicamente crescentes, enquanto 
+  para produtibilidade é possível especificar uma função côncava.
+* `fitgam_perda` agora permite o ajuste de GAM para todo o domínio, isto é, sem utilizar 
+  extrapolações externas. Quando utilizada esta opção, é adicionado um ponto próximo a zero para
+  balizar o ajuste.
+
+### Minor
+
 * Adiciona atributo `bordas` aos objetos `gamprod`. Inclui estes pontos no plot de `gamprod` e 
   `gridprod`
+* A chamada guardada pelas funções `fitgam` agora avaliam os argumentos antes de retornar os 
+  objetos. Isso é feito para que se tenha um registro exato da parametrização das chamadas caso seja preciso rodá-las com versões posteriores do pacote e comparar resultados operacionais
+* `(fit|opt)gam_prod` agora recebem um vetor de duas posições indicando o tipo de splines e um vetor
+  (fit) ou lista (opt) indicando dimensão de base
 
 ## Bug fixes
 
