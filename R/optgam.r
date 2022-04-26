@@ -53,8 +53,13 @@ optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
 
     if(length(range) == 0) stop("Ha menos pontos em 'dat' do que o menor valor de 'range'")
 
-    fitgams <- lapply(range, function(ns) fitgam_perda(dat, ns, ts, dist, extrap, quantil))
-    BICs    <- sapply(fitgams, BIC)
+    # vez ou outra ocorre um erro ainda inexplicado no ajuste do GAM, de modo que o tryCatch se
+    # faz necessario
+    fitgams <- lapply(range, function(ns)
+        tryCatch(fitgam_perda(dat, ns, ts, dist, extrap, quantil), error = function(e) NA)
+    )
+    isna <- sapply(fitgams, function(m) all(is.na(m)))
+    BICs <- sapply(fitgams[!isna], BIC)
 
     optgam <- fitgams[[which.min(BICs)]]
 
@@ -119,10 +124,13 @@ optgam_prod <- function(dat, range = list(5:30, 5:30), ts = c("ps", "ps"), dist 
 
     if(nrow(ranges) == 0) stop("Ha menos pontos em 'dat' do que o menor produto entre 'ranges'")
 
+    # vez ou outra ocorre um erro ainda inexplicado no ajuste do GAM, de modo que o tryCatch se
+    # faz necessario
     fitgams <- lapply(seq(nrow(ranges)), function(i)
-        fitgam_prod(dat, unlist(ranges[i, ]), ts, dist, bordas, modo)
+        tryCatch(fitgam_prod(dat, unlist(ranges[i, ]), ts, dist, bordas, modo), error = function(e) NA)
     )
-    BICs <- sapply(fitgams, BIC)
+    isna <- sapply(fitgams, function(m) all(is.na(m)))
+    BICs <- sapply(fitgams[!isna], BIC)
 
     optgam <- fitgams[[which.min(BICs)]]
 

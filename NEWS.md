@@ -7,6 +7,12 @@
   produtibilidade o data.frame resultante das combinações entre os vetores em `range` é encolhido 
   para as linhas nas quais o produto entre dimensões é menor que o número de pontos
 
+## Bug fixes
+
+* `optgam_perda` e `optgam_prod` agora possuem um controle de erro na estimação dos modelos. De vez 
+  em quando ocorre um erro do próprio `gam` ou `scam` cujas causas ainda não foram identificadas, o
+  que torna o `tryCatch` necessário
+
 # perdaprodvar 1.2
 
 ## New features
