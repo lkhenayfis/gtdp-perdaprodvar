@@ -57,6 +57,9 @@
 #' @param extrap vetor inteiro de duas posições indicando o tipo de extrapolação em cada região -- 
 #'     um de \code{c(0, 1, 2)}. Ver Detalhes
 #' @param quantil quantis para uso na extrapolação. Ver Detalhes
+#' @param gamctrl lista contendo parâmetros de controle para a estimação do modelo aditivo. Ver
+#'     \code{\link[mgcv]{gam.control}} (ou \code{\link[scam]{scam.control}} quando usando shape 
+#'     constrained splines)
 #' 
 #' @examples
 #' 
@@ -88,7 +91,7 @@
 #' @export
 
 fitgam_perda <- function(dat, ns = 10, ts = "ps", dist = gaussian(),
-    extrap = c(2, 2), quantil = c(.05, .95)) {
+    extrap = c(2, 2), quantil = c(.05, .95), gamctrl = list()) {
 
     vazao <- perda <- NULL
 
@@ -117,7 +120,7 @@ fitgam_perda <- function(dat, ns = 10, ts = "ps", dist = gaussian(),
 
     form <- perda ~ s(vazao, bs = ts, k = ns)
 
-    CALL <- as.call(list(quote(mgcv::gam), form, quote(dist), quote(dfit)))
+    CALL <- as.call(list(quote(mgcv::gam), form, dist, dfit, control = gamctrl))
     if(is_sc) CALL[[1]] <- quote(scam::scam)
 
     mod <- eval(CALL)
@@ -204,6 +207,9 @@ fitgam_perda <- function(dat, ns = 10, ts = "ps", dist = gaussian(),
 #'     indicando quais vértices utilizar. Ver Detalhes
 #' @param modo um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de 
 #'     interação entre funções marginais. Ver Detalhes
+#' @param gamctrl lista contendo parâmetros de controle para a estimação do modelo aditivo. Ver
+#'     \code{\link[mgcv]{gam.control}} (ou \code{\link[scam]{scam.control}} quando usando shape 
+#'     constrained splines)
 #' 
 #' @examples
 #' 
@@ -232,7 +238,7 @@ fitgam_perda <- function(dat, ns = 10, ts = "ps", dist = gaussian(),
 #' @export
 
 fitgam_prod <- function(dat, ns = c(10, 10), ts = c("ps", "ps"), dist = gaussian(),
-    bordas = TRUE, modo = c("tensor", "multivar", "simples")) {
+    bordas = TRUE, modo = c("tensor", "multivar", "simples"), gamctrl = list()) {
 
     usina <- vazao <- ponto <- NULL
 
@@ -280,7 +286,7 @@ fitgam_prod <- function(dat, ns = c(10, 10), ts = c("ps", "ps"), dist = gaussian
     # quando se esta estimando um SC GAM, forca a penalidade para zero pois o modelo ja sera concavo
     if(is_sc) SP <- c(0, 0) else SP <- NULL
 
-    CALL <- as.call(list(quote(mgcv::gam), form, quote(dist), quote(dfit), sp = SP))
+    CALL <- as.call(list(quote(mgcv::gam), form, dist, dfit, sp = SP, control = gamctrl))
     if(is_sc) CALL[[1]] <- quote(scam::scam)
 
     mod <- eval(CALL)

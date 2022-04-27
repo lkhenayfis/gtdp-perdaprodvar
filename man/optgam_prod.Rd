@@ -10,7 +10,8 @@ optgam_prod(
   ts = c("ps", "ps"),
   dist = gaussian(),
   bordas = TRUE,
-  modo = c("tensor", "multivar", "simples")
+  modo = c("tensor", "multivar", "simples"),
+  gamctrl = list()
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ indicando quais vértices utilizar. Ver Detalhes}
 
 \item{modo}{um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de
 interação entre funções marginais. Ver Detalhes}
+
+\item{gamctrl}{lista contendo parâmetros de controle para a estimação do modelo aditivo. Ver
+\code{\link[mgcv]{gam.control}} (ou \code{\link[scam]{scam.control}} quando usando shape
+constrained splines)}
 }
 \value{
 objeto \code{gamprod} contendo GAM e extrapolações estimadas

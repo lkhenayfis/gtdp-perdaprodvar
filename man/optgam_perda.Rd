@@ -10,7 +10,8 @@ optgam_perda(
   ts = "ps",
   dist = gaussian(),
   extrap = c(2, 2),
-  quantil = c(0.05, 0.95)
+  quantil = c(0.05, 0.95),
+  gamctrl = list()
 )
 }
 \arguments{
@@ -28,6 +29,10 @@ ajuste. Veja \code{\link[stats]{family}} e \code{\link[stats]{glm}} para mais in
 Detalhes}
 
 \item{quantil}{quantis para uso na extrapolação. Ver Detalhes}
+
+\item{gamctrl}{lista contendo parâmetros de controle para a estimação do modelo aditivo. Ver
+\code{\link[mgcv]{gam.control}} (ou \code{\link[scam]{scam.control}} quando usando shape
+constrained splines)}
 }
 \value{
 objeto \code{gamperda} contendo GAM e extrapolações estimadas

@@ -19,6 +19,9 @@
 #' @param extrap vetor de duas posições indicando o tipo de extrapolação em cada região. Ver 
 #'     Detalhes
 #' @param quantil quantis para uso na extrapolação. Ver Detalhes
+#' @param gamctrl lista contendo parâmetros de controle para a estimação do modelo aditivo. Ver
+#'     \code{\link[mgcv]{gam.control}} (ou \code{\link[scam]{scam.control}} quando usando shape 
+#'     constrained splines)
 #' 
 #' @examples 
 #' 
@@ -40,7 +43,7 @@
 #' @export
 
 optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
-    extrap = c(2, 2), quantil = c(.05, .95)) {
+    extrap = c(2, 2), quantil = c(.05, .95), gamctrl = list()) {
 
     vazao <- perda <- NULL
 
@@ -56,7 +59,8 @@ optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
     # vez ou outra ocorre um erro ainda inexplicado no ajuste do GAM, de modo que o tryCatch se
     # faz necessario
     fitgams <- lapply(range, function(ns)
-        tryCatch(fitgam_perda(dat, ns, ts, dist, extrap, quantil), error = function(e) NA)
+        tryCatch(fitgam_perda(dat, ns, ts, dist, extrap, quantil, gamctrl),
+            error = function(e) NA)
     )
     isna <- sapply(fitgams, function(m) all(is.na(m)))
     BICs <- sapply(fitgams[!isna], BIC)
@@ -88,6 +92,9 @@ optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
 #'     indicando quais vértices utilizar. Ver Detalhes
 #' @param modo um de \code{"tensor"}, \code{"multivar"} ou \code{"simples"} indicando o modo de 
 #'     interação entre funções marginais. Ver Detalhes
+#' @param gamctrl lista contendo parâmetros de controle para a estimação do modelo aditivo. Ver
+#'     \code{\link[mgcv]{gam.control}} (ou \code{\link[scam]{scam.control}} quando usando shape 
+#'     constrained splines)
 #' 
 #' @examples 
 #' 
@@ -109,7 +116,7 @@ optgam_perda <- function(dat, range = 5:30, ts = "ps", dist = gaussian(),
 #' @export
 
 optgam_prod <- function(dat, range = list(5:30, 5:30), ts = c("ps", "ps"), dist = gaussian(),
-    bordas = TRUE, modo = c("tensor", "multivar", "simples")) {
+    bordas = TRUE, modo = c("tensor", "multivar", "simples"), gamctrl = list()) {
 
     quedal <- vazao <- prod <- NULL
 
@@ -127,7 +134,8 @@ optgam_prod <- function(dat, range = list(5:30, 5:30), ts = c("ps", "ps"), dist 
     # vez ou outra ocorre um erro ainda inexplicado no ajuste do GAM, de modo que o tryCatch se
     # faz necessario
     fitgams <- lapply(seq(nrow(ranges)), function(i)
-        tryCatch(fitgam_prod(dat, unlist(ranges[i, ]), ts, dist, bordas, modo), error = function(e) NA)
+        tryCatch(fitgam_prod(dat, unlist(ranges[i, ]), ts, dist, bordas, modo, gamctrl),
+            error = function(e) NA)
     )
     isna <- sapply(fitgams, function(m) all(is.na(m)))
     BICs <- sapply(fitgams[!isna], BIC)

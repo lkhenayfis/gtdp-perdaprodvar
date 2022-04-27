@@ -7,6 +7,11 @@
   produtibilidade o data.frame resultante das combinações entre os vetores em `range` é encolhido 
   para as linhas nas quais o produto entre dimensões é menor que o número de pontos
 
+### Minor
+
+* `(fit|opt)gam` agora recebem um argumento `gamctrl`, uma lista passada como `(gam|scam).control` 
+  para as funções de estimação dos modelos aditivos apropriadas
+
 ## Bug fixes
 
 * `optgam_perda` e `optgam_prod` agora possuem um controle de erro na estimação dos modelos. De vez 
